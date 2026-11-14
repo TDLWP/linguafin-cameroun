@@ -1,0 +1,209 @@
+terme_source,langue,terme_cible,contexte,statut,notes
+Solde,dua,Moni mi titi,Finance / Compte,machine_suggested,Terme courant pour l'argent disponible sur le compte
+Solde,bas,Kôbô i moni,Finance / Compte,machine_suggested,Terme courant pour l'argent disponible sur le compte
+Solde,bbj,Kəpka' cap,Finance / Compte,machine_suggested,Terme courant pour l'argent disponible sur le compte
+Solde,ewo,Nkobe moni,Finance / Compte,machine_suggested,Terme courant pour l'argent disponible sur le compte
+Solde disponible,dua,Moni mi titi o bolane,Finance / Compte,machine_suggested,Périphrase : Argent utilisable immédiatement pour un paiement
+Solde disponible,bas,Moni mi yé inyu salo,Finance / Compte,machine_suggested,Périphrase : Argent utilisable immédiatement pour un paiement
+Solde disponible,bbj,Kəpka' cap i gʉo,Finance / Compte,machine_suggested,Périphrase : Argent utilisable immédiatement pour un paiement
+Solde disponible,ewo,Nkobe moni mbege,Finance / Compte,machine_suggested,Périphrase : Argent utilisable immédiatement pour un paiement
+Solde insuffisant,dua,Moni mi si suwedi,Transaction / Erreur,machine_suggested,Périphrase : L'argent sur le compte ne suffit pas pour l'opération
+Solde insuffisant,bas,Moni moñ ma nsuba bé,Transaction / Erreur,machine_suggested,Périphrase : L'argent sur le compte ne suffit pas pour l'opération
+Solde insuffisant,bbj,Kəpka' cap kə̌ le,Transaction / Erreur,machine_suggested,Périphrase : L'argent sur le compte ne suffit pas pour l'opération
+Solde insuffisant,ewo,Nkobe moni tekě sôsô,Transaction / Erreur,machine_suggested,Périphrase : L'argent sur le compte ne suffit pas pour l'opération
+Frais,dua,Mutoa,Transaction / Tarif,machine_suggested,Terme établi pour le coût d'un service ou d'un acte financier
+Frais,bas,Ntomb,Transaction / Tarif,machine_suggested,Terme établi pour le coût d'un service ou d'un acte financier
+Frais,bbj,Tôk,Transaction / Tarif,machine_suggested,Terme établi pour le coût d'un service ou d'un acte financier
+Frais,ewo,Nzaña,Transaction / Tarif,machine_suggested,Terme établi pour le coût d'un service ou d'un acte financier
+Frais de transfert,dua,Mutoa ma tomba,Transaction / Tarif,machine_suggested,Coût retenu lors de l'expédition de fonds
+Frais de transfert,bas,Ntomb i ntomba,Transaction / Tarif,machine_suggested,Coût retenu lors de l'expédition de fonds
+Frais de transfert,bbj,Tôk jʉ' gə,Transaction / Tarif,machine_suggested,Coût retenu lors de l'expédition de fonds
+Frais de transfert,ewo,Nzaña mbege moni,Transaction / Tarif,machine_suggested,Coût retenu lors de l'expédition de fonds
+Gratuit,dua,Titi mutoa,Tarification,machine_suggested,Sans aucun frais prélevé
+Gratuit,bas,Ibabé ntomb,Tarification,machine_suggested,Sans aucun frais prélevé
+Gratuit,bbj,Gha tôk,Tarification,machine_suggested,Sans aucun frais prélevé
+Gratuit,ewo,Tekě nzaña,Tarification,machine_suggested,Sans aucun frais prélevé
+Transfert,dua,Tomba,Paiement / Envoi,machine_suggested,Action de faire passer des fonds d'un compte à un autre
+Transfert,bas,Ntomba,Paiement / Envoi,machine_suggested,Action de faire passer des fonds d'un compte à un autre
+Transfert,bbj,Jʉ' gə,Paiement / Envoi,machine_suggested,Action de faire passer des fonds d'un compte à un autre
+Transfert,ewo,Mbege moni,Paiement / Envoi,machine_suggested,Action de faire passer des fonds d'un compte à un autre
+Effectuer un transfert,dua,Loma moni,Action utilisateur,machine_suggested,Périphrase : Envoyer de l'argent vers un destinataire
+Effectuer un transfert,bas,Om moni,Action utilisateur,machine_suggested,Périphrase : Envoyer de l'argent vers un destinataire
+Effectuer un transfert,bbj,Kə kap,Action utilisateur,machine_suggested,Périphrase : Envoyer de l'argent vers un destinataire
+Effectuer un transfert,ewo,Lóm moni,Action utilisateur,machine_suggested,Périphrase : Envoyer de l'argent vers un destinataire
+Virement,dua,Loma moni o banka,Opération bancaire,machine_suggested,Périphrase : Virement entre établissements financiers
+Virement,bas,Om moni i bañga,Opération bancaire,machine_suggested,Périphrase : Virement entre établissements financiers
+Virement,bbj,Kə kap i bañga,Opération bancaire,machine_suggested,Périphrase : Virement entre établissements financiers
+Virement,ewo,Lóm moni e banka,Opération bancaire,machine_suggested,Périphrase : Virement entre établissements financiers
+Dépôt,dua,Boke moni o kompiti,Opération compte,machine_suggested,Périphrase : Placer ou verser de l'argent sur le compte
+Dépôt,bas,Ha moni o kompiti,Opération compte,machine_suggested,Périphrase : Placer ou verser de l'argent sur le compte
+Dépôt,bbj,Nen kəpka',Opération compte,machine_suggested,Périphrase : Placer ou verser de l'argent sur le compte
+Dépôt,ewo,Bége moni e kompiti,Opération compte,machine_suggested,Périphrase : Placer ou verser de l'argent sur le compte
+Retrait,dua,Busa moni,Opération compte,machine_suggested,Périphrase : Sortir de l'argent liquide
+Retrait,bas,Kodol moni,Opération compte,machine_suggested,Périphrase : Sortir de l'argent liquide
+Retrait,bbj,Ku' kəpka',Opération compte,machine_suggested,Périphrase : Sortir de l'argent liquide
+Retrait,ewo,Kôlô moni,Opération compte,machine_suggested,Périphrase : Sortir de l'argent liquide
+Compte,dua,Kompiti,Bancaire,machine_suggested,Emprunt bancaire bantouisé généralisé
+Compte,bas,Kompiti,Bancaire,machine_suggested,Emprunt bancaire bantouisé généralisé
+Compte,bbj,Kompiti,Bancaire,machine_suggested,Emprunt bancaire bantouisé généralisé
+Compte,ewo,Kompiti,Bancaire,machine_suggested,Emprunt bancaire bantouisé généralisé
+Compte courant,dua,Kompiti ya buńa té,Bancaire,machine_suggested,Périphrase : Compte destiné aux dépenses de chaque jour
+Compte courant,bas,Kompiti i hiki kel,Bancaire,machine_suggested,Périphrase : Compte destiné aux dépenses de chaque jour
+Compte courant,bbj,Kompiti lə gə́ tsa',Bancaire,machine_suggested,Périphrase : Compte destiné aux dépenses de chaque jour
+Compte courant,ewo,Kompiti ya môs ôse,Bancaire,machine_suggested,Périphrase : Compte destiné aux dépenses de chaque jour
+Compte d'épargne,dua,Kompiti ya baṅga moni,Bancaire,machine_suggested,Périphrase : Compte destiné à garder et faire fructifier l'argent
+Compte d'épargne,bas,Kompiti i koba moni,Bancaire,machine_suggested,Périphrase : Compte destiné à garder et faire fructifier l'argent
+Compte d'épargne,bbj,Kompiti shʉ kəpka',Bancaire,machine_suggested,Périphrase : Compte destiné à garder et faire fructifier l'argent
+Compte d'épargne,ewo,Kompiti nkobe moni,Bancaire,machine_suggested,Périphrase : Compte destiné à garder et faire fructifier l'argent
+Bénéficiaire,dua,Nongi a moni,Destinataire,machine_suggested,Périphrase : La personne qui réceptionne la somme d'argent
+Bénéficiaire,bas,Mut a nkôs,Destinataire,machine_suggested,Périphrase : La personne qui réceptionne la somme d'argent
+Bénéficiaire,bbj,Mbe fə,Destinataire,machine_suggested,Périphrase : La personne qui réceptionne la somme d'argent
+Bénéficiaire,ewo,Nnyo a nyoñ,Destinataire,machine_suggested,Périphrase : La personne qui réceptionne la somme d'argent
+Expéditeur,dua,Lomi a moni,Émetteur,machine_suggested,Périphrase : La personne qui expédie les fonds
+Expéditeur,bas,Mut a n-om,Émetteur,machine_suggested,Périphrase : La personne qui expédie les fonds
+Expéditeur,bbj,Mbe lə́m,Émetteur,machine_suggested,Périphrase : La personne qui expédie les fonds
+Expéditeur,ewo,Nnyo a lóm,Émetteur,machine_suggested,Périphrase : La personne qui expédie les fonds
+Montant,dua,Moni,Valeur monétaire,machine_suggested,Somme chiffrée
+Montant,bas,Moni,Valeur monétaire,machine_suggested,Somme chiffrée
+Montant,bbj,Kəpka',Valeur monétaire,machine_suggested,Somme chiffrée
+Montant,ewo,Moni,Valeur monétaire,machine_suggested,Somme chiffrée
+Montant total,dua,Moni mése,Valeur monétaire,machine_suggested,Somme complète incluant les charges
+Montant total,bas,Moni momasôna,Valeur monétaire,machine_suggested,Somme complète incluant les charges
+Montant total,bbj,Kəpka' tsətsə̀,Valeur monétaire,machine_suggested,Somme complète incluant les charges
+Montant total,ewo,Moni mese,Valeur monétaire,machine_suggested,Somme complète incluant les charges
+Total à débiter,dua,Moni mése ma busisabe,Transaction,machine_suggested,Périphrase : Totalité des fonds débités du solde
+Total à débiter,bas,Moni momasôna ma nkodol,Transaction,machine_suggested,Périphrase : Totalité des fonds débités du solde
+Total à débiter,bbj,Kəpka' tsətsə̀ ku',Transaction,machine_suggested,Périphrase : Totalité des fonds débités du solde
+Total à débiter,ewo,Moni mese ma kôlô,Transaction,machine_suggested,Périphrase : Totalité des fonds débités du solde
+Confirmation,dua,Kakisane,Validation,machine_suggested,Approbation expresse d'une transaction
+Confirmation,bas,Mba᷇k,Validation,machine_suggested,Approbation expresse d'une transaction
+Confirmation,bbj,Kap tə,Validation,machine_suggested,Approbation expresse d'une transaction
+Confirmation,ewo,Akala,Validation,machine_suggested,Approbation expresse d'une transaction
+Confirmer,dua,Kakisane,Action,machine_suggested,Verbe d'action pour valider
+Confirmer,bas,Mba᷇k,Action,machine_suggested,Verbe d'action pour valider
+Confirmer,bbj,Kap tə,Action,machine_suggested,Verbe d'action pour valider
+Confirmer,ewo,Akala,Action,machine_suggested,Verbe d'action pour valider
+Annuler,dua,Kwele ebolo,Action,machine_suggested,Périphrase : Abandonner ou stopper l'opération en cours
+Annuler,bas,Tiba nsal,Action,machine_suggested,Périphrase : Abandonner ou stopper l'opération en cours
+Annuler,bbj,Sə̌ bə̀,Action,machine_suggested,Périphrase : Abandonner ou stopper l'opération en cours
+Annuler,ewo,Tege bo,Action,machine_suggested,Périphrase : Abandonner ou stopper l'opération en cours
+Sécurité,dua,Mbembe,Protection,machine_suggested,Protection des données et des fonds
+Sécurité,bas,Mbok i tibil tehe,Protection,machine_suggested,Protection des données et des fonds
+Sécurité,bbj,Kəm tə,Protection,machine_suggested,Protection des données et des fonds
+Sécurité,ewo,Mbañ,Protection,machine_suggested,Protection des données et des fonds
+Connexion sécurisée,dua,Jowe la mbembe,Système,machine_suggested,Périphrase : Accès informatique protégé et étanche
+Connexion sécurisée,bas,Mbuma i mbok,Système,machine_suggested,Périphrase : Accès informatique protégé et étanche
+Connexion sécurisée,bbj,Jʉ' kəm tə,Système,machine_suggested,Périphrase : Accès informatique protégé et étanche
+Connexion sécurisée,ewo,Mbañ mbamba,Système,machine_suggested,Périphrase : Accès informatique protégé et étanche
+Référence,dua,Lembá,Identifiant,machine_suggested,Marque distinctive ou code identifiant de transaction
+Référence,bas,Lemb,Identifiant,machine_suggested,Marque distinctive ou code identifiant de transaction
+Référence,bbj,Tʉa,Identifiant,machine_suggested,Marque distinctive ou code identifiant de transaction
+Référence,ewo,Ndem,Identifiant,machine_suggested,Marque distinctive ou code identifiant de transaction
+Numéro de transaction,dua,Nombá ya ebólo,Identifiant,machine_suggested,Identifiant numérique de l'acte financier
+Numéro de transaction,bas,Namba i nsal,Identifiant,machine_suggested,Identifiant numérique de l'acte financier
+Numéro de transaction,bbj,Nombá bə̀,Identifiant,machine_suggested,Identifiant numérique de l'acte financier
+Numéro de transaction,ewo,Namba ya ésaé,Identifiant,machine_suggested,Identifiant numérique de l'acte financier
+Code secret / PIN,dua,Lembá la wumbe la kompiti,Sécurité,machine_suggested,Périphrase : Code confidentiel pour autoriser le transfert
+Code secret / PIN,bas,Lemb li nyol,Sécurité,machine_suggested,Périphrase : Code confidentiel pour autoriser le transfert
+Code secret / PIN,bbj,Lembá tsə,Sécurité,machine_suggested,Périphrase : Code confidentiel pour autoriser le transfert
+Code secret / PIN,ewo,Ndem bisôk,Sécurité,machine_suggested,Périphrase : Code confidentiel pour autoriser le transfert
+Mot de passe,dua,Eyango ya jowe,Sécurité,machine_suggested,Périphrase : Mot secret pour déverrouiller l'accès — INCERTAIN
+Mot de passe,bas,Bañga i jôp,Sécurité,machine_suggested,Périphrase : Mot secret pour déverrouiller l'accès — INCERTAIN
+Mot de passe,bbj,Gho' jʉ',Sécurité,machine_suggested,Périphrase : Mot secret pour déverrouiller l'accès — INCERTAIN
+Mot de passe,ewo,Éfia ya nyiil,Sécurité,machine_suggested,Périphrase : Mot secret pour déverrouiller l'accès — INCERTAIN
+Reçu,dua,Kalati ya kakisane ebolo,Document,machine_suggested,Périphrase : Écrit ou reçu confirmant l'exécution
+Reçu,bas,Kalaada i mba᷇k,Document,machine_suggested,Périphrase : Écrit ou reçu confirmant l'exécution
+Reçu,bbj,Wá’la kap,Document,machine_suggested,Périphrase : Écrit ou reçu confirmant l'exécution
+Reçu,ewo,Kalate ya akala,Document,machine_suggested,Périphrase : Écrit ou reçu confirmant l'exécution
+Historique,dua,Betiledi ba bebolo ba kalá,Gestion compte,machine_suggested,Périphrase : Registre chronologique des opérations passées
+Historique,bas,Mam ma moni ma kôba,Gestion compte,machine_suggested,Périphrase : Registre chronologique des opérations passées
+Historique,bbj,Gə́ kəpka' tso,Gestion compte,machine_suggested,Périphrase : Registre chronologique des opérations passées
+Historique,ewo,Mam ya kalá,Gestion compte,machine_suggested,Périphrase : Registre chronologique des opérations passées
+Transactions récentes,dua,Bebolo ba moni ba bo buńa,Gestion compte,machine_suggested,Périphrase : Mouvements financiers des derniers jours
+Transactions récentes,bas,Mam ma moni ma haa,Gestion compte,machine_suggested,Périphrase : Mouvements financiers des derniers jours
+Transactions récentes,bbj,Gə́ kəpka' tsa',Gestion compte,machine_suggested,Périphrase : Mouvements financiers des derniers jours
+Transactions récentes,ewo,Mam ya ana,Gestion compte,machine_suggested,Périphrase : Mouvements financiers des derniers jours
+Plafond,dua,Su la moni ma lomabe,Limite réglementaire,machine_suggested,Périphrase : Montant maximal autorisé par période
+Plafond,bas,Ngim moni i n-om,Limite réglementaire,machine_suggested,Périphrase : Montant maximal autorisé par période
+Plafond,bbj,Su kəpka',Limite réglementaire,machine_suggested,Périphrase : Montant maximal autorisé par période
+Plafond,ewo,Asu moni,Limite réglementaire,machine_suggested,Périphrase : Montant maximal autorisé par période
+Limite quotidienne,dua,Su la moni la buńa bwo,Limite réglementaire,machine_suggested,Périphrase : Seuil maximal d'envoi par journée
+Limite quotidienne,bas,Ngim moni i hiki kel,Limite réglementaire,machine_suggested,Périphrase : Seuil maximal d'envoi par journée
+Limite quotidienne,bbj,Su kəpka' tsa',Limite réglementaire,machine_suggested,Périphrase : Seuil maximal d'envoi par journée
+Limite quotidienne,ewo,Asu moni ya amôs,Limite réglementaire,machine_suggested,Périphrase : Seuil maximal d'envoi par journée
+Commission,dua,Mutoa ma ebolo,Tarification,machine_suggested,Rémunération du prestataire pour le service rendu
+Commission,bas,Ntomb i nsal,Tarification,machine_suggested,Rémunération du prestataire pour le service rendu
+Commission,bbj,Tôk bə̀,Tarification,machine_suggested,Rémunération du prestataire pour le service rendu
+Commission,ewo,Nzaña ésaé,Tarification,machine_suggested,Rémunération du prestataire pour le service rendu
+Taux,dua,Gwedise la mutoa,Tarification / Pourcentage,machine_suggested,Proportion appliquée au calcul des frais — INCERTAIN
+Taux,bas,Gwedise i ntomb,Tarification / Pourcentage,machine_suggested,Proportion appliquée au calcul des frais — INCERTAIN
+Taux,bbj,Pʉa tôk,Tarification / Pourcentage,machine_suggested,Proportion appliquée au calcul des frais — INCERTAIN
+Taux,ewo,Afan nzaña,Tarification / Pourcentage,machine_suggested,Proportion appliquée au calcul des frais — INCERTAIN
+Intérêt,dua,Moni ma bapele,Bancaire,machine_suggested,Périphrase : Somme additionnelle due ou perçue
+Intérêt,bas,Moni ma mabéñg,Bancaire,machine_suggested,Périphrase : Somme additionnelle due ou perçue
+Intérêt,bbj,Kəpka' fə́,Bancaire,machine_suggested,Périphrase : Somme additionnelle due ou perçue
+Intérêt,ewo,Moni mendi,Bancaire,machine_suggested,Périphrase : Somme additionnelle due ou perçue
+Crédit,dua,Nkolongo a moni,Financement,machine_suggested,Périphrase : Somme prêtée remboursable ultérieurement
+Crédit,bas,Nkolongo u moni,Financement,machine_suggested,Périphrase : Somme prêtée remboursable ultérieurement
+Crédit,bbj,Kəpka' nkolongo,Financement,machine_suggested,Périphrase : Somme prêtée remboursable ultérieurement
+Crédit,ewo,Nkolongo moni,Financement,machine_suggested,Périphrase : Somme prêtée remboursable ultérieurement
+Dette / Emprunt,dua,Nkolongo,Financement,machine_suggested,Engagement de remboursement
+Dette / Emprunt,bas,Nkolongo,Financement,machine_suggested,Engagement de remboursement
+Dette / Emprunt,bbj,Nkolongo,Financement,machine_suggested,Engagement de remboursement
+Dette / Emprunt,ewo,Nkolongo,Financement,machine_suggested,Engagement de remboursement
+Remboursement,dua,Timbedise nkolongo,Paiement dette,machine_suggested,Périphrase : Rendre l'argent emprunté
+Remboursement,bas,Timbis nkolongo,Paiement dette,machine_suggested,Périphrase : Rendre l'argent emprunté
+Remboursement,bbj,Tshwe nkolongo,Paiement dette,machine_suggested,Périphrase : Rendre l'argent emprunté
+Remboursement,ewo,Buluse nkolongo,Paiement dette,machine_suggested,Périphrase : Rendre l'argent emprunté
+Épargne,dua,Baṅga moni,Finances personnelles,machine_suggested,Action de mettre de côté des réserves financières
+Épargne,bas,Koba moni,Finances personnelles,machine_suggested,Action de mettre de côté des réserves financières
+Épargne,bbj,Shʉ kəpka',Finances personnelles,machine_suggested,Action de mettre de côté des réserves financières
+Épargne,ewo,Kôme moni,Finances personnelles,machine_suggested,Action de mettre de côté des réserves financières
+Paiement,dua,Sawa la moni,Transaction,machine_suggested,"Règlement d'une dette, facture ou achat"
+Paiement,bas,Mbaña i moni,Transaction,machine_suggested,"Règlement d'une dette, facture ou achat"
+Paiement,bbj,Sə̌ kəpka',Transaction,machine_suggested,"Règlement d'une dette, facture ou achat"
+Paiement,ewo,Yá moni,Transaction,machine_suggested,"Règlement d'une dette, facture ou achat"
+Paiement marchand,dua,Sawa la mutoa,Commerce,machine_suggested,Périphrase : Règlement effectué au bénéfice d'un commerçant — INCERTAIN
+Paiement marchand,bas,Mbaña i mam,Commerce,machine_suggested,Périphrase : Règlement effectué au bénéfice d'un commerçant — INCERTAIN
+Paiement marchand,bbj,Sə̌ kəpka' gu,Commerce,machine_suggested,Périphrase : Règlement effectué au bénéfice d'un commerçant — INCERTAIN
+Paiement marchand,ewo,Yá bôm,Commerce,machine_suggested,Périphrase : Règlement effectué au bénéfice d'un commerçant — INCERTAIN
+Facture,dua,Kalati ya mutoa,Paiement service,machine_suggested,Périphrase : Document indiquant le montant dû pour un service
+Facture,bas,Kalaada i ntomb,Paiement service,machine_suggested,Périphrase : Document indiquant le montant dû pour un service
+Facture,bbj,Wá’la tôk,Paiement service,machine_suggested,Périphrase : Document indiquant le montant dû pour un service
+Facture,ewo,Kalate nzaña,Paiement service,machine_suggested,Périphrase : Document indiquant le montant dû pour un service
+Banque,dua,Banka,Institution,machine_suggested,Institution financière agréée
+Banque,bas,Bañga,Institution,machine_suggested,Institution financière agréée
+Banque,bbj,Bañga,Institution,machine_suggested,Institution financière agréée
+Banque,ewo,Banka,Institution,machine_suggested,Institution financière agréée
+Banque en ligne,dua,Banka o mwendi,Technologie,machine_suggested,Périphrase : Banque accessible via Internet ou téléphone mobile
+Banque en ligne,bas,Bañga i fôn,Technologie,machine_suggested,Périphrase : Banque accessible via Internet ou téléphone mobile
+Banque en ligne,bbj,Bañga o fôn,Technologie,machine_suggested,Périphrase : Banque accessible via Internet ou téléphone mobile
+Banque en ligne,ewo,Banka ya fôn,Technologie,machine_suggested,Périphrase : Banque accessible via Internet ou téléphone mobile
+Mobile Money,dua,Mobile Money,Moyen de paiement,machine_suggested,Terme commercial standard pour porte-monnaie électronique
+Mobile Money,bas,Mobile Money,Moyen de paiement,machine_suggested,Terme commercial standard pour porte-monnaie électronique
+Mobile Money,bbj,Mobile Money,Moyen de paiement,machine_suggested,Terme commercial standard pour porte-monnaie électronique
+Mobile Money,ewo,Mobile Money,Moyen de paiement,machine_suggested,Terme commercial standard pour porte-monnaie électronique
+Opérateur,dua,Ebolo ya telefon,Télécoms,machine_suggested,Périphrase : Entreprise de télécommunication gérant le réseau — INCERTAIN
+Opérateur,bas,Nsal u fôn,Télécoms,machine_suggested,Périphrase : Entreprise de télécommunication gérant le réseau — INCERTAIN
+Opérateur,bbj,Bə̀ fôn,Télécoms,machine_suggested,Périphrase : Entreprise de télécommunication gérant le réseau — INCERTAIN
+Opérateur,ewo,Ésaé telefon,Télécoms,machine_suggested,Périphrase : Entreprise de télécommunication gérant le réseau — INCERTAIN
+Devise / Monnaie,dua,Moni,Économie,machine_suggested,Moyen légal de paiement
+Devise / Monnaie,bas,Moni,Économie,machine_suggested,Moyen légal de paiement
+Devise / Monnaie,bbj,Kəpka',Économie,machine_suggested,Moyen légal de paiement
+Devise / Monnaie,ewo,Moni,Économie,machine_suggested,Moyen légal de paiement
+Franc CFA,dua,Franc CFA,Monnaie officielle,machine_suggested,Devise officielle en vigueur dans la zone CEMAC
+Franc CFA,bas,Franc CFA,Monnaie officielle,machine_suggested,Devise officielle en vigueur dans la zone CEMAC
+Franc CFA,bbj,Franc CFA,Monnaie officielle,machine_suggested,Devise officielle en vigueur dans la zone CEMAC
+Franc CFA,ewo,Franc CFA,Monnaie officielle,machine_suggested,Devise officielle en vigueur dans la zone CEMAC
+Erreur,dua,Bwemba,Système / Statut,machine_suggested,Dysfonctionnement ou rejet d'opération
+Erreur,bas,Mbebi,Système / Statut,machine_suggested,Dysfonctionnement ou rejet d'opération
+Erreur,bbj,Kə̌ le,Système / Statut,machine_suggested,Dysfonctionnement ou rejet d'opération
+Erreur,ewo,Abé,Système / Statut,machine_suggested,Dysfonctionnement ou rejet d'opération
+Échec,dua,Ebolo e si boli,Statut transaction,machine_suggested,Périphrase : L'opération n'a pas pu aboutir
+Échec,bas,Nsal u mboñba bé,Statut transaction,machine_suggested,Périphrase : L'opération n'a pas pu aboutir
+Échec,bbj,Bə̀ la’,Statut transaction,machine_suggested,Périphrase : L'opération n'a pas pu aboutir
+Échec,ewo,Ésaé tege bo,Statut transaction,machine_suggested,Périphrase : L'opération n'a pas pu aboutir
+Succès,dua,Bwam,Statut transaction,machine_suggested,Opération validée et exécutée sans anomalie
+Succès,bas,Loñge,Statut transaction,machine_suggested,Opération validée et exécutée sans anomalie
+Succès,bbj,Bə̀ bo,Statut transaction,machine_suggested,Opération validée et exécutée sans anomalie
+Succès,ewo,Mbamba,Statut transaction,machine_suggested,Opération validée et exécutée sans anomalie

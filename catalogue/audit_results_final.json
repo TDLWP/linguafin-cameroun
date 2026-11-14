@@ -1,0 +1,204 @@
+{
+  "passA_offline": {
+    "first_switch_latency_ms": 1003.34,
+    "steps": {
+      "01_solde": {
+        "montant_250k_preserve": false,
+        "compte_preserve": true,
+        "retour_source_ok": true,
+        "status": "FAIL"
+      },
+      "02_frais": {
+        "montant_25k_preserve": false,
+        "frais_0fcfa_preserve": true,
+        "retour_source_ok": true,
+        "status": "FAIL"
+      },
+      "03_beneficiaire": {
+        "beneficiaire_preserve": true,
+        "telephone_preserve": true,
+        "retour_source_ok": true,
+        "status": "PASS"
+      },
+      "04_recapitulatif": {
+        "montant_preserve": false,
+        "frais_preserve": true,
+        "reference": "SAF-2026-LV4M67",
+        "reference_preservee": true,
+        "retour_source_ok": true,
+        "status": "FAIL"
+      },
+      "05_recu": {
+        "montant_preserve": false,
+        "reference_preservee": true,
+        "retour_source_ok": true,
+        "status": "FAIL"
+      },
+      "06_erreur": {
+        "erreur_detectee": true,
+        "retour_source_ok": true,
+        "status": "PASS"
+      },
+      "07_securite": {
+        "securite_detectee": true,
+        "retour_source_ok": true,
+        "status": "PASS"
+      }
+    },
+    "jury_checks": {
+      "has_compromised": false,
+      "is_integre": true,
+      "compromised_count": 0,
+      "integre_count": 5,
+      "banner_text": "Traductions générées par IA, non validées par un locuteur natif.",
+      "banner_conforme": true,
+      "ful_absent_par_defaut": true,
+      "lang_options": [
+        "dua",
+        "bas",
+        "fr"
+      ],
+      "status": "PASS"
+    },
+    "novel_injections": {
+      "inj1_securite_montant": {
+        "input_text": "Alerte de sécurité : tentative de débit suspect de 75 000 FCFA sur votre compte.",
+        "displayed_text": "NTEÑGU U NLEÑG",
+        "montant_preserve": false,
+        "hover_title": "Original : Message important",
+        "widget_stats": {
+          "human": "0",
+          "machine": "42",
+          "fallback": "35"
+        },
+        "status": "FAIL"
+      },
+      "inj2_confirmation": {
+        "input_text": "Votre virement permanent a été enregistré avec succès par notre service.",
+        "displayed_text": "NTEÑGU U NLEÑG",
+        "montant_preserve": true,
+        "hover_title": "Original : Message important",
+        "widget_stats": {
+          "human": "0",
+          "machine": "43",
+          "fallback": "38"
+        },
+        "status": "PASS"
+      },
+      "inj3_notification_sans_montant": {
+        "input_text": "Un nouveau document sécurisé est disponible dans votre espace client.",
+        "displayed_text": "NTEÑGU U NLEÑG",
+        "montant_preserve": true,
+        "hover_title": "Original : Message important",
+        "widget_stats": {
+          "human": "0",
+          "machine": "44",
+          "fallback": "41"
+        },
+        "status": "PASS"
+      }
+    },
+    "bugs": []
+  },
+  "passB_online": {
+    "first_switch_latency_ms": 1002.95,
+    "steps": {
+      "01_solde": {
+        "montant_250k_preserve": false,
+        "compte_preserve": true,
+        "retour_source_ok": true,
+        "status": "FAIL"
+      },
+      "02_frais": {
+        "montant_25k_preserve": false,
+        "frais_0fcfa_preserve": true,
+        "retour_source_ok": true,
+        "status": "FAIL"
+      },
+      "03_beneficiaire": {
+        "beneficiaire_preserve": true,
+        "telephone_preserve": true,
+        "retour_source_ok": true,
+        "status": "PASS"
+      },
+      "04_recapitulatif": {
+        "montant_preserve": false,
+        "frais_preserve": true,
+        "reference": "SAF-2026-H8YE3E",
+        "reference_preservee": true,
+        "retour_source_ok": true,
+        "status": "FAIL"
+      },
+      "05_recu": {
+        "montant_preserve": false,
+        "reference_preservee": true,
+        "retour_source_ok": true,
+        "status": "FAIL"
+      },
+      "06_erreur": {
+        "erreur_detectee": true,
+        "retour_source_ok": true,
+        "status": "PASS"
+      },
+      "07_securite": {
+        "securite_detectee": true,
+        "retour_source_ok": true,
+        "status": "PASS"
+      }
+    },
+    "jury_checks": {
+      "has_compromised": true,
+      "is_integre": true,
+      "compromised_count": 2,
+      "integre_count": 3,
+      "banner_text": "Traductions générées par IA, non validées par un locuteur natif.",
+      "banner_conforme": true,
+      "ful_absent_par_defaut": true,
+      "lang_options": [
+        "dua",
+        "bas",
+        "fr"
+      ],
+      "status": "FAIL"
+    },
+    "novel_injections": {
+      "inj1_securite_montant": {
+        "input_text": "Alerte de sécurité : tentative de débit suspect de 75 000 FCFA sur votre compte.",
+        "displayed_text": "NTEÑGU U NLEÑG",
+        "montant_preserve": false,
+        "hover_title": "Original : Message important",
+        "widget_stats": {
+          "human": "0",
+          "machine": "77",
+          "fallback": "0"
+        },
+        "status": "FAIL"
+      },
+      "inj2_confirmation": {
+        "input_text": "Votre virement permanent a été enregistré avec succès par notre service.",
+        "displayed_text": "NTEÑGU U NLEÑG",
+        "montant_preserve": true,
+        "hover_title": "Original : Message important",
+        "widget_stats": {
+          "human": "0",
+          "machine": "81",
+          "fallback": "0"
+        },
+        "status": "PASS"
+      },
+      "inj3_notification_sans_montant": {
+        "input_text": "Un nouveau document sécurisé est disponible dans votre espace client.",
+        "displayed_text": "NTEÑGU U NLEÑG",
+        "montant_preserve": true,
+        "hover_title": "Original : Message important",
+        "widget_stats": {
+          "human": "0",
+          "machine": "85",
+          "fallback": "0"
+        },
+        "status": "PASS"
+      }
+    },
+    "bugs": []
+  }
+}

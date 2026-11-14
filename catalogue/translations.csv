@@ -1,0 +1,169 @@
+cle,source,langue,cible,statut,validateur_code,date,commentaire
+brand_name,Safinum Pay,dua,Safinum Pay,machine_suggested,,2026-11-14,Marque commerciale protégée — non modifiée
+brand_name,Safinum Pay,bas,Safinum Pay,machine_suggested,,2026-11-14,Marque commerciale protégée — non modifiée
+online_banking,Banque en ligne,dua,Banka o mwendi,machine_suggested,,2026-11-14,Périphrase : Banka o mwendi ma telefon (banque sur réseau)
+online_banking,Banque en ligne,bas,Bañga i fôn,machine_suggested,,2026-11-14,Périphrase : Bañga i fôn (banque sur téléphone)
+top_banner_notice,"Environnement de test — données fictives, aucune transaction réelle.",dua,"Epolo ya kekise — betiledi ba wombe, to ebolo ya moni ya mbale titi.",machine_suggested,,2026-11-14,Avertissement environnement de démonstration
+top_banner_notice,"Environnement de test — données fictives, aucune transaction réelle.",bas,"Hom i noode — manjel ma wombe, to nsal u moni u mbale bé.",machine_suggested,,2026-11-14,Avertissement environnement de démonstration
+test_protocol,Protocole de test,dua,Mbwedi ya kekise,machine_suggested,,2026-11-14,Périphrase : Mbwedi ya kekise (règles d'évaluation/essai)
+test_protocol,Protocole de test,bas,Mbad i noode,machine_suggested,,2026-11-14,Périphrase : Mbad i noode (chemin/méthode d'essai)
+back_to_hackathon,Retour au hackathon,dua,Timba o hackathon,machine_suggested,,2026-11-14,Terme hackathon conservé comme emprunt technique
+back_to_hackathon,Retour au hackathon,bas,Témb i hackathon,machine_suggested,,2026-11-14,Terme hackathon conservé comme emprunt technique
+secure_connection,Connexion sécurisée,dua,Jowe la mbembe,machine_suggested,,2026-11-14,Périphrase : Jowe la mbembe (liaison sous protection)
+secure_connection,Connexion sécurisée,bas,Mbuma i mbok,machine_suggested,,2026-11-14,Périphrase : Mbuma i mbok (accès protégé)
+footer_disclaimer,Safinum Pay — environnement de démonstration. Ne saisissez aucune donnée personnelle réelle.,dua,Safinum Pay — epolo ya kekise. O si boke betiledi bongó ba mbale.,machine_suggested,,2026-11-14,Avertissement sécurité données privées
+footer_disclaimer,Safinum Pay — environnement de démonstration. Ne saisissez aucune donnée personnelle réelle.,bas,Safinum Pay — hom i noode. U tila bé mam moñ ma mbale.,machine_suggested,,2026-11-14,Avertissement sécurité données privées
+wizard_step1,Solde,dua,Moni mi titi,machine_suggested,,2026-11-14,Terme financier standard : moni mi titi (argent disponible)
+wizard_step1,Solde,bas,Kôbô i moni,machine_suggested,,2026-11-14,Terme financier standard : kôbô i moni (réserve d'argent)
+wizard_step2,Frais,dua,Mutoa,machine_suggested,,2026-11-14,"Terme financier : mutoa (frais, coût de transaction)"
+wizard_step2,Frais,bas,Ntomb,machine_suggested,,2026-11-14,Terme financier : ntomb (frais prélevés)
+wizard_step3,Bénéficiaire,dua,Nongi a moni,machine_suggested,,2026-11-14,Périphrase : Nongi a moni (celui qui reçoit l'argent)
+wizard_step3,Bénéficiaire,bas,Mut a nkôs,machine_suggested,,2026-11-14,Périphrase : Mut a nkôs (personne qui reçoit)
+wizard_step4,Récapitulatif,dua,Mbondo a tomba,machine_suggested,,2026-11-14,Périphrase : Mbondo a tomba (bilan/résumé du transfert)
+wizard_step4,Récapitulatif,bas,Mambog ma ntomba,machine_suggested,,2026-11-14,Périphrase : Mambog ma ntomba (sommaire du transfert)
+wizard_step5,Confirmation,dua,Kakisane,machine_suggested,,2026-11-14,Validation formelle de l'opération
+wizard_step5,Confirmation,bas,Mba᷇k,machine_suggested,,2026-11-14,Validation formelle de l'opération
+action_cancel,Annuler,dua,Kwele ebolo,machine_suggested,,2026-11-14,Périphrase : Kwele ebolo (abandonner/arrêter l'opération en cours)
+action_cancel,Annuler,bas,Tiba nsal,machine_suggested,,2026-11-14,Périphrase : Tiba nsal (arrêter l'action)
+action_confirm,Confirmer,dua,Kakisane,machine_suggested,,2026-11-14,Validation impérative de l'action
+action_confirm,Confirmer,bas,Mba᷇k,machine_suggested,,2026-11-14,Validation impérative de l'action
+action_transfer,Transfert,dua,Tomba,machine_suggested,,2026-11-14,Opération financière de déplacement d'argent (loma moni)
+action_transfer,Transfert,bas,Ntomba,machine_suggested,,2026-11-14,Opération financière d'envoi de fonds
+status_error,Erreur,dua,Bwemba,machine_suggested,,2026-11-14,Défaut d'exécution ou problème survenu
+status_error,Erreur,bas,Mbebi,machine_suggested,,2026-11-14,Anomalie ou problème système
+status_security,Sécurité,dua,Mbembe,machine_suggested,,2026-11-14,Protection et vigilance
+status_security,Sécurité,bas,Mbok i tibil tehe,machine_suggested,,2026-11-14,Protection et précaution
+dash_your_account,Votre compte,dua,Kompiti yango,machine_suggested,,2026-11-14,Emprunt bantouisé standard pour compte bancaire
+dash_your_account,Votre compte,bas,Kompiti yoñ,machine_suggested,,2026-11-14,Emprunt bancaire bantouisé
+dash_hello_amina,"Bonjour, Amina",dua,"Mbolo, Amina",machine_suggested,,2026-11-14,Salutation + nom propre protégé invariable
+dash_hello_amina,"Bonjour, Amina",bas,"Mbolo, Amina",machine_suggested,,2026-11-14,Salutation + nom propre protégé invariable
+dash_intro_text,Consultez votre solde et lancez un transfert en toute sécurité.,dua,Ombwele moni mongó na lom moni na mbembe.,machine_suggested,,2026-11-14,Phrase d'accueil tableau de bord
+dash_intro_text,Consultez votre solde et lancez un transfert en toute sécurité.,bas,"Béñgê moni moñ, u om moni kiki i téé sép.",machine_suggested,,2026-11-14,Phrase d'accueil tableau de bord
+dash_available_balance,Solde disponible,dua,Moni mi titi o bolane,machine_suggested,,2026-11-14,Périphrase : Moni mi titi o bolane (argent présent utilisable)
+dash_available_balance,Solde disponible,bas,Moni mi yé inyu salo,machine_suggested,,2026-11-14,Périphrase : Moni mi yé inyu salo (argent présent pour utilisation)
+dash_account_number,Numéro de compte,dua,Nombá ya kompiti,machine_suggested,,2026-11-14,Identifiant de compte client
+dash_account_number,Numéro de compte,bas,Namba i kompiti,machine_suggested,,2026-11-14,Identifiant de compte client
+dash_current_account,Compte courant,dua,Kompiti ya buńa té,machine_suggested,,2026-11-14,Périphrase : Kompiti ya buńa té (compte des opérations quotidiennes)
+dash_current_account,Compte courant,bas,Kompiti i hiki kel,machine_suggested,,2026-11-14,Périphrase : Kompiti i hiki kel (compte de chaque jour)
+dash_btn_make_transfer,Effectuer un transfert,dua,Loma moni,machine_suggested,,2026-11-14,Action d'envoi de fonds
+dash_btn_make_transfer,Effectuer un transfert,bas,Om moni,machine_suggested,,2026-11-14,Action d'envoi de fonds
+dash_btn_view_fees,Consulter les frais,dua,Ombwele mutoa,machine_suggested,,2026-11-14,Vérification préalable de la tarification
+dash_btn_view_fees,Consulter les frais,bas,Béñgê ntomb,machine_suggested,,2026-11-14,Vérification préalable de la tarification
+dash_recent_transactions,Transactions récentes,dua,Bebolo ba moni ba bo buńa,machine_suggested,,2026-11-14,Périphrase : Bebolo ba moni ba bo buńa (opérations des derniers jours)
+dash_recent_transactions,Transactions récentes,bas,Mam ma moni ma haa,machine_suggested,,2026-11-14,Périphrase : Mam ma moni ma haa (actes financiers récents)
+tx_date_05_nov,05 nov. 2026,dua,05 nov. 2026,machine_suggested,,2026-11-14,Date financière protégée — stricte conservation
+tx_date_05_nov,05 nov. 2026,bas,05 nov. 2026,machine_suggested,,2026-11-14,Date financière protégée — stricte conservation
+tx_merchant_payment,Paiement marchand,dua,Sawa la mutoa,machine_suggested,,2026-11-14,Périphrase : Sawa la mutoa (règlement d'achat commercial) — INCERTAIN
+tx_merchant_payment,Paiement marchand,bas,Mbaña i mam,machine_suggested,,2026-11-14,Périphrase : Mbaña i mam (paiement des marchandises) — INCERTAIN
+tx_date_04_nov,04 nov. 2026,dua,04 nov. 2026,machine_suggested,,2026-11-14,Date financière protégée — stricte conservation
+tx_date_04_nov,04 nov. 2026,bas,04 nov. 2026,machine_suggested,,2026-11-14,Date financière protégée — stricte conservation
+tx_salary_received,Salaire reçu,dua,Moni ma musadi ma sangi,machine_suggested,,2026-11-14,Périphrase : Moni ma musadi ma sangi (argent du travail arrivé)
+tx_salary_received,Salaire reçu,bas,Moni ma salo ma nlo,machine_suggested,,2026-11-14,Périphrase : Moni ma salo ma nlo (revenu du travail reçu)
+tx_date_02_nov,02 nov. 2026,dua,02 nov. 2026,machine_suggested,,2026-11-14,Date financière protégée — stricte conservation
+tx_date_02_nov,02 nov. 2026,bas,02 nov. 2026,machine_suggested,,2026-11-14,Date financière protégée — stricte conservation
+tx_transfer_received,Transfert reçu,dua,Moni ma lomi ma sangi,machine_suggested,,2026-11-14,Périphrase : Moni ma lomi ma sangi (argent envoyé qui a été reçu)
+tx_transfer_received,Transfert reçu,bas,Moni ma om ma nlo,machine_suggested,,2026-11-14,Périphrase : Moni ma om ma nlo (argent envoyé arrivé)
+tx_date_31_oct,31 oct. 2026,dua,31 oct. 2026,machine_suggested,,2026-11-14,Date financière protégée — stricte conservation
+tx_date_31_oct,31 oct. 2026,bas,31 oct. 2026,machine_suggested,,2026-11-14,Date financière protégée — stricte conservation
+tx_electricity_bill,Facture électricité,dua,Mutoa ma mwese,machine_suggested,,2026-11-14,Périphrase : Mutoa ma mwese (coût du courant/lumière)
+tx_electricity_bill,Facture électricité,bas,Ntomb i mabéñg,machine_suggested,,2026-11-14,Périphrase : Ntomb i mabéñg (dépense pour l'électricité)
+fee_screen_title,Frais de transfert,dua,Mutoa ma tomba,machine_suggested,,2026-11-14,Tarification de l'envoi
+fee_screen_title,Frais de transfert,bas,Ntomb i ntomba,machine_suggested,,2026-11-14,Tarification de l'envoi
+fee_screen_subtitle,Choisissez le type de transfert et le montant. Les frais sont calculés automatiquement.,dua,Posa pateli ya tomba na moni. Mutoa mu mendeno kusedo na momele.,machine_suggested,,2026-11-14,Consigne simulation des frais
+fee_screen_subtitle,Choisissez le type de transfert et le montant. Les frais sont calculés automatiquement.,bas,Pôdôs mbad i ntomba ni moni. Ntomb i mboñba nyominsô.,machine_suggested,,2026-11-14,Consigne simulation des frais
+fee_operation_type,Type d'opération,dua,Pateli ya ebólo,machine_suggested,,2026-11-14,Catégorisation de la transaction
+fee_operation_type,Type d'opération,bas,Mbad i nsal,machine_suggested,,2026-11-14,Catégorisation de la transaction
+op_safinum_account,Compte Safinum,dua,Kompiti Safinum,machine_suggested,,2026-11-14,Virement interne Safinum
+op_safinum_account,Compte Safinum,bas,Kompiti Safinum,machine_suggested,,2026-11-14,Virement interne Safinum
+op_safinum_note,Transfert instantané et gratuit,dua,"Loma na diboa, titi mutoa",machine_suggested,,2026-11-14,"Périphrase : Loma na diboa, titi mutoa (envoi immédiat sans frais)"
+op_safinum_note,Transfert instantané et gratuit,bas,"Om i ngii kôna, ibabé ntomb",machine_suggested,,2026-11-14,"Périphrase : Om i ngii kôna, ibabé ntomb (envoi direct sans coût)"
+op_mobile_money,Mobile Money,dua,Mobile Money,machine_suggested,,2026-11-14,Terme protégé écosystème télécom
+op_mobile_money,Mobile Money,bas,Mobile Money,machine_suggested,,2026-11-14,Terme protégé écosystème télécom
+op_mobile_money_note,"Frais de 1,5 % (min. 100 FCFA, max. 2 500 FCFA)",dua,"Mutoa ma 1,5 % (min. 100 FCFA, max. 2 500 FCFA)",machine_suggested,,2026-11-14,Valeurs numériques et pourcentages protégés
+op_mobile_money_note,"Frais de 1,5 % (min. 100 FCFA, max. 2 500 FCFA)",bas,"Ntomb i 1,5 % (min. 100 FCFA, max. 2 500 FCFA)",machine_suggested,,2026-11-14,Valeurs numériques et pourcentages protégés
+op_other_bank,Autre banque,dua,Banka nipépe,machine_suggested,,2026-11-14,Virement interbancaire externe
+op_other_bank,Autre banque,bas,Bañga ipe,machine_suggested,,2026-11-14,Virement interbancaire externe
+op_other_bank_note,"Frais de 2 % (min. 200 FCFA, max. 5 000 FCFA)",dua,"Mutoa ma 2 % (min. 200 FCFA, max. 5 000 FCFA)",machine_suggested,,2026-11-14,Valeurs numériques et pourcentages protégés
+op_other_bank_note,"Frais de 2 % (min. 200 FCFA, max. 5 000 FCFA)",bas,"Ntomb i 2 % (min. 200 FCFA, max. 5 000 FCFA)",machine_suggested,,2026-11-14,Valeurs numériques et pourcentages protégés
+fee_amount_to_send,Montant à envoyer,dua,Moni ma lomabe,machine_suggested,,2026-11-14,Périphrase : Moni ma lomabe (somme d'argent à expédier)
+fee_amount_to_send,Montant à envoyer,bas,Moni i n-om,machine_suggested,,2026-11-14,Périphrase : Moni i n-om (somme envoyée)
+fee_total_to_debit,Total à débiter,dua,Moni mése ma busisabe,machine_suggested,,2026-11-14,Périphrase : Moni mése ma busisabe (tout l'argent qui sortira)
+fee_total_to_debit,Total à débiter,bas,Moni momasôna ma nkodol,machine_suggested,,2026-11-14,Périphrase : Moni momasôna ma nkodol (tout l'argent débité)
+fee_balance_after,Solde après opération,dua,Moni mi matiké,machine_suggested,,2026-11-14,Périphrase : Moni mi matiké (argent qui restera sur le compte)
+fee_balance_after,Solde après opération,bas,Moni ma ntigi,machine_suggested,,2026-11-14,Périphrase : Moni ma ntigi (reste après opération)
+badge_free,Gratuit,dua,Titi mutoa,machine_suggested,,2026-11-14,Sans frais
+badge_free,Gratuit,bas,Ibabé ntomb,machine_suggested,,2026-11-14,Sans frais
+btn_back,Retour,dua,Timba,machine_suggested,,2026-11-14,Bouton d'étape précédente
+btn_back,Retour,bas,Témb,machine_suggested,,2026-11-14,Bouton d'étape précédente
+btn_continue,Continuer,dua,Alá oboso,machine_suggested,,2026-11-14,Progression vers l'étape suivante
+btn_continue,Continuer,bas,Kenel bisu,machine_suggested,,2026-11-14,Progression vers l'étape suivante
+ben_screen_subtitle,Renseignez les informations du destinataire. Vérifiez toujours le numéro avant de valider.,dua,Londeyi bitilá ba nongi. Ombwele nombá oboso na kakisane.,machine_suggested,,2026-11-14,Instructions saisie destinataire
+ben_screen_subtitle,Renseignez les informations du destinataire. Vérifiez toujours le numéro avant de valider.,bas,Tila manjel ma nu a nkôs. Béñgê namba ilole u mba᷇k.,machine_suggested,,2026-11-14,Instructions saisie destinataire
+ben_warning_new,Ce bénéficiaire n'a jamais été utilisé sur ce compte. Vérifiez le numéro avant de continuer.,dua,Nu nongi a si sengedi no o yé kompiti. Ombwele nombá oboso na ala oboso.,machine_suggested,,2026-11-14,Avertissement critique nouveau contact
+ben_warning_new,Ce bénéficiaire n'a jamais été utilisé sur ce compte. Vérifiez le numéro avant de continuer.,bas,Nu a nkôs a nsal bé kii hane o kompiti yini. Béñgê namba ilole u nkenel bisu.,machine_suggested,,2026-11-14,Avertissement critique nouveau contact
+ben_name_label,Nom du bénéficiaire,dua,Dina la nongi,machine_suggested,,2026-11-14,Périphrase : Dina la nongi (nom de celui qui reçoit)
+ben_name_label,Nom du bénéficiaire,bas,Jôl li nu a nkôs,machine_suggested,,2026-11-14,Périphrase : Jôl li nu a nkôs (nom de qui reçoit)
+ben_phone_label,Numéro de téléphone,dua,Nombá ya telefon,machine_suggested,,2026-11-14,Champ téléphone
+ben_phone_label,Numéro de téléphone,bas,Namba i fôn,machine_suggested,,2026-11-14,Champ téléphone
+ben_reason_label,Motif du transfert,dua,Njonji ya tomba,machine_suggested,,2026-11-14,Périphrase : Njonji ya tomba (raison/motif de l'envoi)
+ben_reason_label,Motif du transfert,bas,Njéñg i ntomba,machine_suggested,,2026-11-14,Périphrase : Njéñg i ntomba (cause du transfert)
+ben_reason_default,Paiement de services,dua,Sawa la ebolo,machine_suggested,,2026-11-14,Périphrase : Sawa la ebolo (règlement pour travail)
+ben_reason_default,Paiement de services,bas,Mbaña i salo,machine_suggested,,2026-11-14,Périphrase : Mbaña i salo (paiement pour service rendu)
+ben_note_label,Note (optionnel),dua,Betiledi (o mapula),machine_suggested,,2026-11-14,Périphrase : Betiledi (o mapula) (mots optionnels)
+ben_note_label,Note (optionnel),bas,Bañga (ngi u sômblak),machine_suggested,,2026-11-14,Périphrase : Bañga (ngi u sômblak) (notes si souhaité)
+ben_checkbox_verified,J'ai vérifié le nom et le numéro du bénéficiaire.,dua,Na mombweli dina na nombá ya nu nongi.,machine_suggested,,2026-11-14,Déclaration explicite de vérification
+ben_checkbox_verified,J'ai vérifié le nom et le numéro du bénéficiaire.,bas,Me mbéñgê jôl ni namba i nu a nkôs.,machine_suggested,,2026-11-14,Déclaration explicite de vérification
+sum_screen_subtitle,Vérifiez les informations avant de confirmer le transfert.,dua,Ombwele bwam betiledi oboso na loma moni.,machine_suggested,,2026-11-14,Relecture préalable obligatoire
+sum_screen_subtitle,Vérifiez les informations avant de confirmer le transfert.,bas,Béñgê loñge ilole u n-om moni.,machine_suggested,,2026-11-14,Relecture préalable obligatoire
+sum_label_amount,Montant,dua,Moni,machine_suggested,,2026-11-14,Valeur principale transaction
+sum_label_amount,Montant,bas,Moni,machine_suggested,,2026-11-14,Valeur principale transaction
+sum_label_total_debited,Total débité,dua,Moni mése ma busisabe,machine_suggested,,2026-11-14,Périphrase : Total débité du compte
+sum_label_total_debited,Total débité,bas,Moni momasôna ma nkodol,machine_suggested,,2026-11-14,Périphrase : Total débité du compte
+sum_label_phone,Téléphone,dua,Telefon,machine_suggested,,2026-11-14,Emprunt usuel d'usage universel
+sum_label_phone,Téléphone,bas,Fôn,machine_suggested,,2026-11-14,Emprunt usuel d'usage universel
+sum_label_reference,Référence,dua,Lembá,machine_suggested,,2026-11-14,Périphrase : Lembá (identifiant d'opération)
+sum_label_reference,Référence,bas,Lemb,machine_suggested,,2026-11-14,Périphrase : Lemb (identifiant d'opération)
+sum_label_operation,Opération,dua,Ebólo,machine_suggested,,2026-11-14,Acte financier exécuté
+sum_label_operation,Opération,bas,Nsal,machine_suggested,,2026-11-14,Acte financier exécuté
+sum_checkbox_confirm,Je confirme que les informations ci-dessus sont correctes.,dua,Na kakisane na bi betiledi bése be bwan.,machine_suggested,,2026-11-14,Validation formelle des données récapitulatives
+sum_checkbox_confirm,Je confirme que les informations ci-dessus sont correctes.,bas,Me mba᷇k le mam mana masôna ma yé sép.,machine_suggested,,2026-11-14,Validation formelle des données récapitulatives
+btn_edit,Modifier,dua,Tukwe,machine_suggested,,2026-11-14,Correction des champs saisis
+btn_edit,Modifier,bas,Héñha,machine_suggested,,2026-11-14,Correction des champs saisis
+btn_confirm_transfer,Confirmer le transfert,dua,Kakisane tomba,machine_suggested,,2026-11-14,Bouton d'engagement irréversible
+btn_confirm_transfer,Confirmer le transfert,bas,Mba᷇k ntomba,machine_suggested,,2026-11-14,Bouton d'engagement irréversible
+receipt_title,Transfert effectué,dua,Moni mi lomi na bwam,machine_suggested,,2026-11-14,Notification de succès de l'envoi
+receipt_title,Transfert effectué,bas,Moni ma n-omna loñge,machine_suggested,,2026-11-14,Notification de succès de l'envoi
+receipt_subtitle,Votre transfert a été envoyé avec succès.,dua,Moni mongó mi lomi bwambwam.,machine_suggested,,2026-11-14,Confirmation de transmission réussie
+receipt_subtitle,Votre transfert a été envoyé avec succès.,bas,Moni moñ ma n-omna loñge ngandak.,machine_suggested,,2026-11-14,Confirmation de transmission réussie
+receipt_label_status,Statut,dua,Mbembe ya ebólo,machine_suggested,,2026-11-14,Périphrase : Mbembe ya ebólo (état de l'opération) — INCERTAIN
+receipt_label_status,Statut,bas,Mba᷇k i nsal,machine_suggested,,2026-11-14,Périphrase : Mba᷇k i nsal (état de l'acte) — INCERTAIN
+receipt_status_success,Succès,dua,Bwam,machine_suggested,,2026-11-14,Validation positive
+receipt_status_success,Succès,bas,Loñge,machine_suggested,,2026-11-14,Validation positive
+btn_new_transfer,Nouveau transfert,dua,Loma moni pe,machine_suggested,,2026-11-14,Nouvelle opération financière
+btn_new_transfer,Nouveau transfert,bas,Om moni pe,machine_suggested,,2026-11-14,Nouvelle opération financière
+sec_sidebar_title,Sécurité,dua,Mbembe,machine_suggested,,2026-11-14,Rubrique d'assistance et de vigilance
+sec_sidebar_title,Sécurité,bas,Mbok i tibil tehe,machine_suggested,,2026-11-14,Rubrique de précaution
+sec_sidebar_text,Vérifiez toujours le nom et le numéro du bénéficiaire avant de confirmer un transfert.,dua,Ombwele ponda yése dina na nombá ya nongi oboso na kakisane.,machine_suggested,,2026-11-14,Consigne anti-fraude essentielle
+sec_sidebar_text,Vérifiez toujours le nom et le numéro du bénéficiaire avant de confirmer un transfert.,bas,Béñgê ponda yosôna jôl ni namba i nu a nkôs ilole u mba᷇k.,machine_suggested,,2026-11-14,Consigne anti-fraude essentielle
+alert_error_title,Une erreur est survenue,dua,Bwemba bo pumi,machine_suggested,,2026-11-14,Avertissement anomalie bloquante
+alert_error_title,Une erreur est survenue,bas,Mbebi i nsuba,machine_suggested,,2026-11-14,Avertissement anomalie bloquante
+alert_security_title,Alerte de sécurité,dua,Kwalisan ya mbembe,machine_suggested,,2026-11-14,Périphrase : Kwalisan ya mbembe (avertissement de protection)
+alert_security_title,Alerte de sécurité,bas,Mbat i mbok,machine_suggested,,2026-11-14,Périphrase : Mbat i mbok (avertissement de protection)
+btn_dismiss,Fermer,dua,Kwele,machine_suggested,,2026-11-14,Fermeture d'alerte
+btn_dismiss,Fermer,bas,Tiba,machine_suggested,,2026-11-14,Fermeture d'alerte
+injected_title,Message important,dua,Mwengue mwendi,machine_suggested,,2026-11-14,Périphrase : Avis urgent / message d'attention — INCERTAIN
+injected_title,Message important,bas,Nteñgu u nleñg,machine_suggested,,2026-11-14,Périphrase : Message important — INCERTAIN
+err_amount_001,Le montant doit être supérieur à zéro.,dua,Moni ma lomebe ma sengi bobe nika zéro.,machine_suggested,,2026-11-14,Erreur saisie montant invalide
+err_amount_001,Le montant doit être supérieur à zéro.,bas,Moni ma n-om ma kôli loo zéro.,machine_suggested,,2026-11-14,Erreur saisie montant invalide
+err_amount_002,Solde insuffisant pour effectuer ce transfert.,dua,Moni mongó ma titi suwedi o loma yé moni.,machine_suggested,,2026-11-14,Périphrase : Solde disponible insuffisant pour l'envoi
+err_amount_002,Solde insuffisant pour effectuer ce transfert.,bas,Moni moñ ma nsuba bé inyu ntomba nunu.,machine_suggested,,2026-11-14,Périphrase : Solde insuffisant pour le transfert
+err_beneficiary_001,Veuillez renseigner le nom et le numéro du bénéficiaire.,dua,Londeyi dina na nombá ya nu nongi.,machine_suggested,,2026-11-14,Erreur champ obligatoire absent
+err_beneficiary_001,Veuillez renseigner le nom et le numéro du bénéficiaire.,bas,Tila jôl ni namba i nu a nkôs.,machine_suggested,,2026-11-14,Erreur champ obligatoire absent
+err_security_001,Alerte de sécurité : vérifiez le numéro du bénéficiaire avant de continuer.,dua,Kwalisan ya mbembe : ombwele nombá ya nu nongi oboso na ala oboso.,machine_suggested,,2026-11-14,Alerte contrôle obligatoire numéro
+err_security_001,Alerte de sécurité : vérifiez le numéro du bénéficiaire avant de continuer.,bas,Mbat i mbok : béñgê namba i nu a nkôs ilole u nkenel bisu.,machine_suggested,,2026-11-14,Alerte contrôle obligatoire numéro
+err_security_002,Alerte de sécurité : ce bénéficiaire n'a jamais été utilisé sur ce compte.,dua,Kwalisan ya mbembe : nu nongi a si sengedi no o yé kompiti.,machine_suggested,,2026-11-14,Alerte nouveau destinataire inconnu
+err_security_002,Alerte de sécurité : ce bénéficiaire n'a jamais été utilisé sur ce compte.,bas,Mbat i mbok : nu a nkôs a nsal bé kii hane o kompiti yini.,machine_suggested,,2026-11-14,Alerte nouveau destinataire inconnu
+err_network_001,Erreur réseau : le service est temporairement indisponible. Réessayez.,dua,Bwemba bo titi ya résô : ebolo e titi tano. Timba o keka pe.,machine_suggested,,2026-11-14,Périphrase réseau : emprunt résô — INCERTAIN
+err_network_001,Erreur réseau : le service est temporairement indisponible. Réessayez.,bas,Mbebi i réseau : nsal u yé bé haa. Kéñha pe.,machine_suggested,,2026-11-14,Périphrase réseau : emprunt réseau — INCERTAIN
+err_confirm_001,Vous devez confirmer les informations avant de valider le transfert.,dua,E mapula o kakisane bitilá oboso na loma.,machine_suggested,,2026-11-14,Obligation de cocher la confirmation
+err_confirm_001,Vous devez confirmer les informations avant de valider le transfert.,bas,I kôli le u mba᷇k mam mana ilole u n-om.,machine_suggested,,2026-11-14,Obligation de cocher la confirmation

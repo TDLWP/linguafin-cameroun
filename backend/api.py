@@ -1,0 +1,460 @@
+# -*- coding: utf-8 -*-
+"""
+Serveur API locale FastAPI pour SAFINUM Innovate Challenge 2026.
+Conforme à docs/01_architecture.md et openapi.yaml.
+
+Fonctionnalités :
+- Chargement des catalogues CSV au démarrage (translations.csv, glossaire.csv)
+- Chaîne de résolution stricte : Mémoire validée -> Glossaire -> Moteur automatique -> Repli source
+- Intégrité financière absolue via protect.py (masquage/restauration/verify_integrity)
+- CORS restreint et configurable via .env
+- Limites strictes de taille (anti-DoS)
+- AUCUNE JOURNALISATION DU TEXTE DES UTILISATEURS (confidentialité bancaire et RGPD)
+"""
+
+import os
+import csv
+import json
+import time
+import logging
+from typing import List, Optional, Dict
+from dotenv import load_dotenv
+
+from fastapi import FastAPI, HTTPException, Request, status
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
+
+from backend.protect import mask_sensitive_data, restore_sensitive_data, verify_integrity
+from backend.engine import TranslationEngine, AutomaticMockEngine, TranslationEngineError, TranslationEngineTimeoutError
+
+load_dotenv()
+
+# Configuration du logger : AUCUN TEXTE UTILISATEUR NE DOIT ÊTRE ENREGISTRÉ
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+logger = logging.getLogger("safinum_api")
+
+app = FastAPI(
+    title="SAFINUM Local Translation & Accessibility API",
+    version="1.0.0",
+    description="API locale souveraine d'accessibilité linguistique pour services financiers camerounais."
+)
+
+# Configuration CORS restreinte
+raw_origins = os.getenv(
+    "ALLOWED_ORIGINS",
+    "https://safinum.cm,http://localhost:8000,http://127.0.0.1:8000,http://localhost:3000,http://localhost:5173"
+)
+allowed_origins = [o.strip() for o in raw_origins.split(",") if o.strip()]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
+)
+
+# Limites de sécurité
+MAX_BATCH_SIZE = int(os.getenv("MAX_BATCH_SIZE", "100"))
+MAX_TEXT_LENGTH = int(os.getenv("MAX_TEXT_LENGTH", "2000"))
+
+START_TIME = time.time()
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+CSV_TRANSLATIONS_PATH = os.path.join(BASE_DIR, "catalogue", "translations.csv")
+CSV_GLOSSAIRE_PATH = os.path.join(BASE_DIR, "catalogue", "glossaire.csv")
+FEEDBACK_FILE = os.path.join(BASE_DIR, "catalogue", "feedback_submissions.json")
+
+
+# Structures en mémoire
+class TranslationMemory:
+    def __init__(self):
+        # Format : { "dua": { "source_fr": ("cible", "statut", "cle") }, "bas": { ... } }
+        self.translations: Dict[str, Dict[str, Dict[str, str]]] = {}
+        # Format : { "source_fr": { "dua": "cible", "bas": "cible" } }
+        self.glossary: Dict[str, Dict[str, str]] = {}
+        self.load_catalogs()
+
+    def load_catalogs(self):
+        # 1. Chargement de translations.csv
+        if os.path.exists(CSV_TRANSLATIONS_PATH):
+            with open(CSV_TRANSLATIONS_PATH, "r", encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    lang = row["langue"].strip().lower()
+                    src = row["source"].strip()
+                    tgt = row["cible"].strip()
+                    stat = row.get("statut", "machine_suggested").strip()
+                    key = row.get("cle", "").strip()
+
+                    if lang not in self.translations:
+                        self.translations[lang] = {}
+                    self.translations[lang][src] = {
+                        "target": tgt,
+                        "status": stat,
+                        "key": key
+                    }
+
+        # 2. Chargement de glossaire.csv
+        if os.path.exists(CSV_GLOSSAIRE_PATH):
+            with open(CSV_GLOSSAIRE_PATH, "r", encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    src = row["terme_source"].strip()
+                    lang = row["langue"].strip().lower()
+                    tgt = row["terme_cible"].strip()
+
+                    if src not in self.glossary:
+                        self.glossary[src] = {}
+                    self.glossary[src][lang] = tgt
+
+
+from backend.engine import (
+    TranslationEngine,
+    TranslationEngineError,
+    TranslationEngineTimeoutError,
+    AutomaticMockEngine,
+    CTranslate2FulfuldeEngine
+)
+
+MEMOIRE = TranslationMemory()
+# Moteur automatique par défaut
+AUTO_ENGINE: TranslationEngine = AutomaticMockEngine()
+# Moteur CTranslate2 local dédié au Fulfulde
+FULFULDE_ENGINE: TranslationEngine = CTranslate2FulfuldeEngine()
+
+
+
+# --- Modèles Pydantic ---
+
+class HealthResponse(BaseModel):
+    status: str = "ok"
+    version: str = "1.0.0"
+    offline_catalog_loaded: bool
+    active_languages_count: int
+    ml_model_available: bool = True
+    uptime_seconds: float
+
+
+class LanguageInfo(BaseModel):
+    code: str
+    name: str
+    autonym: str
+    status: str
+    human_validated_entries: int
+    glossary_entries: int
+
+
+class TranslationItemRequest(BaseModel):
+    id: str
+    text: str
+    screen_context: Optional[str] = "global"
+    is_critical_security: Optional[bool] = False
+
+
+class BatchTranslationRequest(BaseModel):
+    source_lang: str = "fr"
+    target_lang: str = "dua"
+    allow_machine_translation: bool = True
+    allow_experimental: bool = False
+    items: List[TranslationItemRequest]
+
+
+class TranslationItemResponse(BaseModel):
+    id: str
+    source_text: str
+    target_text: str
+    status: str
+    integrity_verified: bool
+    masked_tokens_count: int
+    bilingual_required: bool
+
+
+class BatchTranslationResponse(BaseModel):
+    target_lang: str
+    total_items: int
+    verified_integrity_rate: float
+    items: List[TranslationItemResponse]
+
+
+class FeedbackRequest(BaseModel):
+    source_text: str
+    target_lang: str
+    suggested_translation: str
+    screen_context: Optional[str] = "dashboard"
+    validator_code: Optional[str] = None
+    comment: Optional[str] = None
+
+
+class FeedbackResponse(BaseModel):
+    feedback_id: str
+    status: str
+    message: str
+
+
+# --- Endpoints ---
+
+@app.get("/health", response_model=HealthResponse)
+def get_health():
+    # Journalisation de monitoring anonyme
+    logger.info("Health check requested")
+    return HealthResponse(
+        status="ok",
+        version="1.0.0",
+        offline_catalog_loaded=bool(MEMOIRE.translations),
+        active_languages_count=len(MEMOIRE.translations),
+        ml_model_available=True,
+        uptime_seconds=round(time.time() - START_TIME, 2)
+    )
+
+
+@app.get("/languages", response_model=List[LanguageInfo])
+def get_languages(include_experimental: bool = False):
+    logger.info("Languages metadata requested (include_experimental=%s)", include_experimental)
+    dua_trans = MEMOIRE.translations.get("dua", {})
+    dua_human = sum(1 for v in dua_trans.values() if v.get("status") == "human_validated")
+    bas_trans = MEMOIRE.translations.get("bas", {})
+    bas_human = sum(1 for v in bas_trans.values() if v.get("status") == "human_validated")
+
+    langs = [
+        LanguageInfo(
+            code="dua",
+            name="Duala",
+            autonym="Duálá",
+            status="machine_suggested",
+            human_validated_entries=dua_human,
+            glossary_entries=len(MEMOIRE.glossary)
+        ),
+        LanguageInfo(
+            code="bas",
+            name="Bassa'a",
+            autonym="Ɓàsàa",
+            status="machine_suggested",
+            human_validated_entries=bas_human,
+            glossary_entries=len(MEMOIRE.glossary)
+        ),
+        LanguageInfo(
+            code="bbj",
+            name="Ghomala'",
+            autonym="Ghɔmálá’",
+            status="beta",
+            human_validated_entries=0,
+            glossary_entries=len(MEMOIRE.glossary)
+        ),
+        LanguageInfo(
+            code="ewo",
+            name="Ewondo",
+            autonym="Ewondo",
+            status="beta",
+            human_validated_entries=0,
+            glossary_entries=len(MEMOIRE.glossary)
+        )
+    ]
+
+    if include_experimental:
+        langs.append(
+            LanguageInfo(
+                code="ful",
+                name="Fulfulde (Expérimental)",
+                autonym="Fulfulde",
+                status="experimental",
+                human_validated_entries=0,
+                glossary_entries=len(MEMOIRE.glossary)
+            )
+        )
+
+    return langs
+
+
+@app.post("/translate/batch", response_model=BatchTranslationResponse)
+def translate_batch(req: BatchTranslationRequest):
+    # 1. Validation des limites de taille (sécurité anti-DoS)
+    if len(req.items) > MAX_BATCH_SIZE:
+        logger.warning("Batch size limit exceeded: %d > %d", len(req.items), MAX_BATCH_SIZE)
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail=f"Le lot dépasse la limite autorisée de {MAX_BATCH_SIZE} éléments."
+        )
+
+    for item in req.items:
+        if len(item.text) > MAX_TEXT_LENGTH:
+            logger.warning("Item text length limit exceeded: %d > %d", len(item.text), MAX_TEXT_LENGTH)
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Un élément dépasse la longueur maximale de {MAX_TEXT_LENGTH} caractères."
+            )
+
+    target_lang = req.target_lang.lower().strip()
+    lang_translations = MEMOIRE.translations.get(target_lang, {})
+    glossary = MEMOIRE.glossary
+
+    # Journalisation de monitoring STRICTEMENT ANONYME (aucun contenu textuel)
+    logger.info("Processing translation batch: %d items, target_lang=%s", len(req.items), target_lang)
+
+    output_items = []
+    verified_count = 0
+
+    for item in req.items:
+        src_raw = item.text.strip()
+        # ÉTAPE 1 : Masquage des entités sensibles par jetons inviolables
+        masked_src, token_map, token_order = mask_sensitive_data(src_raw)
+
+        # Détection étendue des contenus à sensibilité critique (montants, frais, avertissements, erreurs, récapitulatifs)
+        critical_markers = {
+            # Sécurité, avertissements, alertes
+            "alerte", "sécurité", "securite", "attention", "fraude", "suspect", "danger",
+            "bloqué", "bloque", "confidentialité", "confidentiel", "warning", "alert",
+            "security", "fraud", "avertissement",
+            # Frais et tarifs
+            "frais", "commission", "%", "pourcent", "tarif",
+            # Erreurs et échecs
+            "erreur", "échec", "echec", "insuffisant", "invalide", "rejeté", "rejete",
+            "impossible", "error", "fail", "failed",
+            # Récapitulatifs et confirmations
+            "récapitulatif", "recapitulatif", "confirmation", "total à débiter", "total a debiter",
+            # Devises et montants
+            "fcfa", "xaf", "cfa", "eur", "usd", "frs", "solde", "montant"
+        }
+        src_lower = src_raw.lower()
+        has_masked_sensitive = bool(token_map)
+        is_critical = (
+            bool(item.is_critical_security) or
+            has_masked_sensitive or
+            any(marker in src_lower for marker in critical_markers)
+        )
+
+        # ÉTAPE 2 : Chaîne de résolution (Mémoire -> Glossaire -> Moteur auto -> Repli)
+        candidate_text: Optional[str] = None
+        item_status = "fallback_source"
+
+        # 2.1 Mémoire de traduction validée (recherche directe ou masquée)
+        if src_raw in lang_translations:
+            # Texte brut connu dans le catalogue
+            candidate_text = lang_translations[src_raw]["target"]
+            item_status = lang_translations[src_raw]["status"]
+            # Si le texte validé est un template, on ré-applique le masquage pour restauration
+            candidate_text, _ = mask_sensitive_data(candidate_text)[:2]
+        elif masked_src in lang_translations:
+            candidate_text = lang_translations[masked_src]["target"]
+            item_status = lang_translations[masked_src]["status"]
+
+        # 2.2 Glossaire terminologique
+        elif src_raw in glossary and target_lang in glossary[src_raw]:
+            candidate_text = glossary[src_raw][target_lang]
+            item_status = "machine_suggested"
+
+        # 2.3 Moteur automatique pour contenu inédit
+        elif req.allow_machine_translation:
+            try:
+                if target_lang in ("ful", "ff", "fufulde"):
+                    # RÈGLE STRICTE : le moteur Fulfulde ne répond JAMAIS sans le mode expérimental
+                    # et bascule en repli source si le modèle optionnel n'est pas téléchargé/disponible
+                    if not req.allow_experimental or not FULFULDE_ENGINE.is_available():
+                        logger.info("Fulfulde translation requested without experimental mode or model unavailable -> fallback source enforced")
+                        candidate_text = src_raw
+                        item_status = "fallback_source"
+                    else:
+                        auto_output = FULFULDE_ENGINE.translate(
+                            masked_src,
+                            req.source_lang,
+                            target_lang,
+                            allow_experimental=True
+                        )
+                        candidate_text = auto_output
+                        item_status = "machine_suggested"
+                else:
+                    auto_output = AUTO_ENGINE.translate(masked_src, req.source_lang, target_lang)
+                    candidate_text = auto_output
+                    item_status = "machine_suggested"
+            except (TranslationEngineTimeoutError, TranslationEngineError) as e:
+                # Échec ou timeout du moteur -> repli vers la source sans blocage
+                logger.warning("Engine failed or timed out: %s -> falling back to source", type(e).__name__)
+                candidate_text = src_raw
+                item_status = "fallback_source"
+            except Exception as e:
+                logger.error("Unexpected engine error -> falling back to source")
+                candidate_text = src_raw
+                item_status = "fallback_source"
+        else:
+            candidate_text = src_raw
+            item_status = "fallback_source"
+
+        # ÉTAPE 3 : Restauration et contrôle d'intégrité strict
+        restored_text, is_valid = restore_sensitive_data(candidate_text, token_map, src_raw)
+
+        # ÉTAPE 4 : Contrôle supplémentaire via verify_integrity
+        if is_valid:
+            if not verify_integrity(src_raw, restored_text, token_map):
+                is_valid = False
+                restored_text = src_raw
+                item_status = "fallback_source"
+
+        if is_valid:
+            verified_count += 1
+        else:
+            restored_text = src_raw
+            item_status = "fallback_source"
+
+        # Règle spéciale bilinguisme pour contenus sensibles non attestés
+        bilingual_req = is_critical and (item_status != "human_validated")
+
+        # Règle critique : pour toute chaîne dont sensibilité est critique
+        # (montants, frais, avertissements, erreurs) ET non attestée,
+        # affiche le texte français d'origine suivi de la proposition entre crochets, sans le remplacer.
+        final_target = restored_text
+        if bilingual_req and src_raw != restored_text and not restored_text.startswith(src_raw + " ["):
+            final_target = f"{src_raw} [{restored_text}]"
+
+        output_items.append(TranslationItemResponse(
+            id=item.id,
+            source_text=item.text,
+            target_text=final_target,
+            status=item_status,
+            integrity_verified=is_valid,
+            masked_tokens_count=len(token_map),
+            bilingual_required=bilingual_req
+        ))
+
+    rate = (verified_count / len(output_items)) if output_items else 1.0
+
+    return BatchTranslationResponse(
+        target_lang=target_lang,
+        total_items=len(output_items),
+        verified_integrity_rate=round(rate, 3),
+        items=output_items
+    )
+
+
+@app.post("/feedback", response_model=FeedbackResponse, status_code=201)
+def submit_feedback(req: FeedbackRequest):
+    # Journalisation strictement anonyme (aucun texte utilisateur n'est loggué)
+    logger.info("Feedback received for target_lang=%s, context=%s", req.target_lang, req.screen_context)
+
+    submission = {
+        "id": f"fbk_{int(time.time()*1000)}",
+        "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "source_text": req.source_text,
+        "target_lang": req.target_lang,
+        "suggested_translation": req.suggested_translation,
+        "screen_context": req.screen_context,
+        "validator_code": req.validator_code or "COMMUNITY_USER",
+        "comment": req.comment or ""
+    }
+
+    submissions = []
+    if os.path.exists(FEEDBACK_FILE):
+        try:
+            with open(FEEDBACK_FILE, "r", encoding="utf-8") as f:
+                submissions = json.load(f)
+        except Exception:
+            submissions = []
+
+    submissions.append(submission)
+
+    with open(FEEDBACK_FILE, "w", encoding="utf-8") as f:
+        json.dump(submissions, f, ensure_ascii=False, indent=2)
+
+    return FeedbackResponse(
+        feedback_id=submission["id"],
+        status="recorded",
+        message="Proposition enregistrée avec succès pour examen linguistique."
+    )

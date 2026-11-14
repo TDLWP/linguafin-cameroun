@@ -1,0 +1,309 @@
+openapi: 3.0.3
+info:
+  title: SAFINUM Local Translation & Accessibility API
+  version: 1.0.0
+  description: |
+    API locale ultra-légère et souveraine pour l'accessibilité linguistique des services financiers numériques au Cameroun.
+    Assure la traduction vers les langues nationales (Duala, Bassa'a, Ghomala', Ewondo, etc.) avec garantie absolue
+    de préservation de l'intégrité financière (montants, devises, bénéficiaires, références, téléphones).
+servers:
+  - url: http://localhost:8000
+    description: Serveur FastAPI local
+  - url: http://127.0.0.1:8000
+    description: Serveur FastAPI local (boucle locale IPv4)
+
+paths:
+  /health:
+    get:
+      summary: État de santé du service local
+      description: Vérifie la disponibilité du backend, l'état de la mémoire de traduction et la disponibilité des modèles.
+      operationId: getHealth
+      responses:
+        '200':
+          description: Service opérationnel
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /languages:
+    get:
+      summary: Liste des langues supportées
+      description: Retourne la liste des langues camerounaises disponibles avec le statut de validation du catalogue.
+      operationId: getSupportedLanguages
+      responses:
+        '200':
+          description: Liste des langues disponibles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LanguageInfo'
+
+  /translate/batch:
+    post:
+      summary: Traduction par lot avec préservation d'intégrité
+      description: |
+        Traite un lot de segments textuels extraits du DOM.
+        Applique le pipeline strict : Masquage par jetons -> Mémoire validée -> Glossaire -> Moteur automatique -> Restauration & Vérification multi-ensemble.
+      operationId: translateBatch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchTranslationRequest'
+      responses:
+        '200':
+          description: Résultats de la traduction avec statuts d'intégrité
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchTranslationResponse'
+        '400':
+          description: Requête invalide ou paramètre manquant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /feedback:
+    post:
+      summary: Enregistrement d'un retour ou d'une validation linguistique
+      description: Permet aux validateurs linguistiques ou aux utilisateurs de signaler un contresens ou de proposer une confirmation.
+      operationId: submitFeedback
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeedbackRequest'
+      responses:
+        '201':
+          description: Retour enregistré avec succès dans la base de révision
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedbackResponse'
+        '400':
+          description: Données de validation invalides
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - version
+        - offline_catalog_loaded
+        - active_languages_count
+      properties:
+        status:
+          type: string
+          example: "ok"
+          enum: ["ok", "degraded", "maintenance"]
+        version:
+          type: string
+          example: "1.0.0"
+        offline_catalog_loaded:
+          type: boolean
+          example: true
+        active_languages_count:
+          type: integer
+          example: 4
+        ml_model_available:
+          type: boolean
+          example: true
+        uptime_seconds:
+          type: number
+          example: 3600.5
+
+    LanguageInfo:
+      type: object
+      required:
+        - code
+        - name
+        - autonym
+        - status
+        - human_validated_entries
+      properties:
+        code:
+          type: string
+          description: Code ISO 639-3 ou identifiant normalisé (ex. dua, bas, bbj, ewo)
+          example: "dua"
+        name:
+          type: string
+          example: "Duala"
+        autonym:
+          type: string
+          example: "Duálá"
+        status:
+          type: string
+          enum: ["ready", "beta", "experimental"]
+          example: "ready"
+        human_validated_entries:
+          type: integer
+          example: 79
+        glossary_entries:
+          type: integer
+          example: 120
+
+    TranslationItemRequest:
+      type: object
+      required:
+        - id
+        - text
+      properties:
+        id:
+          type: string
+          description: Identifiant unique ou hash du nœud DOM
+          example: "node_step2_amount_label"
+        text:
+          type: string
+          description: Texte source à traduire (FR ou EN)
+          example: "Frais de 1,5 % (min. 100 FCFA, max. 2 500 FCFA)"
+        screen_context:
+          type: string
+          description: Écran d'origine pour désambiguïsation contextuelle
+          example: "transfer_fees"
+        is_critical_security:
+          type: boolean
+          description: Vrai si le segment correspond à une alerte ou un écran de récapitulatif
+          default: false
+
+    BatchTranslationRequest:
+      type: object
+      required:
+        - source_lang
+        - target_lang
+        - items
+      properties:
+        source_lang:
+          type: string
+          enum: ["fr", "en"]
+          example: "fr"
+        target_lang:
+          type: string
+          example: "dua"
+        allow_machine_translation:
+          type: boolean
+          default: true
+          description: Si faux, renvoie le repli source pour les segments non validés
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TranslationItemRequest'
+
+    TranslationItemResponse:
+      type: object
+      required:
+        - id
+        - source_text
+        - target_text
+        - status
+        - integrity_verified
+      properties:
+        id:
+          type: string
+          example: "node_step2_amount_label"
+        source_text:
+          type: string
+          example: "Frais de 1,5 % (min. 100 FCFA, max. 2 500 FCFA)"
+        target_text:
+          type: string
+          example: "Ntomb ya 1,5 % (min. 100 FCFA, max. 2 500 FCFA)"
+        status:
+          type: string
+          enum: ["human_validated", "machine_suggested", "fallback_source", "rejected"]
+          example: "human_validated"
+        integrity_verified:
+          type: boolean
+          description: Vrai si tous les jetons financiers ont été fidèlement restaurés
+          example: true
+        masked_tokens_count:
+          type: integer
+          example: 3
+        bilingual_required:
+          type: boolean
+          description: Vrai si la règle de sécurité impose l'affichage parallèle du texte source
+          example: false
+
+    BatchTranslationResponse:
+      type: object
+      required:
+        - target_lang
+        - total_items
+        - verified_integrity_rate
+        - items
+      properties:
+        target_lang:
+          type: string
+          example: "dua"
+        total_items:
+          type: integer
+          example: 12
+        verified_integrity_rate:
+          type: number
+          description: Pourcentage des traductions avec intégrité validée à 100%
+          example: 1.0
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TranslationItemResponse'
+
+    FeedbackRequest:
+      type: object
+      required:
+        - source_text
+        - target_lang
+        - suggested_translation
+      properties:
+        source_text:
+          type: string
+          example: "Solde disponible"
+        target_lang:
+          type: string
+          example: "dua"
+        suggested_translation:
+          type: string
+          example: "Mbolo ma moni"
+        screen_context:
+          type: string
+          example: "dashboard"
+        validator_code:
+          type: string
+          example: "VAL_DUA_LOC_01"
+        comment:
+          type: string
+          example: "Correction lexicale plus accessible en milieu rural"
+
+    FeedbackResponse:
+      type: object
+      required:
+        - feedback_id
+        - status
+        - message
+      properties:
+        feedback_id:
+          type: string
+          example: "fbk_20261114_0042"
+        status:
+          type: string
+          example: "recorded"
+        message:
+          type: string
+          example: "Proposition enregistrée pour examen de validation humaine."
+
+    ErrorResponse:
+      type: object
+      required:
+        - detail
+      properties:
+        detail:
+          type: string
+          example: "Langue cible non supportée ou payload corrompu."

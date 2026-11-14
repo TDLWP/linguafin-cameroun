@@ -1,0 +1,83 @@
+{
+  "steps": [
+    {
+      "nom": "Écran 1 : Solde (Tableau de bord)",
+      "capture_fr": "docs/screens/01_step1_solde_fr.png",
+      "capture_trans": "docs/screens/01_step1_solde_dua.png",
+      "montant_solde": "250 000 FCFA",
+      "montant_preserve": false,
+      "compte": "CM 001 2345 6789 01",
+      "compte_preserve": true,
+      "traduction_activee": true,
+      "retour_source_ok": true,
+      "status": "FAIL"
+    },
+    {
+      "nom": "Écran 2 : Frais de transfert",
+      "capture_fr": "docs/screens/02_step2_frais_fr.png",
+      "capture_trans": "docs/screens/02_step2_frais_dua.png",
+      "montant_saisi": "25000",
+      "montant_preserve": false,
+      "frais_calcules_preserves": true,
+      "retour_source_ok": true,
+      "status": "FAIL"
+    },
+    {
+      "nom": "Écran 3 : Bénéficiaire & Sécurité",
+      "capture_fr": "docs/screens/03_step3_beneficiaire_fr.png",
+      "capture_trans": "docs/screens/03_step3_beneficiaire_dua.png",
+      "beneficiaire": "Jean-Paul Mbarga",
+      "beneficiaire_preserve": true,
+      "telephone": "+237 6 99 12 34 56",
+      "telephone_preserve": true,
+      "avertissement_securite_affiche": true,
+      "status": "PASS"
+    },
+    {
+      "nom": "Écran 4 : Récapitulatif",
+      "capture_fr": "docs/screens/04_step4_recapitulatif_fr.png",
+      "capture_trans": "docs/screens/04_step4_recapitulatif_dua.png",
+      "montant_preserve": false,
+      "beneficiaire_preserve": true,
+      "telephone_preserve": true,
+      "reference": "SAF-2026-GOUNQP",
+      "reference_preservee": true,
+      "status": "FAIL"
+    },
+    {
+      "nom": "Écran 5 : Reçu / Confirmation finale",
+      "capture_fr": "docs/screens/05_step5_recu_fr.png",
+      "capture_trans": "docs/screens/05_step5_recu_dua.png",
+      "reference_reçu": "SAF-2026-GOUNQP",
+      "reference_preservee": true,
+      "montant_preserve": false,
+      "status": "FAIL"
+    },
+    {
+      "nom": "Alertes & Avertissements de Sécurité",
+      "capture_fr": "docs/screens/06_alerte_securite_fr.png",
+      "capture_trans": "docs/screens/06_alerte_securite_dua.png",
+      "alerte_traduite": true,
+      "statut_bilingue_conforme": true,
+      "status": "PASS"
+    }
+  ],
+  "novel_content": {
+    "source_brute": "Alerte de sécurité : une tentative de prélèvement inédite de 45 000 FCFA a été détectée sur votre compte.",
+    "rendu_traduit": "Alerte de sécurité : une tentative de prélèvement inédite de 45 000 FCFA a été détectée sur votre compte.",
+    "montant_preserve": true,
+    "bilingue_survol_present": true,
+    "statut_machine_suggested_detecte": true,
+    "stat_machine_count": "0",
+    "stat_fallback_count": "6",
+    "status": "PASS"
+  },
+  "bugs": [
+    {
+      "step": "Contenu Inédit",
+      "title": "Repli source immédiat activé pour phrase inédite hors catalogue",
+      "details": "La phrase inédite n'ayant pas de correspondance directe dans translations.csv est conservée en français source (statut fallback_source) avec le montant 45 000 FCFA inviolé.",
+      "severity": "INFO"
+    }
+  ]
+}
