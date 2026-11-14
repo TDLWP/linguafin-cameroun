@@ -68,7 +68,7 @@ Start-Process msedge "https://safinum.cm/hackathon-test?jury=1"
 | **Tests unitaires & adversariaux** | **80 / 80 tests réussis (0 échec)** | `unittest discover backend/tests` + tests E2E |
 | **Tests d'intégrité jury (`normalizeValue`)** | **8 / 8 vérifications conformes** | `tests/test_jury_integrity.py` |
 | **Temps d'exécution regex (anti-ReDoS)** | **< 0,01 ms** sur chaîne piège | Benchmark `time.time()` |
-| **Empreinte de l'extension client** | **< 80 Ko** (zéro dépendance externe) | Mesuré sur dossier `extension/` |
+| **Empreinte de l'extension client** | **environ 134 Ko** (zéro dépendance externe) | Mesuré sur dossier `extension/` |
 | **Temps de bascule hors ligne** | **Instantané** (mémoire cache) | Mesuré via mock bank Playwright |
 | **Consommation mémoire sur smartphone bas de gamme** | **Non mesuré** | Environnement de banc d'essai PC (Win 11) |
 | **Taux de rétention usagers ruraux en conditions réelles** | **Non mesuré** | Expérimentation terrain post-challenge requise |

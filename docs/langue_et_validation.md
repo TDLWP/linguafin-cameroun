@@ -12,8 +12,8 @@ La solution cible deux langues nationales bantoues parlées dans les principaux 
 
 | Langue | Code ISO 639-3 | Statut dans la Solution | Aire Géographique | Base Lexicale Utilisée |
 |---|---|---|---|---|
-| **Duálá** | `dua` | **Langue Pilote Complète** (84 chaînes) | Région du Littoral (Douala, Wouri, Moungo) | Dictionnaire Duala-Français (P. Helmlinger) & corpus audio Mélac |
-| **Ɓàsàa (Bassa'a)** | `bas` | **Langue Secondaire Complète** (84 chaînes) | Littoral & Centre (Sanaga-Maritime, Nyong-et-Kéllé) | Lexiques CEBELA & corpus audio Mélac |
+| **Duálá** | `dua` | **Langue Pilote Complète** (84 chaînes) | Région du Littoral (Douala, Wouri, Moungo) | Lexique du projet Mélac (Lingua Libre) & corpus audio Mélac |
+| **Ɓàsàa (Bassa'a)** | `bas` | **Langue Secondaire Complète** (84 chaînes) | Littoral & Centre (Sanaga-Maritime, Nyong-et-Kéllé) | Lexique du projet Mélac (SimbaBench, saisie manuelle) & corpus audio Mélac |
 | **Ghɔmálá’** | `bbj` | **Glossaire Financier** (52 termes) | Région de l'Ouest (Hauts-Plateaux) | Glossaire terminologique comparé |
 | **Ewondo** | `ewo` | **Glossaire Financier** (52 termes) | Région du Centre (Yaoundé, Mfoundi, Lékié) | Glossaire terminologique comparé |
 
@@ -70,9 +70,9 @@ La validation humaine certifiée est planifiée entre la soumission du prototype
 
 1. **Outil de Collecte** : La fiche [`catalogue/fiche_validation.csv`](../catalogue/fiche_validation.csv) (84 lignes pour Duálá) et son équivalent Ɓàsàa sont mis à disposition des locuteurs natifs avec le format standardisé :
    `source,proposition,correction du validateur,OK/KO`
-2. **Profil des Validateurs Recrutés** :
-   - Deux locuteurs natifs Duálá (un universitaire/linguiste et un commerçant du marché Sandaga à Douala).
-   - Deux locuteurs natifs Ɓàsàa (un enseignant CEBELA et un usager régulier de services Mobile Money en zone rurale).
+2. **Profil des validateurs visés (à recruter ; aucun n'est engagé à ce jour)** :
+   - Deux locuteurs natifs Duálá à identifier (profil visé : linguiste ou enseignant, et usager du commerce à Douala).
+   - Deux locuteurs natifs Ɓàsàa à identifier (profil visé : enseignant, et usager de services Mobile Money).
 3. **Critères de Passage en `human_validated`** :
    - Une chaîne ne passera au statut `human_validated` dans [`catalogue/translations.csv`](../catalogue/translations.csv) qu'après confirmation signée par le validateur avec horodatage et code validateur (`validateur_code`).
    - Toute proposition jugée trompeuse ou confuse pour des montants/frais sera immédiatement corrigée ou déclassée en `rejected`.

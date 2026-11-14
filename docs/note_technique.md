@@ -30,28 +30,28 @@ La solution SAFINUM Accessibility est structurée selon un modèle à double ann
 │   │ • Bilinguisme visible pour données critiques : Texte source [Proposition]       │   │
 │   │ • Mode Démo Hors Ligne embarqué (catalogue_offline.json)                        │   │
 │   └────────────────────────────────────────┬────────────────────────────────────────┘   │
-33: └────────────────────────────────────────────┼────────────────────────────────────────────┘
-34:                                              │ Appels HTTP JSON asynchrones (port 8000)
-35:                                              ▼
-36: ┌─────────────────────────────────────────────────────────────────────────────────────────┐
-37: │                           Backend Local Souverain (FastAPI)                             │
-38: │                                                                                         │
-39: │   ┌─────────────────────────────────────────────────────────────────────────────────┐   │
-40: │   │ Module protect.py (Pipeline d'Intégrité Financière)                             │   │
-41: │   │ 1. Échappement préventif des faux jetons utilisateur                            │   │
-42: │   │ 2. Masquage déterministe (URLs, Références, Téléphones, Montants, Comptes)     │   │
-43: │   │ 3. Restauration exacte et contrôle multi-ensemble (Tokens_in == Tokens_out)     │   │
-44: │   │ 4. Détection ReDoS immunisée (< 0,01 ms)                                        │   │
-45: │   └────────────────────────────────────────┬────────────────────────────────────────┘   │
-46: │                                            │                                            │
-47: │   ┌────────────────────────────────────────▼────────────────────────────────────────┐   │
-48: │   │ Chaîne de Résolution Séquentielle                                               │   │
-49: │   │ [1] Mémoire de Traduction (machine_suggested — brouillons IA)                   │   │
-50: │   │ [2] Glossaire Financier (52 termes terminologiques — machine_suggested)         │   │
-51: │   │ [3] Moteur Automatique pour Inédits (marqué machine_suggested + bilinguisme)    │   │
-52: │   │ [4] Repli Source Garanti (fallback_source)                                      │   │
-53: │   └─────────────────────────────────────────────────────────────────────────────────┘   │
-54: └─────────────────────────────────────────────────────────────────────────────────────────┘
+└────────────────────────────────────────────┼────────────────────────────────────────────┘
+                                             │ Appels HTTP JSON asynchrones (port 8000)
+                                             ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│                           Backend Local Souverain (FastAPI)                             │
+│                                                                                         │
+│   ┌─────────────────────────────────────────────────────────────────────────────────┐   │
+│   │ Module protect.py (Pipeline d'Intégrité Financière)                             │   │
+│   │ 1. Échappement préventif des faux jetons utilisateur                            │   │
+│   │ 2. Masquage déterministe (URLs, Références, Téléphones, Montants, Comptes)     │   │
+│   │ 3. Restauration exacte et contrôle multi-ensemble (Tokens_in == Tokens_out)     │   │
+│   │ 4. Détection ReDoS immunisée (< 0,01 ms)                                        │   │
+│   └────────────────────────────────────────┬────────────────────────────────────────┘   │
+│                                            │                                            │
+│   ┌────────────────────────────────────────▼────────────────────────────────────────┐   │
+│   │ Chaîne de Résolution Séquentielle                                               │   │
+│   │ [1] Mémoire de Traduction (machine_suggested — brouillons IA)                   │   │
+│   │ [2] Glossaire Financier (52 termes terminologiques — machine_suggested)         │   │
+│   │ [3] Moteur Automatique pour Inédits (marqué machine_suggested + bilinguisme)    │   │
+│   │ [4] Repli Source Garanti (fallback_source)                                      │   │
+│   └─────────────────────────────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -80,7 +80,7 @@ Conformément à la règle permanente de sobriété technique (`AGENTS.md`) et a
 ### A. Extension Navigateur (Client)
 * **Zéro bibliothèque tierce** : Pur Vanilla JavaScript (ES6+ standard).
 * **Zéro framework** : Ni React, ni Vue, ni jQuery, ni polyfills lourds.
-* **Empreinte totale du dossier `extension/`** : **< 80 Ko** (incluant le catalogue JSON hors-ligne).
+* **Empreinte totale du dossier `extension/`** : **environ 134 Ko** (incluant le catalogue JSON hors-ligne).
 
 ### B. Backend Local (Python 3.10+)
 Toutes les dépendances sont déclarées dans [`backend/requirements.txt`](../backend/requirements.txt) :
@@ -114,10 +114,10 @@ Le module [`backend/protect.py`](../backend/protect.py) applique un pipeline de 
    - `BENEF` : Noms de bénéficiaires identifiés contextuellement (`Bénéficiaire : ...`, `Vers ...`).
    - `NUMBER` : Nombres purs isolés issus du découpage de balises imbriquées (`25 000`, `0`).
 3. **Contrôle Multi-Ensemble Strict** : Après traduction, le sac de jetons en sortie est comparé au sac d'entrée :
-   $$\text{Counter}(\text{Tokens}_{\text{présents}}) == \text{Counter}(\text{Tokens}_{\text{attendus}})$$
+   Counter(jetons présents) == Counter(jetons attendus)
 4. **Bilinguisme Non-Substitutif pour Chaînes Critiques** :  
    Pour toute chaîne à sensibilité financière ou sécuritaire (montants, frais, alertes, erreurs, récapitulatifs) non attestée par un locuteur natif, le système affiche le texte original français suivi de la proposition entre crochets sans remplacement :
-   $$\text{Rendu} = \text{Texte source} + \text{ [Proposition]}$$
+   Rendu = Texte source + [Proposition]
 5. **Repli Source Immédiat** : En cas d'altération de jeton, de timeout moteur ou d'incohérence, le système bascule immédiatement sur le texte original français (`fallback_source`).
 
 ---
