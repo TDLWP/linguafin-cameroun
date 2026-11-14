@@ -1,4 +1,8 @@
-﻿backend/models/
+backend/models/
 .env
+.env.*
+!.env.example
 __pycache__/
 *.pyc
+dist/
+feedback_submissions.json
