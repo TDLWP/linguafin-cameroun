@@ -65,7 +65,7 @@ La contrainte d'indépendance absolue du site cible est satisfaite par cinq méc
 2. **Sanctuarisation des Champs de Saisie et Boutons** :  
    Les balises `<input>`, `<textarea>`, `<select>` sont **systématiquement rejetées** (`NodeFilter.FILTER_REJECT`). Leurs valeurs, états réactifs Vue 3 et gestionnaires d'événements (`v-model`, validation de formulaire) ne sont jamais interceptés ni réécrits.
 3. **Encapsulation Étanche en Shadow DOM** :  
-   Le widget utilisateur est injecté dans un hôte unique `#safinum-accessibility-host` doté d'un `ShadowRoot` fermé (`attachShadow({ mode: 'open' })`). Aucune règle Tailwind CSS du site cible ne peut altérer l'interface du widget, et les styles du widget ne peuvent fuiter dans la page hôte.
+   Le widget utilisateur est injecté dans un hôte unique `#safinum-accessibility-host` doté d'un `ShadowRoot` isolé (`attachShadow({ mode: 'open' })`). Aucune règle Tailwind CSS du site cible ne peut altérer l'interface du widget, et les styles du widget ne peuvent fuiter dans la page hôte.
 4. **Surveillance Réactive avec Verrouillage d'Inhibition** :  
    Le `MutationObserver` écoute `#app` avec un anti-rebond de 160 ms pour absorber les rendus partiels d'Inertia.js. Pour éliminer tout risque de boucle de ré-observation infinie lors de l'écriture des traductions, un verrou mémoire `state.isMutating = true` bloque temporairement l'écouteur pendant la mise à jour des nœuds.
 5. **Réversibilité Instantanée en Mémoire** :  
