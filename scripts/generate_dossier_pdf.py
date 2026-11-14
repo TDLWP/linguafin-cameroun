@@ -609,16 +609,16 @@ def build_full_html() -> str:
 
             <div class="cover-info-group">
                 <div class="cover-info-label">Responsable du projet</div>
-                <div class="cover-info-val">TOWA TCHAPTCHIE EMMANUEL FILS</div>
+                <div class="cover-info-val">MBENBE BOGMIS PIERRE ALEXANDRE</div>
             </div>
 
             <div class="cover-info-group">
                 <div class="cover-info-label">Membres de l'équipe</div>
                 <ul class="cover-team-list">
-                    <li><strong>MBENBE BOGMIS PIERRE ALEXANDRE</strong></li>
+                    <li><strong>MBENBE BOGMIS PIERRE ALEXANDRE</strong> (Responsable)</li>
                     <li><strong>GRÂCE NZONNOU NJAMPA</strong></li>
                     <li><strong>NTAMACK RENE PASCAL</strong></li>
-                    <li><strong>TOWA TCHAPTCHIE EMMANUEL FILS</strong> (Responsable)</li>
+                    <li><strong>TOWA TCHAPTCHIE EMMANUEL FILS</strong></li>
                 </ul>
             </div>
 
