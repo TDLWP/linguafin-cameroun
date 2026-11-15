@@ -1,3 +1,4 @@
+> **Versions du dépôt** : le tag `v1.0-soumission-14nov` correspond à la version soumise au SAFINUM Innovate Challenge le 14 novembre 2026. Les commits postérieurs corrigent un défaut constaté après l'envoi (crochets bilingues autour des montants en mode backend actif). Les travaux d'amélioration ultérieurs sont sur la branche `amelioration` et ne font pas partie de la soumission.
 # SAFINUM 2026 — Couche d'Accessibilité Linguistique pour Services Financiers
 
 > **Challenge** : SAFINUM Innovate Challenge 2026  
