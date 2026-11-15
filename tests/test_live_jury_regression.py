@@ -13,6 +13,14 @@ Exigences :
     4. Récapitulatif
     5. Reçu
   exécuté en Duálá (dua) puis en Ɓàsàa (bas).
+- Injection via le panneau jury de 3 contenus inédits :
+    (a) Alerte de sécurité avec un montant utilisant une espace fine insécable \u202F
+    (b) Phrase de confirmation
+    (c) Notification sans montant
+- Dans les modes backend arrêté et backend lancé, vérification que :
+    * Aucune entrée n'est 'Compromis'
+    * Aucun crochet n'entoure un montant
+    * Le badge 'contenu inédit' est visible quand des termes sont annotés
 - Lecture de l'onglet 'Soumissions' du panneau jury.
 - Échec immédiat si une seule entrée affiche 'Compromis'.
 - Exécution dans 3 modes :
@@ -25,6 +33,7 @@ Exigences :
 
 import os
 import sys
+import re
 import time
 import json
 import socket
@@ -205,18 +214,132 @@ def read_jury_submissions(page: Page, step_id: str, step_label: str) -> tuple[Li
     return submissions, compromised_count
 
 
+def inject_and_verify_novel_content(
+    page: Page,
+    item_key: str,
+    item_label: str,
+    text_to_inject: str,
+    step_id: str
+) -> Dict[str, Any]:
+    """
+    Injecte un contenu inédit via le volet 'Injecter' du panneau jury,
+    puis vérifie :
+    1. Qu'aucun crochet n'entoure un montant financier.
+    2. Que le badge / conteneur 'contenu inédit' est bien visible quand des termes sont annotés.
+    3. Qu'aucune entrée de soumission n'est 'Compromis'.
+    """
+    print(f"      --> Injection inédite [{item_key}] : '{text_to_inject}'")
+
+    # 1. Basculer sur l'onglet Contrôle
+    page.locator("aside nav button").nth(0).click(force=True)
+    time.sleep(0.4)
+
+    # 2. Remplir la zone de texte
+    txt_area = page.locator("textarea").first
+    txt_area.fill(text_to_inject)
+    time.sleep(0.3)
+
+    # 3. Cliquer sur Injecter
+    btn_inject = page.locator("button:has-text('Injecter'), button[title*='Injecter']").first
+    btn_inject.click(force=True)
+    time.sleep(1.2)
+
+    # 4. Examiner le conteneur injecté dans le DOM de #app
+    injected_info = page.evaluate("""(srcText) => {
+        // Recherche des conteneurs injectés (id injected-* ou classe border-[#9B7FD4])
+        const containers = Array.from(document.querySelectorAll("div[id^='injected-'], div[class*='9B7FD4']"));
+        const targetContainer = containers[containers.length - 1] || null;
+
+        let displayedText = "";
+        let hasTermsAnnotated = false;
+        let badgeNovelVisible = false;
+
+        if (targetContainer) {
+            displayedText = targetContainer.innerText || "";
+            // Termes annotés : attribut data-safinum-translated ou title
+            hasTermsAnnotated = Boolean(
+                targetContainer.querySelector("[data-safinum-translated='true']") ||
+                targetContainer.getAttribute("data-safinum-translated") === "true" ||
+                targetContainer.querySelector("[title*='Original']")
+            );
+            // Badge / conteneur inédit visible
+            const rect = targetContainer.getBoundingClientRect();
+            badgeNovelVisible = (rect.width > 0 && rect.height > 0);
+        } else {
+            // Recherche de secours par texte
+            const pEls = Array.from(document.querySelectorAll("p, div")).filter(el => el.children.length === 0 && (el.innerText || "").includes("75"));
+            if (pEls.length > 0) {
+                displayedText = pEls[0].innerText || "";
+                badgeNovelVisible = true;
+            }
+        }
+
+        // Vérification de la présence du label/badge dans le panneau jury
+        const juryBadge = Array.from(document.querySelectorAll("aside *")).some(el =>
+            el.innerText && (
+                el.innerText.includes("CONTENU INJECTÉ") ||
+                el.innerText.includes("INJECTER DU CONTENU INÉDIT")
+            )
+        );
+
+        return {
+            containerFound: Boolean(targetContainer),
+            displayedText: displayedText.trim(),
+            hasTermsAnnotated: hasTermsAnnotated,
+            badgeNovelVisible: badgeNovelVisible || juryBadge
+        };
+    }""", text_to_inject)
+
+    displayed_text = injected_info.get("displayedText", "")
+
+    # 5. Règle stricte : Aucun crochet n'entoure un montant financier
+    # Détection de motifs du type : [75 000 FCFA], [ 75 000 FCFA ], ou [ ... FCFA ... ]
+    has_bracketed_amount = bool(
+        re.search(r"\[\s*\d{1,3}(?:[\s\u00A0\u202F]\d{3})*(?:[,\.]\d+)?\s*FCFA\s*\]", displayed_text, re.IGNORECASE) or
+        re.search(r"\[[^\]]*\b\d{1,3}(?:[\s\u00A0\u202F]\d{3})*(?:[,\.]\d+)?\s*FCFA[^\]]*\]", displayed_text, re.IGNORECASE)
+    )
+
+    # 6. Règle : Le badge 'contenu inédit' est visible quand des termes sont annotés
+    terms_annotated = injected_info.get("hasTermsAnnotated", False)
+    badge_visible = injected_info.get("badgeNovelVisible", False)
+    badge_ok = True
+    if terms_annotated:
+        badge_ok = badge_visible
+
+    # 7. Contrôle du panneau jury (Soumissions)
+    subs, comp_count = read_jury_submissions(page, step_id, f"Contenu Inédit — {item_label}")
+
+    return {
+        "item_key": item_key,
+        "item_label": item_label,
+        "input_text": text_to_inject,
+        "displayed_text": displayed_text,
+        "has_bracketed_amount": has_bracketed_amount,
+        "terms_annotated": terms_annotated,
+        "badge_novel_visible": badge_visible,
+        "badge_ok": badge_ok,
+        "compromised_count": comp_count,
+        "submissions": subs
+    }
+
+
 def execute_journey_pass(
     page: Page,
     mode_name: str,
-    lang_code: Optional[str] = None
+    lang_code: Optional[str] = None,
+    inject_novel_content: bool = False
 ) -> Dict[str, Any]:
     """
-    Exécute le parcours bancaire complet (5 étapes) pour une langue donnée :
+    Exécute le parcours bancaire complet (5 étapes) pour une langue donnée,
+    suivi de l'injection de 3 contenus inédits si requis :
     - Étape 1 : Solde
     - Étape 2 : Frais (saisie 25000)
     - Étape 3 : Bénéficiaire
     - Étape 4 : Récapitulatif
     - Étape 5 : Reçu
+    - Inédit 1 : Alerte sécurité avec montant et espace fine insécable \u202F
+    - Inédit 2 : Phrase de confirmation
+    - Inédit 3 : Notification sans montant
     """
     lang_label = "Français (Source native)" if not lang_code else ("Duálá" if lang_code == "dua" else "Ɓàsàa")
     print(f"\n---> Parcours en cours : Mode='{mode_name}', Langue='{lang_label}'")
@@ -226,6 +349,7 @@ def execute_journey_pass(
         "lang": lang_code or "fr",
         "lang_label": lang_label,
         "steps": {},
+        "novel_injections": {},
         "total_compromised": 0,
         "all_submissions": []
     }
@@ -336,6 +460,45 @@ def execute_journey_pass(
     pass_results["total_compromised"] += comp_5
     pass_results["all_submissions"].extend(subs_5)
 
+    # -------------------------------------------------------------
+    # Extension : Injection des 3 contenus inédits (Modes avec extension)
+    # -------------------------------------------------------------
+    if inject_novel_content:
+        print(f"\n    --> [INÉDIT] Injection des 3 contenus inédits pour {lang_label}...")
+
+        novel_cases = [
+            (
+                "novel_a_security_amount_narrow_nbsp",
+                "Alerte sécurité avec montant (\u202F)",
+                "Alerte de sécurité : tentative de débit suspect de 75\u202F000 FCFA sur votre compte.",
+                "6_inedit_a"
+            ),
+            (
+                "novel_b_confirmation",
+                "Confirmation de virement permanent",
+                "Votre virement permanent a été enregistré avec succès par notre service.",
+                "7_inedit_b"
+            ),
+            (
+                "novel_c_notification_no_amount",
+                "Notification sans montant",
+                "Un nouveau document sécurisé est disponible dans votre espace client.",
+                "8_inedit_c"
+            )
+        ]
+
+        for n_key, n_label, n_text, n_step in novel_cases:
+            inj_res = inject_and_verify_novel_content(
+                page=page,
+                item_key=n_key,
+                item_label=n_label,
+                text_to_inject=n_text,
+                step_id=n_step
+            )
+            pass_results["novel_injections"][n_key] = inj_res
+            pass_results["total_compromised"] += inj_res["compromised_count"]
+            pass_results["all_submissions"].extend(inj_res["submissions"])
+
     return pass_results
 
 
@@ -349,22 +512,35 @@ def print_mode_raw_report(mode_name: str, runs: List[Dict[str, Any]]):
         print(f"\n  [LANGUE : {r['lang_label']} ({r['lang']})]")
         print(f"  Total entrées compromises : {r['total_compromised']}")
 
+        print("\n    --- Parcours bancaire normal (5 étapes) ---")
         for step_key, step_data in r["steps"].items():
             subs = step_data["submissions"]
-            print(f"    --> Étape {step_data['label']} : {len(subs)} soumission(s) enregistrée(s)")
+            print(f"      --> Étape {step_data['label']} : {len(subs)} soumission(s) enregistrée(s)")
             for s in subs:
                 status_icon = "❌ COMPROMIS" if s["is_compromised"] else "✅ INTÈGRE"
-                print(f"        [#{s['index']}] Statut: {s['status']} ({status_icon})")
+                print(f"          [#{s['index']}] Statut: {s['status']} ({status_icon})")
                 if s["expected"]:
-                    print(f"             Attendu : {s['expected']}")
+                    print(f"               Attendu : {s['expected']}")
                 if s["displayed"]:
-                    print(f"             Affiché : {s['displayed']}")
+                    print(f"               Affiché : {s['displayed']}")
                 if s["submitted"]:
-                    print(f"             Soumis  : {s['submitted']}")
+                    print(f"               Soumis  : {s['submitted']}")
                 if s["diffs"]:
-                    print(f"             Écarts  : {s['diffs']}")
+                    print(f"               Écarts  : {s['diffs']}")
                 if not s["expected"] and not s["displayed"]:
-                    print(f"             Extrait : {s['raw_text']}")
+                    print(f"               Extrait : {s['raw_text']}")
+
+        if r["novel_injections"]:
+            print("\n    --- Injections de contenus inédits (3 contenus) ---")
+            for n_key, n_data in r["novel_injections"].items():
+                print(f"      --> [{n_data['item_label']}]")
+                print(f"          Saisie          : {n_data['input_text']}")
+                print(f"          Affiché à l'écran : {n_data['displayed_text']}")
+                bracket_status = "❌ ÉCHEC (Crochets présents)" if n_data["has_bracketed_amount"] else "✅ CONFORME (Aucun crochet)"
+                print(f"          Crochet montant : {bracket_status}")
+                badge_status = f"✅ VISIBLE (Annoté: {n_data['terms_annotated']})" if n_data["badge_ok"] else "❌ NON VISIBLE"
+                print(f"          Badge inédit    : {badge_status}")
+                print(f"          Soumissions     : {len(n_data['submissions'])} carte(s), {n_data['compromised_count']} compromis")
 
 
 class TestLiveJuryRegression(unittest.TestCase):
@@ -383,7 +559,12 @@ class TestLiveJuryRegression(unittest.TestCase):
             )
         print(f"\n[CONNECTIVITÉ] Site {TARGET_URL} joignable avec succès ({reason}).")
 
-    def _run_dual_language_test(self, mode_name: str, has_extension: bool) -> List[Dict[str, Any]]:
+    def _run_dual_language_test(
+        self,
+        mode_name: str,
+        has_extension: bool,
+        inject_novel_content: bool = False
+    ) -> List[Dict[str, Any]]:
         """Exécute les parcours requis sous Microsoft Edge en profil vierge."""
         runs_output = []
 
@@ -399,16 +580,16 @@ class TestLiveJuryRegression(unittest.TestCase):
 
             try:
                 if has_extension:
-                    # Parcours complet en Duálá
-                    res_dua = execute_journey_pass(page, mode_name, lang_code="dua")
+                    # Parcours complet en Duálá (avec injections inédites si activé)
+                    res_dua = execute_journey_pass(page, mode_name, lang_code="dua", inject_novel_content=inject_novel_content)
                     runs_output.append(res_dua)
 
-                    # Parcours complet en Ɓàsàa
-                    res_bas = execute_journey_pass(page, mode_name, lang_code="bas")
+                    # Parcours complet en Ɓàsàa (avec injections inédites si activé)
+                    res_bas = execute_journey_pass(page, mode_name, lang_code="bas", inject_novel_content=inject_novel_content)
                     runs_output.append(res_bas)
                 else:
                     # Parcours de référence natif en français
-                    res_fr = execute_journey_pass(page, mode_name, lang_code=None)
+                    res_fr = execute_journey_pass(page, mode_name, lang_code=None, inject_novel_content=False)
                     runs_output.append(res_fr)
 
             except Exception as e:
@@ -429,20 +610,41 @@ class TestLiveJuryRegression(unittest.TestCase):
     def test_mode_1_backend_arrete(self):
         """
         Mode 1 : Backend arrêté (Hors-ligne pur via catalogue embarqué).
-        L'extension doit basculer de manière transparente et autonome sans altérer les montants.
+        L'extension doit basculer de manière transparente et autonome sans altérer les montants,
+        y compris sur l'injection de 3 contenus inédits.
         """
         print(f"\n{'='*70}\n DÉMARRAGE DU MODE 1 : BACKEND ARRÊTÉ (Hors-ligne / Catalogue)\n{'='*70}")
         if is_port_in_use(8000):
             print("  [Avertissement] Le port 8000 est actuellement occupé. Vérification...")
 
-        runs = self._run_dual_language_test(mode_name="Mode 1 : Backend Arrêté (Hors-Ligne)", has_extension=True)
+        runs = self._run_dual_language_test(
+            mode_name="Mode 1 : Backend Arrêté (Hors-Ligne)",
+            has_extension=True,
+            inject_novel_content=True
+        )
 
         compromised_entries = []
+        bracket_violations = []
+        badge_violations = []
+
         for r in runs:
+            # Contrôle de toutes les soumissions jury
             for s in r["all_submissions"]:
                 if s["is_compromised"]:
                     compromised_entries.append((r["lang_label"], s))
 
+            # Contrôle spécifique des contenus inédits
+            for n_key, n_data in r["novel_injections"].items():
+                if n_data["has_bracketed_amount"]:
+                    bracket_violations.append((r["lang_label"], n_data["item_label"], n_data["displayed_text"]))
+                if not n_data["badge_ok"]:
+                    badge_violations.append((r["lang_label"], n_data["item_label"]))
+
+        # Assertions strictes
+        if bracket_violations:
+            self.fail(f"Régression : crochet(s) détecté(s) autour d'un montant inédit : {bracket_violations}")
+        if badge_violations:
+            self.fail(f"Régression : badge 'contenu inédit' non visible quand des termes sont annotés : {badge_violations}")
         if compromised_entries:
             err_msg = f"Régression détectée en Mode 1 (Backend Arrêté) : {len(compromised_entries)} entrée(s) 'Compromis' trouvée(s) :\n"
             for lang, ent in compromised_entries:
@@ -452,7 +654,8 @@ class TestLiveJuryRegression(unittest.TestCase):
     def test_mode_2_backend_lance(self):
         """
         Mode 2 : Backend lancé (En ligne via API FastAPI locale sur 127.0.0.1:8000).
-        L'extension communique avec l'API /translate/batch en préservant l'intégrité financière.
+        L'extension communique avec l'API /translate/batch en préservant l'intégrité financière,
+        y compris sur l'injection de 3 contenus inédits.
         """
         print(f"\n{'='*70}\n DÉMARRAGE DU MODE 2 : BACKEND LANCÉ (En ligne / FastAPI 127.0.0.1:8000)\n{'='*70}")
 
@@ -478,7 +681,11 @@ class TestLiveJuryRegression(unittest.TestCase):
         print("  [INIT] Backend FastAPI opérationnel sur http://127.0.0.1:8000.")
 
         try:
-            runs = self._run_dual_language_test(mode_name="Mode 2 : Backend Lancé (En Ligne)", has_extension=True)
+            runs = self._run_dual_language_test(
+                mode_name="Mode 2 : Backend Lancé (En Ligne)",
+                has_extension=True,
+                inject_novel_content=True
+            )
         finally:
             print("  [CLEANUP] Arrêt propre du backend FastAPI...")
             backend_proc.terminate()
@@ -486,11 +693,27 @@ class TestLiveJuryRegression(unittest.TestCase):
             print("  [CLEANUP] Backend FastAPI arrêté.")
 
         compromised_entries = []
+        bracket_violations = []
+        badge_violations = []
+
         for r in runs:
+            # Contrôle de toutes les soumissions jury
             for s in r["all_submissions"]:
                 if s["is_compromised"]:
                     compromised_entries.append((r["lang_label"], s))
 
+            # Contrôle spécifique des contenus inédits
+            for n_key, n_data in r["novel_injections"].items():
+                if n_data["has_bracketed_amount"]:
+                    bracket_violations.append((r["lang_label"], n_data["item_label"], n_data["displayed_text"]))
+                if not n_data["badge_ok"]:
+                    badge_violations.append((r["lang_label"], n_data["item_label"]))
+
+        # Assertions strictes
+        if bracket_violations:
+            self.fail(f"Régression : crochet(s) détecté(s) autour d'un montant inédit : {bracket_violations}")
+        if badge_violations:
+            self.fail(f"Régression : badge 'contenu inédit' non visible quand des termes sont annotés : {badge_violations}")
         if compromised_entries:
             err_msg = f"Régression détectée en Mode 2 (Backend Lancé) : {len(compromised_entries)} entrée(s) 'Compromis' trouvée(s) :\n"
             for lang, ent in compromised_entries:
@@ -504,7 +727,11 @@ class TestLiveJuryRegression(unittest.TestCase):
         """
         print(f"\n{'='*70}\n DÉMARRAGE DU MODE 3 : EXTENSION DÉSACTIVÉE (Référence native FR)\n{'='*70}")
 
-        runs = self._run_dual_language_test(mode_name="Mode 3 : Extension Désactivée (Référence FR)", has_extension=False)
+        runs = self._run_dual_language_test(
+            mode_name="Mode 3 : Extension Désactivée (Référence FR)",
+            has_extension=False,
+            inject_novel_content=False
+        )
 
         compromised_entries = []
         for r in runs:

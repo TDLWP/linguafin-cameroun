@@ -102,6 +102,16 @@
   3. Intégration optimisée des 5 captures requises (`passB_01_solde_dua`, `passB_02_frais_dua`, `passB_07_securite_dua`, `passB_09_injected_1_security_amount`, `passB_08_jury_panel_intact`) redimensionnées à 1200 px en JPEG base64.
   4. Métriques certifiées : taille finale de **0,92 Mo** (965 807 octets, très largement inférieure au seuil strict < 8 Mo), **20 pages**, extraction textuelle vérifiée (100% des mots-clés de garde trouvés) et préservation stricte des mentions « 0/84 validées par un locuteur natif » et de l'écartement du moteur Fulfulde.
 
+- 2026-11-15 19:55 — Fiches de validation PDF (kit_validation) et extension du test Live Jury aux contenus inédits :
+  1. Branche : `amelioration` exclusivement (`git branch --show-current` vérifié, tag `v1.0-soumission-14nov` intact).
+  2. Création de `scripts/generate_validation_sheets.py` et génération dans `catalogue/kit_validation/` :
+     - `fiche_validation_duala.pdf` (4 pages A4, police min 9.00 pt) et `fiche_validation_duala.csv` (84 entrées).
+     - `fiche_validation_bassaa.pdf` (4 pages A4, police min 9.00 pt) et `fiche_validation_bassaa.csv` (84 entrées).
+     - Conservation de `catalogue/fiche_validation.csv` ; en-tête de tableau répété sur chaque page A4 (`thead` répété) ; vérification PyMuPDF/fitz certifiée (pages comprises entre 2 et 4, police >= 9 pt).
+  3. Extension de `tests/test_live_jury_regression.py` : injection successive via le panneau jury de 3 contenus inédits (alerte de sécurité avec montant et espace fine insécable `\u202F`, confirmation de virement, notification sans montant).
+  4. Validation certifiée dans les modes backend arrêté et backend lancé : 0 entrée « Compromis », aucun crochet entourant un montant financier, et badge / conteneur « contenu inédit » visible.
+  5. Bilan complet des tests : 86/86 tests réussis (77 backend + 6 racine + 3 live jury Playwright).
+
 - 2026-11-15 19:10 — Création et exécution réussie du test de régression live jury (`tests/test_live_jury_regression.py`) :
   1. Branche courante : `amelioration` (tag `v1.0-soumission-14nov` intact).
   2. Implémentation du test sous Microsoft Edge (Playwright, profil vierge) avec gestion automatique de la connectivité réseau (clause d'injoignabilité : statut `skipped` avec motif clair en cas d'inaccessibilité).
