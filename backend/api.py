@@ -17,6 +17,7 @@ import csv
 import json
 import time
 import logging
+import unicodedata
 from typing import List, Optional, Dict
 from dotenv import load_dotenv
 
@@ -400,9 +401,19 @@ def translate_batch(req: BatchTranslationRequest):
         # Règle critique : pour toute chaîne dont sensibilité est critique
         # (montants, frais, avertissements, erreurs) ET non attestée,
         # affiche le texte français d'origine suivi de la proposition entre crochets, sans le remplacer.
-        final_target = restored_text
-        if bilingual_req and src_raw != restored_text and not restored_text.startswith(src_raw + " ["):
+        # Exception : si la chaîne est un repli source ou identique après normalisation NFKC,
+        # ne jamais insérer de crochets bilingues sur des montants ou nombres purs.
+        is_same_text = (
+            item_status == "fallback_source" or
+            src_raw == restored_text or
+            unicodedata.normalize("NFKC", src_raw).strip() == unicodedata.normalize("NFKC", restored_text).strip()
+        )
+        if is_same_text:
+            final_target = src_raw
+        elif bilingual_req and not restored_text.startswith(src_raw + " ["):
             final_target = f"{src_raw} [{restored_text}]"
+        else:
+            final_target = restored_text
 
         output_items.append(TranslationItemResponse(
             id=item.id,

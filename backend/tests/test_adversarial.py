@@ -145,6 +145,25 @@ class TestAdversarialHostileJury(unittest.TestCase):
         item = data["items"][0]
         self.assertTrue(item["bilingual_required"], "Une alerte de fraude doit exiger le bilinguisme visible")
 
+    def test_no_unwanted_brackets_on_untranslated_amounts_with_narrow_space(self):
+        """Vérifie que les montants avec espace fine insécable (\\u202F) ne reçoivent pas de faux crochets bilingues."""
+        client = TestClient(app)
+        amounts = ["250\u202F000 FCFA", "0 FCFA", "25\u202F000 FCFA", "100 FCFA"]
+        payload = {
+            "source_lang": "fr",
+            "target_lang": "dua",
+            "allow_machine_translation": True,
+            "items": [{"id": f"amt_{i}", "text": a, "screen_context": "fees"} for i, a in enumerate(amounts)]
+        }
+        res = client.post("/translate/batch", json=payload)
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        for i, item in enumerate(data["items"]):
+            # Le texte cible ne doit contenir aucun crochet bilingue parasite autour du montant
+            self.assertNotIn("[", item["target_text"])
+            self.assertNotIn("]", item["target_text"])
+            self.assertEqual(item["target_text"], amounts[i])
+
 
 if __name__ == "__main__":
     unittest.main()

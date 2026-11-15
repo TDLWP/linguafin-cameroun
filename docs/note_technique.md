@@ -139,7 +139,7 @@ Le module [`backend/protect.py`](../backend/protect.py) applique un pipeline de 
 2. **Synthèse Vocale (Text-To-Speech)** :  
    Bien que des enregistrements audio de référence existent dans le dépôt (`shared/data/duala/audio/`), le raccordement TTS n'est pas finalisé dans ce prototype.
 3. **Performance sur Matériel Embarqué / Réseau Dégradé** :
-   - Temps d'exécution des tests sur PC (Intel/Windows 11) : **0,361 s** pour 80 tests.
+   - Temps d'exécution des tests sur PC (Intel/Windows 11) : **environ 0,38 s** pour 83 tests.
    - Latence sur smartphone ARM d'entrée de gamme : **non mesuré**.
    - Consommation de batterie sur session prolongée : **non mesuré**.
    - Débit réel sur réseau 2G/EDGE en milieu rural : **non mesuré** (compensé par le mode hors-ligne à 0 requête réseau).

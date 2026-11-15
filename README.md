@@ -52,7 +52,7 @@ Start-Process msedge "https://safinum.cm/hackathon-test?jury=1"
    - **Étape 3 (Bénéficiaire)** : Le nom `Jean-Paul Mbarga` et le téléphone `+237 6 99 12 34 56` sont préservés.
    - **Étape 4 (Récapitulatif)** : La référence `SAF-2026-*` et les montants sont strictement conservés ; affichage bilingue parallèle sans substitution (`Texte source [Proposition]`).
    - **Étape 5 (Confirmation)** : Le reçu de transfert confirme l'opération.
-5. **Validation par le Panneau Jury** : Avec `?jury=1`, la fonction de normalisation du jury affiche **OK (0 compromission)** sur l'intégralité du parcours.
+5. **Validation par le Panneau Jury** : Avec `?jury=1`, le contrôle d'intégrité du jury enregistre **100 % Intègre (0 compromis sur les 9 soumissions du parcours)** en mode hors-ligne nominal (catalogue embarqué) comme sur la page native et en mode connecté, grâce à la neutralisation des faux différentiels d'espace insécable (`\u202F`) et à l'interdiction de crochets bilingues sur les montants purs.
 6. **Mode hors ligne (sans réseau)** : Coupez la connexion Internet ou arrêtez le backend : l'extension bascule automatiquement sur `catalogue_offline.json` sans interruption de service.
 
 ---
@@ -65,7 +65,7 @@ Start-Process msedge "https://safinum.cm/hackathon-test?jury=1"
 | **Recoupement lexical Duálá (`dua`)** | **0 / 84 attesté (0,0 %)** | `scripts/crosscheck_lexiques.py` (colonne traduction Mélac) |
 | **Recoupement lexical Ɓàsàa (`bas`)** | **4 / 84 attesté (4,8 %)**, 58 partiels (69,0 %) | `scripts/crosscheck_lexiques.py` sur 994 mots réels |
 | **Recoupement lexical combiné** | **4 / 168 attesté (2,4 %)**, 58 partiels (34,5 %) | `catalogue/crosscheck_rapport.csv` |
-| **Tests unitaires & adversariaux** | **80 / 80 tests réussis (0 échec)** | `unittest discover backend/tests` + tests E2E |
+| **Tests unitaires & adversariaux** | **83 / 83 tests réussis (0 échec)** | 77 tests backend + 6 tests racine (`unittest discover`) |
 | **Tests d'intégrité jury (`normalizeValue`)** | **8 / 8 vérifications conformes** | `tests/test_jury_integrity.py` |
 | **Temps d'exécution regex (anti-ReDoS)** | **< 0,01 ms** sur chaîne piège | Benchmark `time.time()` |
 | **Empreinte de l'extension client** | **environ 134 Ko** (zéro dépendance externe) | Mesuré sur dossier `extension/` |

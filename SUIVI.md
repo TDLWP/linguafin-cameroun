@@ -74,6 +74,34 @@
 
 ## Fait
 
+- 2026-11-15 02:08 — Diagnostic approfondi de la ligne « Consultation des frais » et du statut « Compromis » :
+  1. Déroulé complet E2E sous Playwright Edge comparant l'extension active en Duala et la page native en français :
+     - En mode hors-ligne (catalogue embarqué) : 100 % Intègre (0 compromis sur 9 soumissions), résultat strictement identique à la page native.
+     - En mode en ligne (backend FastAPI démarré) : identification de la cause racine. La normalisation de l'espace fine insécable `\u202f` issue d'`Intl.NumberFormat` en espace insécable `\u00a0` dans `backend/protect.py` fait échouer l'égalité source/cible, déclenchant l'ajout de crochets bilingues `250 000 FCFA [250 000 FCFA]`. La fonction `normalizeValue` du jury ne retirant pas les crochets `[...]`, la valeur affichée `250000[250000]` est pénalisée comme « Compromis ».
+  2. Mise à jour de `README.md` : décompte ajusté à 82 tests (76 backend + 6 racine) et formulation fidèle des résultats mesurés sur le panneau jury. Exécution certifiée des 82 tests sans échec.
+
+- 2026-11-15 00:03 — Mise à jour officielle de la page de garde du dossier PDF :
+  1. Attribution du rôle de responsable de projet à **MBENBE BOGMIS PIERRE ALEXANDRE** sur la page de garde de `dist/dossier_soumission.pdf`.
+  2. Régénération immédiate via Playwright Edge (`scripts/generate_dossier_pdf.py`) : 19 pages, 829 656 octets (0,79 Mo), 100% conforme.
+  3. Synchronisation et push sur le dépôt distant GitHub `https://github.com/TDLWP/linguafin-cameroun` (commit `afd4cc3`).
+
+- 2026-11-14 23:48 — Finalisation rigoureuse de la soumission du formulaire et push GitHub :
+  1. Correction de transparence dans la documentation : clarification des validateurs visés (à recruter) et des sources réelles (Lingua Libre, SimbaBench) dans `docs/langue_et_validation.md` ; correction technique dans `docs/note_technique.md` (ShadowRoot isolé, environ 134 Ko, retrait de LaTeX brut) et alignement dans `THIRD_PARTY.md` et `README.md`.
+  2. Régénération certifiée de `dist/dossier_soumission.pdf` : responsable mis à jour sur la couverture ; retrait de la capture du panneau jury avec compromis ; 0 occurrence de Sandaga, CEBELA, Helmlinger ou LaTeX brut ; taille de 0,79 Mo (829 666 octets) pour 19 pages.
+  3. Dépôt public GitHub `https://github.com/TDLWP/linguafin-cameroun` synchronisé et poussé avec succès ; visibilité publique vérifiée par requête HTTP 200 OK.
+  4. Audit du lien vidéo Google Drive et préparation détaillée des 4 champs finaux du formulaire avec rappel d'ouverture des droits de partage de la vidéo.
+
+- 2026-11-14 23:02 — Création et vérification certifiée du package autonome de l'extension dist/extension_linguafin.zip :
+  1. Génération de l'archive avec `manifest.json` strictement à la racine (aucun sous-dossier conteneur), incluant les 4 fichiers nécessaires (`manifest.json`, `content.js`, `offline_catalog.json`, `catalogue_offline.json`).
+  2. Vérification d'intégrité : taille de 26 224 octets (0,025 Mo, très largement inférieure au seuil strict < 10 Mo) ; `manifest.json` valide et lu avec succès via `json.load` ; 100% des fichiers déclarés dans `content_scripts` et `web_accessible_resources` présents dans l'archive (3/3).
+  3. Décompression en dossier temporaire vierge et validation Playwright (Microsoft Edge) sur `https://safinum.cm/hackathon-test` : nœud `#safinum-accessibility-host` détecté, Shadow DOM encapsulé fonctionnel, panneau de contrôle, langues (`dua`, `bas`, `fr`) et bandeau de transparence IA confirmés.
+
+- 2026-11-14 22:54 — Génération et validation intégrale du dossier officiel de soumission PDF dist/dossier_soumission.pdf :
+  1. Conception et exécution du script automatisé `scripts/generate_dossier_pdf.py` via Playwright (`channel="msedge"` avec `page.pdf()`).
+  2. Structure ordonnée et conforme : page de garde formelle (prototype LinguaFin Cameroun, équipe Triomphe Digital de Douala, 4 membres et responsable MBENBE BOGMIS PIERRE ALEXANDRE), table des matières cliquable avec ancres internes, `docs/description_solution.md`, `docs/note_technique.md`, `docs/langue_et_validation.md`, `THIRD_PARTY.md`, et section Captures.
+  3. Intégration optimisée des 5 captures requises (`passB_01_solde_dua`, `passB_02_frais_dua`, `passB_07_securite_dua`, `passB_09_injected_1_security_amount`, `passB_08_jury_panel_intact`) redimensionnées à 1200 px en JPEG base64.
+  4. Métriques certifiées : taille finale de **0,92 Mo** (965 807 octets, très largement inférieure au seuil strict < 8 Mo), **20 pages**, extraction textuelle vérifiée (100% des mots-clés de garde trouvés) et préservation stricte des mentions « 0/84 validées par un locuteur natif » et de l'écartement du moteur Fulfulde.
+
 - 2026-11-14 21:26 — Vérification approfondie du livrable dist/safinum_soumission.zip contre le dépôt :
   1. Vérification d'intégrité de l'arborescence : confirmation que `backend/protect.py` existe bien dans le dépôt et dans le ZIP. Relevé certifié des imports réels des tests et décompte unitaire par fichier : 76 tests backend (test_adversarial: 10, test_api: 5, test_masking: 5, test_protect_integrity: 56) et 6 tests racine (test_extension_e2e: 4, test_jury_integrity: 1, test_playwright_mock_bank: 1), soit 82 tests au total.
   2. Vérification rigoureuse des 11 fichiers cibles demandés (`catalogue/translations.csv`, `catalogue/glossaire.csv`, `catalogue/fiche_validation.csv`, `catalogue/crosscheck_rapport.csv`, `docs/00_audit_env_test.md`, `docs/01_architecture.md`, `docs/03_audit.md`, `docs/description_solution.md`, `docs/langue_et_validation.md`, `docs/note_technique.md`, `openapi.yaml`) : confirmation qu'aucun n'est manquant, tous sont présents dans le dépôt ET dans le ZIP.

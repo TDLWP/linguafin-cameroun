@@ -326,8 +326,17 @@
           const isCritical = Boolean(res.bilingual_required) || isCriticalText(origTrimmed);
           const isAttested = (res.status === 'human_validated');
 
+          const isSameText = (
+            res.status === 'fallback_source' ||
+            origTrimmed === res.target ||
+            origTrimmed.normalize('NFKC').replace(/[\s\u00A0\u202F]+/g, ' ').trim() ===
+            res.target.normalize('NFKC').replace(/[\s\u00A0\u202F]+/g, ' ').trim()
+          );
+
           let displayedTarget = res.target;
-          if (displayedTarget.startsWith(origTrimmed + ' [')) {
+          if (isSameText) {
+            displayedTarget = origTrimmed;
+          } else if (displayedTarget.startsWith(origTrimmed + ' [')) {
             // Déjà formaté par le backend
           } else if (isCritical && !isAttested && origTrimmed !== res.target) {
             displayedTarget = `${origTrimmed} [${res.target}]`;
