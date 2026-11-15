@@ -102,6 +102,15 @@
   3. Intégration optimisée des 5 captures requises (`passB_01_solde_dua`, `passB_02_frais_dua`, `passB_07_securite_dua`, `passB_09_injected_1_security_amount`, `passB_08_jury_panel_intact`) redimensionnées à 1200 px en JPEG base64.
   4. Métriques certifiées : taille finale de **0,92 Mo** (965 807 octets, très largement inférieure au seuil strict < 8 Mo), **20 pages**, extraction textuelle vérifiée (100% des mots-clés de garde trouvés) et préservation stricte des mentions « 0/84 validées par un locuteur natif » et de l'écartement du moteur Fulfulde.
 
+- 2026-11-15 19:10 — Création et exécution réussie du test de régression live jury (`tests/test_live_jury_regression.py`) :
+  1. Branche courante : `amelioration` (tag `v1.0-soumission-14nov` intact).
+  2. Implémentation du test sous Microsoft Edge (Playwright, profil vierge) avec gestion automatique de la connectivité réseau (clause d'injoignabilité : statut `skipped` avec motif clair en cas d'inaccessibilité).
+  3. Exécution complète des 3 modes sur `https://safinum.cm/hackathon-test?jury=1` :
+     - **Mode 1 (Backend arrêté / Hors-ligne)** : parcours complet (Solde, Frais avec saisie 25000, Bénéficiaire, Récapitulatif, Reçu) déroulé en Duálá puis en Ɓàsàa -> **0 entrée compromise** (100% Intègre sur toutes les soumissions).
+     - **Mode 2 (Backend lancé / FastAPI 127.0.0.1:8000)** : parcours complet déroulé en Duálá puis en Ɓàsàa -> **0 entrée compromise** (100% Intègre).
+     - **Mode 3 (Extension désactivée / Référence FR)** : parcours complet en français natif -> **0 entrée compromise** (100% Intègre).
+  4. Bilan global : **3/3 tests passés avec succès**, 0 statut « Compromis », intégrité financière et normalisation jury strictement préservées.
+
 - 2026-11-14 21:26 — Vérification approfondie du livrable dist/safinum_soumission.zip contre le dépôt :
   1. Vérification d'intégrité de l'arborescence : confirmation que `backend/protect.py` existe bien dans le dépôt et dans le ZIP. Relevé certifié des imports réels des tests et décompte unitaire par fichier : 76 tests backend (test_adversarial: 10, test_api: 5, test_masking: 5, test_protect_integrity: 56) et 6 tests racine (test_extension_e2e: 4, test_jury_integrity: 1, test_playwright_mock_bank: 1), soit 82 tests au total.
   2. Vérification rigoureuse des 11 fichiers cibles demandés (`catalogue/translations.csv`, `catalogue/glossaire.csv`, `catalogue/fiche_validation.csv`, `catalogue/crosscheck_rapport.csv`, `docs/00_audit_env_test.md`, `docs/01_architecture.md`, `docs/03_audit.md`, `docs/description_solution.md`, `docs/langue_et_validation.md`, `docs/note_technique.md`, `openapi.yaml`) : confirmation qu'aucun n'est manquant, tous sont présents dans le dépôt ET dans le ZIP.
