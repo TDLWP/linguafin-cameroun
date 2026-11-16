@@ -26,6 +26,42 @@
     'http://127.0.0.1:8000/translate/batch'
   ];
 
+  // Injection des styles pour la mise en valeur des montants, sécurité et badge de contenu inédit
+  function injectDocumentStyles() {
+    if (document.getElementById('safinum-doc-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'safinum-doc-styles';
+    style.textContent = `
+      .safinum-highlight-amount {
+        font-weight: 700 !important;
+        letter-spacing: 0.2px;
+      }
+      .safinum-highlight-security {
+        font-weight: 700 !important;
+        border-left: 3px solid #F59E0B !important;
+        background-color: rgba(245, 158, 11, 0.08) !important;
+        padding-left: 6px !important;
+        border-radius: 4px;
+      }
+      .safinum-novel-badge {
+        display: inline-block !important;
+        background-color: #FEF3C7 !important;
+        color: #92400E !important;
+        border: 1px solid #F59E0B !important;
+        border-radius: 4px !important;
+        padding: 2px 6px !important;
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        margin-left: 8px !important;
+        vertical-align: middle !important;
+        line-height: 1.2 !important;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+      }
+    `;
+    (document.head || document.documentElement).appendChild(style);
+  }
+  injectDocumentStyles();
+
   // État applicatif de l'extension
   const state = {
     currentLang: 'dua',       // 'dua', 'bas', 'fr' (et 'ful' uniquement en mode expérimental)
@@ -81,10 +117,10 @@
     return false;
   }
 
-  // --- 2. Résolution Hors-Ligne (Repli) ---
+  // --- 2. Résolution Hors-Ligne (Repli & Inédit) ---
   function resolveOffline(text, lang) {
     if (!state.offlineCatalog || !state.offlineCatalog.translations) {
-      return { target: text, status: 'fallback_source', integrity_verified: true, bilingual_required: isCriticalText(text) };
+      return { target: text, status: 'fallback_source', integrity_verified: true, bilingual_required: isCriticalText(text), novel_annotated: false, badge: null };
     }
 
     const dict = state.offlineCatalog.translations[lang] || {};
@@ -92,44 +128,90 @@
     const trimmed = text.trim();
     const critical = isCriticalText(trimmed);
 
-    // 1. Recherche exacte
+    // 1. Recherche exacte dans la mémoire
     if (dict[trimmed]) {
       const entryStatus = dict[trimmed].status || 'machine_suggested';
       return {
         target: dict[trimmed].target,
         status: entryStatus,
         integrity_verified: true,
-        bilingual_required: critical && (entryStatus !== 'human_validated')
+        bilingual_required: critical && (entryStatus !== 'human_validated'),
+        novel_annotated: false,
+        badge: null
       };
     }
 
-    // 2. Recherche dans le glossaire
+    // 2. Recherche exacte dans le glossaire (terme seul)
     if (glossary[trimmed] && glossary[trimmed][lang]) {
       const entryStatus = glossary[trimmed].status || 'machine_suggested';
       return {
         target: glossary[trimmed][lang],
         status: entryStatus,
         integrity_verified: true,
-        bilingual_required: critical && (entryStatus !== 'human_validated')
+        bilingual_required: critical && (entryStatus !== 'human_validated'),
+        novel_annotated: false,
+        badge: null
       };
     }
 
-    // 3. Substitution terminologique partielle
-    let auto = trimmed;
-    let modified = false;
-    for (const [term, tr] of Object.entries(glossary)) {
-      if (auto.includes(term) && tr[lang]) {
-        auto = auto.split(term).join(tr[lang]);
-        modified = true;
+    // 3. Texte absent de la mémoire : conservation du texte source + annotation des termes financiers du glossaire
+    // Masquage préalable des montants/numéros pour ne jamais insérer de crochets autour d'eux
+    const amountRegex = /(?:[+-]\s*)?(?:(?:[$€£]\s*(?:\d{1,3}(?:[\s\u00A0\u202F\u2007,\.]\d{3})*|\d+)(?:[,\.]\d+)?)|(?:\b(?:\d{1,3}(?:[\s\u00A0\u202F\u2007,\.]\d{3})*|\d+)(?:[,\.]\d+)?\s*(?:FCFA|XAF|CFA|XOF|EUR|USD|GBP|€|\$|£|francs?\s*(?:cfa)?|frs)(?!\w)))/gi;
+    const safeTokens = [];
+    let masked = trimmed.replace(amountRegex, (m) => {
+      const tok = `__SAFE_OFFLINE_${safeTokens.length}__`;
+      safeTokens.push({ token: tok, value: m });
+      return tok;
+    });
+
+    // Sélectionner les termes du glossaire disponibles pour la langue
+    const availableTerms = [];
+    for (const [srcTerm, trMap] of Object.entries(glossary)) {
+      if (trMap[lang] && typeof trMap[lang] === 'string' && trMap[lang].trim()) {
+        const tgt = trMap[lang].trim();
+        if (srcTerm.trim().toLowerCase() !== tgt.toLowerCase()) {
+          availableTerms.push({ src: srcTerm.trim(), tgt: tgt });
+        }
       }
     }
 
-    if (modified) {
+    // Trier par longueur décroissante
+    availableTerms.sort((a, b) => b.src.length - a.src.length);
+
+    let hasAnnotation = false;
+    const glossTokens = [];
+
+    for (const item of availableTerms) {
+      const escaped = item.src.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const pattern = new RegExp(`(?<![A-Za-z0-9_À-ÿ])(${escaped})(?![A-Za-z0-9_À-ÿ])`, 'gi');
+      if (pattern.test(masked)) {
+        masked = masked.replace(pattern, (match, word) => {
+          const tok = `__GLOSS_OFFLINE_${glossTokens.length}__`;
+          glossTokens.push({ token: tok, value: `${word} [${item.tgt}]` });
+          hasAnnotation = true;
+          return tok;
+        });
+      }
+    }
+
+    // Restauration des jetons de glossaire
+    for (const gt of glossTokens) {
+      masked = masked.split(gt.token).join(gt.value);
+    }
+
+    // Restauration des montants protégés
+    for (const st of safeTokens) {
+      masked = masked.split(st.token).join(st.value);
+    }
+
+    if (hasAnnotation) {
       return {
-        target: auto,
+        target: masked,
         status: 'machine_suggested',
         integrity_verified: true,
-        bilingual_required: critical
+        bilingual_required: false,
+        novel_annotated: true,
+        badge: 'contenu inédit : termes annotés, phrase non traduite'
       };
     }
 
@@ -138,7 +220,9 @@
       target: text,
       status: 'fallback_source',
       integrity_verified: true,
-      bilingual_required: critical
+      bilingual_required: critical,
+      novel_annotated: false,
+      badge: null
     };
   }
 
@@ -199,7 +283,9 @@
               target: item.target_text,
               status: item.status,
               integrity_verified: item.integrity_verified,
-              bilingual_required: Boolean(item.bilingual_required)
+              bilingual_required: Boolean(item.bilingual_required),
+              novel_annotated: Boolean(item.novel_annotated),
+              badge: item.badge || null
             };
             results.set(item.source_text, resObj);
             state.cache.set(`${item.source_text}__${targetLang}`, resObj);
@@ -334,7 +420,10 @@
           );
 
           let displayedTarget = res.target;
-          if (isSameText) {
+          if (res.novel_annotated) {
+            // Contenu inédit : termes financiers annotés individuellement entre crochets dans la phrase source
+            displayedTarget = res.target;
+          } else if (isSameText) {
             displayedTarget = origTrimmed;
           } else if (displayedTarget.startsWith(origTrimmed + ' [')) {
             // Déjà formaté par le backend
@@ -355,6 +444,28 @@
               node.parentElement.setAttribute('title', `Original : ${origTrimmed}`);
             } else {
               node.parentElement.removeAttribute('title');
+            }
+
+            // Mise en évidence visuelle : Montants financiers (gras et contraste)
+            if (/\b(?:\d{1,3}(?:[\s\u00A0\u202F]\d{3})*|\d+)\s*(?:FCFA|XAF|CFA|EUR|USD|€|\$)/i.test(origTrimmed)) {
+              node.parentElement.classList.add('safinum-highlight-amount');
+            }
+
+            // Mise en évidence visuelle : Avertissements de sécurité (gras et contraste)
+            if (/sécurité|securite|alerte|attention|danger|avertissement|suspect|fraud/i.test(origTrimmed)) {
+              node.parentElement.classList.add('safinum-highlight-security');
+            }
+
+            // Badge visible : « contenu inédit : termes annotés, phrase non traduite »
+            if (res.novel_annotated) {
+              const existingBadge = node.parentElement.querySelector('.safinum-novel-badge');
+              if (!existingBadge) {
+                const badgeSpan = document.createElement('span');
+                badgeSpan.className = 'safinum-novel-badge';
+                badgeSpan.setAttribute('data-safinum-ignore', 'true');
+                badgeSpan.textContent = res.badge || 'contenu inédit : termes annotés, phrase non traduite';
+                node.parentElement.appendChild(badgeSpan);
+              }
             }
           }
 
@@ -402,7 +513,15 @@
         node.parentElement.removeAttribute('data-safinum-translated');
         node.parentElement.removeAttribute('title');
         node.parentElement.removeAttribute('data-safinum-orig');
+        node.parentElement.classList.remove('safinum-highlight-amount');
+        node.parentElement.classList.remove('safinum-highlight-security');
       }
+    }
+
+    // Retirer tous les badges de contenus inédits injectés
+    const novelBadges = document.querySelectorAll('.safinum-novel-badge');
+    for (const b of novelBadges) {
+      b.remove();
     }
 
     // Rétablir les placeholders

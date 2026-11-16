@@ -226,3 +226,67 @@ def verify_integrity(
         return False
 
     return True
+
+
+def annotate_glossary_in_masked_text(
+    masked_text: str,
+    glossary: Dict[str, Dict[str, str]],
+    target_lang: str
+) -> Tuple[str, bool, List[str]]:
+    """
+    Annote les termes financiers du glossaire dans un texte masqué :
+    - Remplace chaque terme trouvé par 'terme [équivalent_glossaire]'.
+    - Préserve l'intégrité des jetons __SAFE_*__ (qui ne contiennent aucun terme français).
+    - Utilise des jetons temporaires __GLOSS_ANNO_N__ pour éviter les collisions et remplacements imbriqués.
+    - Retourne (texte_annoté, a_des_annotations, liste_termes_annotés).
+    """
+    if not masked_text or not glossary:
+        return masked_text, False, []
+
+    lang = target_lang.lower().strip()
+
+    # 1. Sélectionner les termes disponibles pour la langue cible
+    available_terms = []
+    for src_term, tr_map in glossary.items():
+        if lang in tr_map and tr_map[lang] and tr_map[lang].strip():
+            # Ne pas re-traduire si le terme source et cible sont identiques (ex: Safinum Pay)
+            if src_term.strip().lower() != tr_map[lang].strip().lower():
+                available_terms.append((src_term.strip(), tr_map[lang].strip()))
+
+    if not available_terms:
+        return masked_text, False, []
+
+    # 2. Trier par longueur décroissante du terme source pour privilégier les locutions composées
+    available_terms.sort(key=lambda x: len(x[0]), reverse=True)
+
+    gloss_tokens: Dict[str, str] = {}
+    annotated_terms: List[str] = []
+    current_text = masked_text
+    gloss_counter = 0
+
+    for src_term, target_term in available_terms:
+        # Frontières de mot en tenant compte de l'alphabet latin étendu et des apostrophes
+        pattern = re.compile(
+            r"(?<![A-Za-z0-9_À-ÿ])(" + re.escape(src_term) + r")(?![A-Za-z0-9_À-ÿ])",
+            re.IGNORECASE
+        )
+
+        matches = list(pattern.finditer(current_text))
+        if matches:
+            # Remplacement de droite à gauche pour préserver les indices
+            for m in reversed(matches):
+                matched_val = m.group(1)
+                token = f"__GLOSS_ANNO_{gloss_counter}__"
+                gloss_tokens[token] = f"{matched_val} [{target_term}]"
+                current_text = current_text[:m.start(1)] + token + current_text[m.end(1):]
+                annotated_terms.append(src_term)
+                gloss_counter += 1
+
+    has_annotations = bool(gloss_tokens)
+    if has_annotations:
+        # Restauration de tous les jetons de glossaire
+        for token, rep in gloss_tokens.items():
+            current_text = current_text.replace(token, rep)
+
+    return current_text, has_annotations, annotated_terms
+

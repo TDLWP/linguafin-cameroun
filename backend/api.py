@@ -25,7 +25,12 @@ from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-from backend.protect import mask_sensitive_data, restore_sensitive_data, verify_integrity
+from backend.protect import (
+    mask_sensitive_data,
+    restore_sensitive_data,
+    verify_integrity,
+    annotate_glossary_in_masked_text
+)
 from backend.engine import TranslationEngine, AutomaticMockEngine, TranslationEngineError, TranslationEngineTimeoutError
 
 load_dotenv()
@@ -168,6 +173,8 @@ class TranslationItemResponse(BaseModel):
     integrity_verified: bool
     masked_tokens_count: int
     bilingual_required: bool
+    novel_annotated: Optional[bool] = False
+    badge: Optional[str] = None
 
 
 class BatchTranslationResponse(BaseModel):
@@ -323,9 +330,11 @@ def translate_batch(req: BatchTranslationRequest):
             any(marker in src_lower for marker in critical_markers)
         )
 
-        # ÉTAPE 2 : Chaîne de résolution (Mémoire -> Glossaire -> Moteur auto -> Repli)
+        # ÉTAPE 2 : Chaîne de résolution (Mémoire -> Glossaire -> Annotation inédite -> Repli)
         candidate_text: Optional[str] = None
         item_status = "fallback_source"
+        novel_annotated = False
+        novel_badge: Optional[str] = None
 
         # 2.1 Mémoire de traduction validée (recherche directe ou masquée)
         if src_raw in lang_translations:
@@ -338,46 +347,24 @@ def translate_batch(req: BatchTranslationRequest):
             candidate_text = lang_translations[masked_src]["target"]
             item_status = lang_translations[masked_src]["status"]
 
-        # 2.2 Glossaire terminologique
+        # 2.2 Terme exact du glossaire terminologique
         elif src_raw in glossary and target_lang in glossary[src_raw]:
             candidate_text = glossary[src_raw][target_lang]
             item_status = "machine_suggested"
 
-        # 2.3 Moteur automatique pour contenu inédit
-        elif req.allow_machine_translation:
-            try:
-                if target_lang in ("ful", "ff", "fufulde"):
-                    # RÈGLE STRICTE : le moteur Fulfulde ne répond JAMAIS sans le mode expérimental
-                    # et bascule en repli source si le modèle optionnel n'est pas téléchargé/disponible
-                    if not req.allow_experimental or not FULFULDE_ENGINE.is_available():
-                        logger.info("Fulfulde translation requested without experimental mode or model unavailable -> fallback source enforced")
-                        candidate_text = src_raw
-                        item_status = "fallback_source"
-                    else:
-                        auto_output = FULFULDE_ENGINE.translate(
-                            masked_src,
-                            req.source_lang,
-                            target_lang,
-                            allow_experimental=True
-                        )
-                        candidate_text = auto_output
-                        item_status = "machine_suggested"
-                else:
-                    auto_output = AUTO_ENGINE.translate(masked_src, req.source_lang, target_lang)
-                    candidate_text = auto_output
-                    item_status = "machine_suggested"
-            except (TranslationEngineTimeoutError, TranslationEngineError) as e:
-                # Échec ou timeout du moteur -> repli vers la source sans blocage
-                logger.warning("Engine failed or timed out: %s -> falling back to source", type(e).__name__)
-                candidate_text = src_raw
-                item_status = "fallback_source"
-            except Exception as e:
-                logger.error("Unexpected engine error -> falling back to source")
-                candidate_text = src_raw
-                item_status = "fallback_source"
+        # 2.3 Texte absent de la mémoire : conservation du texte source + annotation des termes financiers du glossaire
         else:
-            candidate_text = src_raw
-            item_status = "fallback_source"
+            annotated_masked, has_anno, _ = annotate_glossary_in_masked_text(masked_src, glossary, target_lang)
+            if has_anno:
+                candidate_text = annotated_masked
+                item_status = "machine_suggested"
+                novel_annotated = True
+                novel_badge = "contenu inédit : termes annotés, phrase non traduite"
+            else:
+                candidate_text = masked_src
+                item_status = "fallback_source"
+                novel_annotated = False
+                novel_badge = None
 
         # ÉTAPE 3 : Restauration et contrôle d'intégrité strict
         restored_text, is_valid = restore_sensitive_data(candidate_text, token_map, src_raw)
@@ -388,12 +375,16 @@ def translate_batch(req: BatchTranslationRequest):
                 is_valid = False
                 restored_text = src_raw
                 item_status = "fallback_source"
+                novel_annotated = False
+                novel_badge = None
 
         if is_valid:
             verified_count += 1
         else:
             restored_text = src_raw
             item_status = "fallback_source"
+            novel_annotated = False
+            novel_badge = None
 
         # Règle spéciale bilinguisme pour contenus sensibles non attestés
         bilingual_req = is_critical and (item_status != "human_validated")
@@ -402,13 +393,17 @@ def translate_batch(req: BatchTranslationRequest):
         # (montants, frais, avertissements, erreurs) ET non attestée,
         # affiche le texte français d'origine suivi de la proposition entre crochets, sans le remplacer.
         # Exception : si la chaîne est un repli source ou identique après normalisation NFKC,
+        # ou s'il s'agit d'un contenu inédit annoté terme par terme,
         # ne jamais insérer de crochets bilingues sur des montants ou nombres purs.
         is_same_text = (
             item_status == "fallback_source" or
             src_raw == restored_text or
             unicodedata.normalize("NFKC", src_raw).strip() == unicodedata.normalize("NFKC", restored_text).strip()
         )
-        if is_same_text:
+        if novel_annotated:
+            # Termes financiers déjà annotés individuellement entre crochets dans la phrase source
+            final_target = restored_text
+        elif is_same_text:
             final_target = src_raw
         elif bilingual_req and not restored_text.startswith(src_raw + " ["):
             final_target = f"{src_raw} [{restored_text}]"
@@ -422,7 +417,9 @@ def translate_batch(req: BatchTranslationRequest):
             status=item_status,
             integrity_verified=is_valid,
             masked_tokens_count=len(token_map),
-            bilingual_required=bilingual_req
+            bilingual_required=bilingual_req,
+            novel_annotated=novel_annotated,
+            badge=novel_badge
         ))
 
     rate = (verified_count / len(output_items)) if output_items else 1.0
