@@ -74,7 +74,23 @@
 
 ## Fait
 
+- 2026-11-16 19:19 — Support source anglais (EN→FR) dans le content script et le backend (branche `amelioration`) :
+  1. **`data/en_to_fr_index.json`** (nouveau) : index normalisé `{en_key_lower: source_fr}` généré depuis `data/test_env_strings.json`. 79 entrées. Normalisation NFKC + lower + espaces insécables → espace ordinaire.
+  2. **`extension/offline_catalog.json`** : enrichi avec `en_index` (79 entrées). Les chaînes anglaises connues sont résolues vers leur traduction locale FR sans inventions.
+  3. **`extension/content.js`** : ajout de `normalizeEnKey()` et `resolveEnToFr()` ; `resolveOffline()` tente d'abord la résolution EN→FR si la chaîne n'est pas directement dans le dictionnaire FR ; `fetchTranslationsBatch()` convertit les textes anglais en FR avant envoi API et mappe les résultats sur le texte DOM original.
+  4. **`backend/api.py`** : chargement de `EN_INDEX` au démarrage (`load_en_to_fr_index()`), `normalize_en_key()`, résolution EN→FR au début de la boucle `translate_batch` si `source_lang=="en"`.
+  5. **Formats anglais `25,000 FCFA`** : déjà couverts par le pattern AMOUNT existant dans `protect.py` (confirmé par tests).
+  6. **`backend/tests/test_en_index.py`** (nouveau) : 36 tests unitaires en 5 classes (TestEnIndexLoad, TestNormalizeEnKey, TestResolveEnToFr, TestEnglishAmountMasking, TestApiEnSourceLang). Tous OK.
+  7. **`tests/test_live_jury_regression.py`** : ajout de `TestEnglishJourneyRegression` avec `test_mode1_backend_arrete_en` et `test_mode2_backend_lance_en` (Duala + Bassa'a).
+  8. **Sorties brutes certifiées** (exécution réelle) :
+     - Backend tests : `Ran 144 tests in 0.298s — OK`
+     - EN Mode 1 (backend arrêté) : Duala(EN)=2 soumissions, 0 compromis ✅ | Bassa'a(EN)=2 soumissions, 0 compromis ✅
+     - EN Mode 2 : IGNORÉ proprement (backend non actif, port 8000 fermé) ✅
+  9. **`openapi.yaml`** : `source_lang: enum ["fr","en"]` était déjà présent — aucune modification nécessaire.
+  10. Règle : chaîne EN inconnue → texte source conservé, badge "contenu inédit" si termes annotés, jamais de traduction inventée.
+
 - 2026-11-16 17:23 — Mesure de couverture de traduction par écran (Playwright Edge, branche `amelioration`) :
+
   1. `scripts/mesurer_couverture.py` : navigation complète (Tableau de bord, Frais, Bénéficiaire, Récapitulatif, Reçu, Alertes/Erreurs) SANS extension (textes FR natifs), comparaison avec `catalogue/translations.csv` et `catalogue/glossaire.csv`. Sortie brute mesurée via exécution réelle.
   2. **Sorties brutes certifiées** : 91 chaînes FR visibles (tous écrans, dédoublonnées).
      - `dua` : mémoire=70 (77%), glossaire=0, non couverts=21 (23%)

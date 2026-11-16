@@ -67,8 +67,38 @@ MAX_TEXT_LENGTH = int(os.getenv("MAX_TEXT_LENGTH", "2000"))
 START_TIME = time.time()
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CSV_TRANSLATIONS_PATH = os.path.join(BASE_DIR, "catalogue", "translations.csv")
-CSV_GLOSSAIRE_PATH = os.path.join(BASE_DIR, "catalogue", "glossaire.csv")
-FEEDBACK_FILE = os.path.join(BASE_DIR, "catalogue", "feedback_submissions.json")
+CSV_GLOSSAIRE_PATH    = os.path.join(BASE_DIR, "catalogue", "glossaire.csv")
+FEEDBACK_FILE         = os.path.join(BASE_DIR, "catalogue", "feedback_submissions.json")
+EN_TO_FR_INDEX_PATH   = os.path.join(BASE_DIR, "data", "en_to_fr_index.json")
+
+
+def normalize_en_key(s: str) -> str:
+    """Normalise une chaîne EN pour la comparaison d'index (NFKC, lower, espaces insécables -> espace)."""
+    s = unicodedata.normalize("NFKC", s)
+    s = s.replace("\u00A0", " ").replace("\u202F", " ").replace("\u2007", " ")
+    return s.lower().strip()
+
+
+def load_en_to_fr_index() -> Dict[str, str]:
+    """Charge l'index EN→FR depuis data/en_to_fr_index.json.
+    Retourne {en_normalized: fr_source}. Ne lève jamais d'exception."""
+    if not os.path.exists(EN_TO_FR_INDEX_PATH):
+        logger.warning("Index EN→FR introuvable : %s", EN_TO_FR_INDEX_PATH)
+        return {}
+    try:
+        with open(EN_TO_FR_INDEX_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        idx = data.get("en_to_fr", {})
+        logger.info("Index EN→FR chargé : %d entrées", len(idx))
+        return idx
+    except Exception as exc:
+        logger.error("Erreur chargement index EN→FR : %s", exc)
+        return {}
+
+# Index global EN→FR chargé au démarrage
+EN_INDEX: Dict[str, str] = load_en_to_fr_index()
+
+
 
 
 # Structures en mémoire
@@ -301,10 +331,24 @@ def translate_batch(req: BatchTranslationRequest):
     output_items = []
     verified_count = 0
 
+    source_lang = req.source_lang.lower().strip()
+
     for item in req.items:
         src_raw = item.text.strip()
+
+        # Résolution EN→FR : si source_lang == "en", tenter de résoudre via l'index.
+        # Le texte résolu (FR) est utilisé pour la recherche en mémoire et le masquage.
+        # Règle : correspondance exacte normalisée uniquement, jamais inventée.
+        # Si non résolu : traitement standard (badge "contenu inédit" si absent de la mémoire).
+        if source_lang == "en":
+            en_norm = normalize_en_key(src_raw)
+            fr_equiv = EN_INDEX.get(en_norm)
+            if fr_equiv:
+                src_raw = fr_equiv   # on travaille avec la source FR
+
         # ÉTAPE 1 : Masquage des entités sensibles par jetons inviolables
         masked_src, token_map, token_order = mask_sensitive_data(src_raw)
+
 
         # Détection étendue des contenus à sensibilité critique (montants, frais, avertissements, erreurs, récapitulatifs)
         critical_markers = {

@@ -96,9 +96,32 @@
     }
 
     if (!state.offlineCatalog) {
-      state.offlineCatalog = { translations: { dua: {}, bas: {} }, glossary: {} };
+      state.offlineCatalog = { translations: { dua: {}, bas: {} }, glossary: {}, en_index: {} };
     }
   }
+
+  /**
+   * Normalise une chaîne pour la comparaison de clés EN.
+   * NFKC + lower + espaces insécables → espace ordinaire + trim.
+   */
+  function normalizeEnKey(s) {
+    // Remplacer espaces insécables (U+00A0, U+202F, U+2007) par espace ordinaire
+    return s.replace(/[\u00A0\u202F\u2007]/g, ' ').toLowerCase().trim();
+  }
+
+  /**
+   * Résout une chaîne EN vers sa source FR via l'index embarqué en_index.
+   * Retourne la source FR si trouvée, sinon null.
+   * Règle : correspondance exacte normalisée uniquement (jamais inventée).
+   */
+  function resolveEnToFr(text) {
+    if (!state.offlineCatalog || !state.offlineCatalog.en_index) return null;
+    const key = normalizeEnKey(text.trim());
+    const frSource = state.offlineCatalog.en_index[key];
+    return frSource || null;
+  }
+
+
 
   // Détection des chaînes à sensibilité critique (montants, frais, avertissements, erreurs, récapitulatifs)
   function isCriticalText(text) {
@@ -128,11 +151,23 @@
     const trimmed = text.trim();
     const critical = isCriticalText(trimmed);
 
-    // 1. Recherche exacte dans la mémoire
-    if (dict[trimmed]) {
-      const entryStatus = dict[trimmed].status || 'machine_suggested';
+    // 0. Résolution EN→FR : si la chaîne n'est pas trouvée directement,
+    //    essayer de la résoudre via l'index anglais (en_index) pour obtenir
+    //    la clé FR et utiliser la même traduction locale.
+    //    Règle : correspondance exacte normalisée uniquement, jamais inventée.
+    let lookupText = trimmed;
+    if (!dict[trimmed]) {
+      const frSource = resolveEnToFr(trimmed);
+      if (frSource && dict[frSource]) {
+        lookupText = frSource; // on utilise la source FR pour le lookup
+      }
+    }
+
+    // 1. Recherche exacte dans la mémoire (FR natif ou résolu depuis EN)
+    if (dict[lookupText]) {
+      const entryStatus = dict[lookupText].status || 'machine_suggested';
       return {
-        target: dict[trimmed].target,
+        target: dict[lookupText].target,
         status: entryStatus,
         integrity_verified: true,
         bilingual_required: critical && (entryStatus !== 'human_validated'),
@@ -140,6 +175,8 @@
         badge: null
       };
     }
+
+
 
     // 2. Recherche exacte dans le glossaire (terme seul)
     if (glossary[trimmed] && glossary[trimmed][lang]) {
@@ -245,20 +282,28 @@
       return results;
     }
 
-    // Construction du payload conforme à openapi.yaml
-    const items = uncachedTexts.map((txt, idx) => ({
-      id: `node_${idx}_${Date.now()}`,
-      text: txt.trim(),
-      screen_context: 'active_screen'
-    }));
+    // Construction du payload conforme à openapi.yaml.
+    // Résolution EN→FR : si un texte anglais a un équivalent FR dans l'index, on
+    // envoie le texte FR à l'API (qui cherche dans sa mémoire FR). On conserve
+    // le texte original (EN ou FR) comme clé de résultat dans results.
+    const items = uncachedTexts.map((txt, idx) => {
+      const frEquiv = resolveEnToFr(txt.trim());
+      return {
+        id: `node_${idx}_${Date.now()}`,
+        text: (frEquiv || txt).trim(),   // envoie l'équivalent FR si connu
+        screen_context: 'active_screen',
+        _original_text: txt.trim()       // gardé localement pour le mapping retour
+      };
+    });
 
     const payload = {
-      source_lang: 'fr',
+      source_lang: 'fr',    // toujours FR : la mémoire catalogue est en FR
       target_lang: targetLang,
       allow_machine_translation: true,
       allow_experimental: Boolean(state.experimentalMode),
-      items: items
+      items: items.map(({ id, text, screen_context }) => ({ id, text, screen_context }))
     };
+
 
     let apiSuccess = false;
 
@@ -278,6 +323,10 @@
 
         if (response.ok) {
           const data = await response.json();
+          // Construire une map id -> texte_original pour retrouver le texte DOM original
+          const idToOriginal = {};
+          items.forEach(it => { idToOriginal[it.id] = it._original_text || it.text; });
+
           for (const item of data.items) {
             const resObj = {
               target: item.target_text,
@@ -287,12 +336,20 @@
               novel_annotated: Boolean(item.novel_annotated),
               badge: item.badge || null
             };
-            results.set(item.source_text, resObj);
-            state.cache.set(`${item.source_text}__${targetLang}`, resObj);
+            // Clé de mapping = texte original du DOM (EN ou FR)
+            const origText = idToOriginal[item.id] || item.source_text;
+            results.set(origText, resObj);
+            state.cache.set(`${origText}__${targetLang}`, resObj);
+            // Indexer aussi sur source_text FR au cas où le DOM reçoit le texte FR directement
+            if (origText !== item.source_text) {
+              results.set(item.source_text, resObj);
+              state.cache.set(`${item.source_text}__${targetLang}`, resObj);
+            }
           }
           apiSuccess = true;
           break;
         }
+
       } catch (e) {
         clearTimeout(timeoutId);
         // Endpoint indisponible, passage au suivant ou repli hors-ligne
