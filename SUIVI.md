@@ -74,11 +74,21 @@
 
 ## Fait
 
+- 2026-11-16 16:30 — Adaptation de l'importateur de validation aux fiches kit_validation (branche `amelioration`) :
+  1. `scripts/importer_validation.py` refondé : normalisation NFKD des en-têtes (accents, ponctuation, implosive Ɓ), reconnaissance de tous les en-têtes réels (`N°`, `Clé / Contexte`, `Texte Source (Français)`, `Proposition Traduction (Duálá)`, `Proposition Traduction (Ɓàsàa)`, `Correction du validateur`, `Validation (OK / KO)`, `Commentaire linguistique`).
+  2. Ajout des options CLI `--langue` (obligatoire, `dua` ou `bas`), `--validateur` (code validateur), `--date` (AAAA-MM-JJ), applicables à l'intégralité de la fiche.
+  3. Correspondance par `(cle, langue)` exclusivement — jamais par source seule. Clé introuvable = erreur signalée, jamais créée.
+  4. Règle stricte confirmée : `human_validated` si et seulement si avis=OK + validateur non vide + date non vide + pas de correction. Correction présente → `draft`. DOUTE → `rejected`. Tout le reste → `machine_suggested`.
+  5. `backend/tests/test_validation_import.py` enrichi : 23 tests couvrant les en-têtes réels (duala et bassa'a), absence validateur/date → 0 promotion, mauvaise langue → 0 modification, clé inconnue → erreur (jamais créée), correction → draft (jamais human_validated), dry-run → disque intact.
+  6. Exécution réelle certifiée : **23/23 tests** `test_validation_import.py` OK. **108/108 tests** (discover backend/tests) OK. Sorties brutes ci-après (non mesurée : suite Playwright live jury en cours au moment du commit).
+  7. Commit ciblé : `git add scripts/importer_validation.py backend/tests/test_validation_import.py SUIVI.md`.
+
 - 2026-11-15 02:08 — Diagnostic approfondi de la ligne « Consultation des frais » et du statut « Compromis » :
   1. Déroulé complet E2E sous Playwright Edge comparant l'extension active en Duala et la page native en français :
      - En mode hors-ligne (catalogue embarqué) : 100 % Intègre (0 compromis sur 9 soumissions), résultat strictement identique à la page native.
      - En mode en ligne (backend FastAPI démarré) : identification de la cause racine. La normalisation de l'espace fine insécable `\u202f` issue d'`Intl.NumberFormat` en espace insécable `\u00a0` dans `backend/protect.py` fait échouer l'égalité source/cible, déclenchant l'ajout de crochets bilingues `250 000 FCFA [250 000 FCFA]`. La fonction `normalizeValue` du jury ne retirant pas les crochets `[...]`, la valeur affichée `250000[250000]` est pénalisée comme « Compromis ».
   2. Mise à jour de `README.md` : décompte ajusté à 82 tests (76 backend + 6 racine) et formulation fidèle des résultats mesurés sur le panneau jury. Exécution certifiée des 82 tests sans échec.
+
 
 - 2026-11-15 00:03 — Mise à jour officielle de la page de garde du dossier PDF :
   1. Attribution du rôle de responsable de projet à **MBENBE BOGMIS PIERRE ALEXANDRE** sur la page de garde de `dist/dossier_soumission.pdf`.
