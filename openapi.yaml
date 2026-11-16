@@ -194,6 +194,10 @@ components:
           type: boolean
           default: true
           description: Si faux, renvoie le repli source pour les segments non validés
+        annotate_security_alerts:
+          type: boolean
+          default: false
+          description: Si faux (défaut), les avertissements de sécurité et alertes restent en français sans annotation
         items:
           type: array
           items:

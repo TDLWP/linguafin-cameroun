@@ -228,6 +228,27 @@ def verify_integrity(
     return True
 
 
+# ---------------------------------------------------------------------------
+# Mots-clés factorisés de sécurité et alertes
+# ---------------------------------------------------------------------------
+SECURITY_ALERT_KEYWORDS = {
+    "alerte", "sécurité", "securite", "attention", "fraude", "suspect", "danger",
+    "bloqué", "bloque", "confidentialité", "confidentiel", "warning", "alert",
+    "security", "fraud", "avertissement",
+}
+
+
+def is_security_alert_text(text: str) -> bool:
+    """
+    Détecte si un texte est un avertissement de sécurité ou une alerte
+    sur la base des mots-clés factorisés.
+    """
+    if not text or not isinstance(text, str):
+        return False
+    lower = text.lower()
+    return any(kw in lower for kw in SECURITY_ALERT_KEYWORDS)
+
+
 def annotate_glossary_in_masked_text(
     masked_text: str,
     glossary: Dict[str, Dict[str, str]],

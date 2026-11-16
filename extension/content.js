@@ -68,6 +68,7 @@
     isTranslated: true,       // Mode Traduit (true) vs Original (false)
     bilingualMode: true,      // Affichage de l'original au survol
     experimentalMode: false,  // Désactivé par défaut (débloque Fulfulde expérimental)
+    annotateSecurityAlerts: (typeof window !== 'undefined' && typeof window.ANNOTATE_SECURITY_ALERTS !== 'undefined') ? Boolean(window.ANNOTATE_SECURITY_ALERTS) : false, // Réglage ANNOTATE_SECURITY_ALERTS (défaut : false)
     offlineCatalog: null,     // Catalogue embarqué offline_catalog.json
     cache: new Map(),         // Clé: "texte__langue" -> { target, status, integrity_verified }
     managedNodes: new Set(),  // Nœuds textuels sous gestion
@@ -80,6 +81,27 @@
     isProcessing: false,
     isMutating: false
   };
+
+  // Mots-clés factorisés pour la détection des avertissements de sécurité et alertes
+  const SECURITY_ALERT_KEYWORDS = [
+    'alerte', 'sécurité', 'securite', 'attention', 'fraude', 'suspect', 'danger',
+    'bloqué', 'bloque', 'confidentialité', 'confidentiel', 'warning', 'alert',
+    'security', 'fraud', 'avertissement'
+  ];
+
+  function isSecurityAlertText(text) {
+    if (!text) return false;
+    const lower = text.toLowerCase();
+    return SECURITY_ALERT_KEYWORDS.some(kw => lower.includes(kw));
+  }
+
+  function shouldAnnotateSecurityAlerts() {
+    if (typeof window !== 'undefined' && typeof window.ANNOTATE_SECURITY_ALERTS !== 'undefined') {
+      return Boolean(window.ANNOTATE_SECURITY_ALERTS);
+    }
+    return Boolean(state.annotateSecurityAlerts);
+  }
+
 
   // --- 1. Chargement du Catalogue Hors-Ligne Embarqué ---
   async function loadOfflineCatalog() {
@@ -132,7 +154,7 @@
     // Frais, tarifs, solde, montant
     if (/frais|commission|mutoa|ntomb|solde|montant/.test(lower)) return true;
     // Sécurité, avertissements, alertes, fraudes
-    if (/alerte|sécurité|securite|attention|fraude|suspect|danger|bloqué|bloque|avertissement|warning|alert|security|fraud/.test(lower)) return true;
+    if (isSecurityAlertText(lower)) return true;
     // Erreurs, échecs
     if (/erreur|échec|insuffisant|invalide|rejeté|impossible|error|fail|bwemba|mbebi/.test(lower)) return true;
     // Récapitulatifs, confirmation
@@ -176,8 +198,6 @@
       };
     }
 
-
-
     // 2. Recherche exacte dans le glossaire (terme seul)
     if (glossary[trimmed] && glossary[trimmed][lang]) {
       const entryStatus = glossary[trimmed].status || 'machine_suggested';
@@ -190,6 +210,19 @@
         badge: null
       };
     }
+
+    // 2.5 Avertissement de sécurité / alerte inédit lorsque ANNOTATE_SECURITY_ALERTS est false (défaut)
+    if (!shouldAnnotateSecurityAlerts() && isSecurityAlertText(trimmed)) {
+      return {
+        target: text,
+        status: 'fallback_source',
+        integrity_verified: true,
+        bilingual_required: false,
+        novel_annotated: false,
+        badge: 'avertissement affiché en français : traduction non validée'
+      };
+    }
+
 
     // 3. Texte absent de la mémoire : conservation du texte source + annotation des termes financiers du glossaire
     // Masquage préalable des montants/numéros pour ne jamais insérer de crochets autour d'eux
@@ -301,8 +334,10 @@
       target_lang: targetLang,
       allow_machine_translation: true,
       allow_experimental: Boolean(state.experimentalMode),
+      annotate_security_alerts: shouldAnnotateSecurityAlerts(),
       items: items.map(({ id, text, screen_context }) => ({ id, text, screen_context }))
     };
+
 
 
     let apiSuccess = false;
@@ -509,22 +544,27 @@
             }
 
             // Mise en évidence visuelle : Avertissements de sécurité (gras et contraste)
-            if (/sécurité|securite|alerte|attention|danger|avertissement|suspect|fraud/i.test(origTrimmed)) {
+            if (isSecurityAlertText(origTrimmed)) {
               node.parentElement.classList.add('safinum-highlight-security');
             }
 
-            // Badge visible : « contenu inédit : termes annotés, phrase non traduite »
-            if (res.novel_annotated) {
+            // Badge visible : « contenu inédit » ou « avertissement affiché en français : traduction non validée »
+            if (res.novel_annotated || res.badge) {
               const existingBadge = node.parentElement.querySelector('.safinum-novel-badge');
               if (!existingBadge) {
+                // Espace avant le badge pour éviter qu'il ne soit collé à la phrase
+                node.parentElement.appendChild(document.createTextNode(' '));
                 const badgeSpan = document.createElement('span');
                 badgeSpan.className = 'safinum-novel-badge';
                 badgeSpan.setAttribute('data-safinum-ignore', 'true');
                 badgeSpan.textContent = res.badge || 'contenu inédit : termes annotés, phrase non traduite';
                 node.parentElement.appendChild(badgeSpan);
+              } else if (res.badge && existingBadge.textContent !== res.badge) {
+                existingBadge.textContent = res.badge;
               }
             }
           }
+
 
           if (res.status === 'human_validated') statsHuman++;
           else if (res.status === 'machine_suggested') statsMachine++;

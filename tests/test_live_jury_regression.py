@@ -262,6 +262,15 @@ def inject_and_verify_novel_content(
                 targetContainer.getAttribute("data-safinum-translated") === "true" ||
                 targetContainer.querySelector("[title*='Original']")
             );
+            // Vérification spécifique de l'élément badge
+            const badgeEl = targetContainer.querySelector(".safinum-novel-badge");
+            let hasBadgeElement = false;
+            let badgeText = "";
+            if (badgeEl) {
+                const bRect = badgeEl.getBoundingClientRect();
+                hasBadgeElement = (bRect.width > 0 && bRect.height > 0);
+                badgeText = badgeEl.innerText.trim();
+            }
             // Badge / conteneur inédit visible
             const rect = targetContainer.getBoundingClientRect();
             badgeNovelVisible = (rect.width > 0 && rect.height > 0);
@@ -286,6 +295,8 @@ def inject_and_verify_novel_content(
             containerFound: Boolean(targetContainer),
             displayedText: displayedText.trim(),
             hasTermsAnnotated: hasTermsAnnotated,
+            hasBadgeElement: Boolean(typeof hasBadgeElement !== 'undefined' && hasBadgeElement),
+            badgeText: typeof badgeText !== 'undefined' ? badgeText : "",
             badgeNovelVisible: badgeNovelVisible || juryBadge
         };
     }""", text_to_inject)
@@ -299,12 +310,25 @@ def inject_and_verify_novel_content(
         re.search(r"\[[^\]]*\b\d{1,3}(?:[\s\u00A0\u202F]\d{3})*(?:[,\.]\d+)?\s*FCFA[^\]]*\]", displayed_text, re.IGNORECASE)
     )
 
-    # 6. Règle : Le badge 'contenu inédit' est visible quand des termes sont annotés
+    # 6. Règle : Le badge est visible (inédit annoté ou alerte de sécurité en français)
     terms_annotated = injected_info.get("hasTermsAnnotated", False)
     badge_visible = injected_info.get("badgeNovelVisible", False)
+    has_badge_el = injected_info.get("hasBadgeElement", False)
+    badge_text = injected_info.get("badgeText", "")
+
+    is_sec_alert = ("security" in item_key) or ("alerte" in item_key.lower()) or ("alerte" in text_to_inject.lower())
     badge_ok = True
-    if terms_annotated:
+    if is_sec_alert:
+        # Pour une alerte de sécurité inédite avec montant, le badge doit être visible
+        badge_ok = has_badge_el or badge_visible or (
+            "avertissement affiché en français" in displayed_text or
+            "contenu inédit" in displayed_text
+        )
+    elif terms_annotated:
         badge_ok = badge_visible
+
+    # Vérification anti-collage : le badge ne doit pas être collé sans espace
+    is_glued = bool(re.search(r"\S(avertissement affiché|contenu inédit)", displayed_text))
 
     # 7. Contrôle du panneau jury (Soumissions)
     subs, comp_count = read_jury_submissions(page, step_id, f"Contenu Inédit — {item_label}")
@@ -317,7 +341,8 @@ def inject_and_verify_novel_content(
         "has_bracketed_amount": has_bracketed_amount,
         "terms_annotated": terms_annotated,
         "badge_novel_visible": badge_visible,
-        "badge_ok": badge_ok,
+        "badge_ok": badge_ok and not is_glued,
+        "is_glued": is_glued,
         "compromised_count": comp_count,
         "submissions": subs
     }
@@ -540,6 +565,7 @@ def print_mode_raw_report(mode_name: str, runs: List[Dict[str, Any]]):
                 print(f"          Crochet montant : {bracket_status}")
                 badge_status = f"✅ VISIBLE (Annoté: {n_data['terms_annotated']})" if n_data["badge_ok"] else "❌ NON VISIBLE"
                 print(f"          Badge inédit    : {badge_status}")
+                print(f"          Anti-collage    : {'❌ COLLÉ' if n_data.get('is_glued') else '✅ ESPACEMENT CONFORME'}")
                 print(f"          Soumissions     : {len(n_data['submissions'])} carte(s), {n_data['compromised_count']} compromis")
 
 

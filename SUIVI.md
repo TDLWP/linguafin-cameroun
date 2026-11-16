@@ -74,6 +74,27 @@
 
 ## Fait
 
+- 2026-11-16 20:18 — Réglage ANNOTATE_SECURITY_ALERTS et correction de l'espacement du badge (branche `amelioration`) :
+  1. **Factorisation des mots-clés de sécurité** :
+     - `backend/protect.py` : création de `SECURITY_ALERT_KEYWORDS` et `is_security_alert_text(text)` factorisés (mots-clés : `alerte`, `sécurité`, `securite`, `attention`, `fraude`, `suspect`, `danger`, `bloqué`, `bloque`, `confidentialité`, `confidentiel`, `warning`, `alert`, `security`, `fraud`, `avertissement`).
+     - `extension/content.js` : déclaration factorisée de `SECURITY_ALERT_KEYWORDS` et `isSecurityAlertText(text)` utilisés dans `isCriticalText()`, `resolveOffline()` et la mise en évidence DOM.
+  2. **Réglage ANNOTATE_SECURITY_ALERTS (défaut : false)** :
+     - Backend (`backend/api.py`) : `ANNOTATE_SECURITY_ALERTS` via variable d'environnement (défaut `False`) et paramètre optionnel `annotate_security_alerts` dans `BatchTranslationRequest`.
+     - Contrat d'API (`openapi.yaml`) : ajout de `annotate_security_alerts: boolean` (défaut `false`) dans le schéma `BatchTranslationRequest`.
+     - Extension (`extension/content.js`) : `state.annotateSecurityAlerts` (défaut `false`), surchargeable via `window.ANNOTATE_SECURITY_ALERTS`, transmis dans le payload de `fetchTranslationsBatch()`.
+  3. **Comportement sur alerte de sécurité inédite** :
+     - Quand `ANNOTATE_SECURITY_ALERTS == false` : le texte reste en français d'origine sans annotation de glossaire (aucun crochet `[...]`), statut `fallback_source`, `novel_annotated: false`, avec le badge exact : `« avertissement affiché en français : traduction non validée »`.
+     - Quand `ANNOTATE_SECURITY_ALERTS == true` : annotation normale des termes du glossaire, montants préservés sans crochets, badge `« contenu inédit : termes annotés, phrase non traduite »`.
+  4. **Correction du collage du badge sur la phrase** :
+     - `extension/content.js` : insertion d'un nœud d'espacement (`document.createTextNode(' ')`) avant l'élément `.safinum-novel-badge` évitant tout collage avec la ponctuation ou le dernier mot dans le flux textuel et dans `innerText`.
+  5. **Tests unitaires et de régression live jury** (sorties brutes réelles certifiées) :
+     - `backend/tests/test_annotate_security_alerts.py` : 9/9 tests OK.
+     - `backend/tests/test_novel_glossary_annotation.py` : 10/10 tests OK.
+     - Suite complète backend : `Ran 155 tests in 0.328s — OK`.
+     - Mode 1 Live Jury (Backend arrêté) : Alerte sécurité avec montant 75 000 FCFA (\u202F) -> aucun crochet, badge visible (`avertissement affiché en français : traduction non validée`), anti-collage conforme, 0 entrée compromise (`Ran 1 test in 96.096s — OK`).
+     - Mode 2 Live Jury (Backend lancé) : Alerte sécurité avec montant 75 000 FCFA (\u202F) -> aucun crochet, badge visible, anti-collage conforme, 0 entrée compromise (`Ran 1 test in 112.071s — OK`).
+     - Mode 3 Live Jury (Extension désactivée) : 0 compromis (`Ran 2 tests in 139.529s — OK`).
+
 - 2026-11-16 19:19 — Support source anglais (EN→FR) dans le content script et le backend (branche `amelioration`) :
   1. **`data/en_to_fr_index.json`** (nouveau) : index normalisé `{en_key_lower: source_fr}` généré depuis `data/test_env_strings.json`. 79 entrées. Normalisation NFKC + lower + espaces insécables → espace ordinaire.
   2. **`extension/offline_catalog.json`** : enrichi avec `en_index` (79 entrées). Les chaînes anglaises connues sont résolues vers leur traduction locale FR sans inventions.

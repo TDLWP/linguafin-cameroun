@@ -85,8 +85,8 @@ class TestNovelGlossaryAnnotation(unittest.TestCase):
     # =========================================================================
 
     def test_status_machine_suggested_with_novel_badge(self):
-        """Vérifie que le statut est 'machine_suggested' et que le badge inédit est présent."""
-        novel_text = "Alerte de sécurité : veuillez contrôler votre solde disponible."
+        """Vérifie que le statut est 'machine_suggested' et que le badge inédit est présent sur contenu non sécuritaire."""
+        novel_text = "Information du compte : veuillez contrôler votre solde disponible."
         payload = {
             "source_lang": "fr",
             "target_lang": "dua",
@@ -103,6 +103,59 @@ class TestNovelGlossaryAnnotation(unittest.TestCase):
         self.assertTrue(item.get("novel_annotated"))
         # Badge visible conforme
         self.assertEqual(item.get("badge"), "contenu inédit : termes annotés, phrase non traduite")
+
+    def test_security_alert_remains_in_french_with_security_badge_when_setting_false(self):
+        """Vérifie qu'un avertissement de sécurité inédit reste en français sans annotation quand ANNOTATE_SECURITY_ALERTS=false."""
+        novel_alert = "Alerte de sécurité : tentative de débit suspect de 75 000 FCFA sur votre compte."
+        payload = {
+            "source_lang": "fr",
+            "target_lang": "dua",
+            "allow_machine_translation": True,
+            "annotate_security_alerts": False,
+            "items": [{"id": "item_sec_alert", "text": novel_alert}]
+        }
+        resp = self.client.post("/translate/batch", json=payload)
+        self.assertEqual(resp.status_code, 200)
+        item = resp.json()["items"][0]
+
+        # 1. Reste en français sans annotation de glossaire (aucun crochet)
+        self.assertEqual(item["target_text"], novel_alert)
+        self.assertNotIn("[", item["target_text"])
+        self.assertNotIn("]", item["target_text"])
+
+        # 2. Statut fallback_source et novel_annotated=False
+        self.assertEqual(item["status"], "fallback_source")
+        self.assertFalse(item.get("novel_annotated"))
+
+        # 3. Badge spécifique obligatoire
+        self.assertEqual(item.get("badge"), "avertissement affiché en français : traduction non validée")
+
+        # 4. Intégrité financière vérifiée
+        self.assertTrue(item["integrity_verified"])
+
+    def test_security_alert_annotated_when_setting_true(self):
+        """Vérifie qu'un avertissement de sécurité inédit est annoté si ANNOTATE_SECURITY_ALERTS=true."""
+        novel_alert = "Alerte de sécurité : tentative de débit suspect de 75 000 FCFA sur votre compte."
+        payload = {
+            "source_lang": "fr",
+            "target_lang": "dua",
+            "allow_machine_translation": True,
+            "annotate_security_alerts": True,
+            "items": [{"id": "item_sec_alert_true", "text": novel_alert}]
+        }
+        resp = self.client.post("/translate/batch", json=payload)
+        self.assertEqual(resp.status_code, 200)
+        item = resp.json()["items"][0]
+
+        # Montant préservé sans crochet
+        self.assertIn("75 000 FCFA", item["target_text"])
+        self.assertNotIn("[75 000 FCFA]", item["target_text"])
+
+        # Statut machine_suggested et badge inédit générique
+        self.assertEqual(item["status"], "machine_suggested")
+        self.assertTrue(item.get("novel_annotated"))
+        self.assertEqual(item.get("badge"), "contenu inédit : termes annotés, phrase non traduite")
+
 
     def test_glossary_terms_annotated_in_brackets(self):
         """Vérifie que les termes du glossaire sont annotés sous la forme 'terme [équivalent]'."""

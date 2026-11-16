@@ -29,11 +29,17 @@ from backend.protect import (
     mask_sensitive_data,
     restore_sensitive_data,
     verify_integrity,
-    annotate_glossary_in_masked_text
+    annotate_glossary_in_masked_text,
+    SECURITY_ALERT_KEYWORDS,
+    is_security_alert_text
 )
 from backend.engine import TranslationEngine, AutomaticMockEngine, TranslationEngineError, TranslationEngineTimeoutError
 
 load_dotenv()
+
+# Réglage ANNOTATE_SECURITY_ALERTS (défaut : false)
+ANNOTATE_SECURITY_ALERTS = os.getenv("ANNOTATE_SECURITY_ALERTS", "false").strip().lower() in ("true", "1", "yes")
+
 
 # Configuration du logger : AUCUN TEXTE UTILISATEUR NE DOIT ÊTRE ENREGISTRÉ
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -192,7 +198,9 @@ class BatchTranslationRequest(BaseModel):
     target_lang: str = "dua"
     allow_machine_translation: bool = True
     allow_experimental: bool = False
+    annotate_security_alerts: Optional[bool] = None
     items: List[TranslationItemRequest]
+
 
 
 class TranslationItemResponse(BaseModel):
@@ -332,6 +340,11 @@ def translate_batch(req: BatchTranslationRequest):
     verified_count = 0
 
     source_lang = req.source_lang.lower().strip()
+    annotate_sec_setting = (
+        req.annotate_security_alerts
+        if req.annotate_security_alerts is not None
+        else ANNOTATE_SECURITY_ALERTS
+    )
 
     for item in req.items:
         src_raw = item.text.strip()
@@ -349,13 +362,12 @@ def translate_batch(req: BatchTranslationRequest):
         # ÉTAPE 1 : Masquage des entités sensibles par jetons inviolables
         masked_src, token_map, token_order = mask_sensitive_data(src_raw)
 
+        # Détection des alertes et avertissements de sécurité (factorisée)
+        is_sec_alert = is_security_alert_text(src_raw) or bool(item.is_critical_security)
 
         # Détection étendue des contenus à sensibilité critique (montants, frais, avertissements, erreurs, récapitulatifs)
         critical_markers = {
-            # Sécurité, avertissements, alertes
-            "alerte", "sécurité", "securite", "attention", "fraude", "suspect", "danger",
-            "bloqué", "bloque", "confidentialité", "confidentiel", "warning", "alert",
-            "security", "fraud", "avertissement",
+            *SECURITY_ALERT_KEYWORDS,
             # Frais et tarifs
             "frais", "commission", "%", "pourcent", "tarif",
             # Erreurs et échecs
@@ -369,7 +381,7 @@ def translate_batch(req: BatchTranslationRequest):
         src_lower = src_raw.lower()
         has_masked_sensitive = bool(token_map)
         is_critical = (
-            bool(item.is_critical_security) or
+            is_sec_alert or
             has_masked_sensitive or
             any(marker in src_lower for marker in critical_markers)
         )
@@ -398,17 +410,27 @@ def translate_batch(req: BatchTranslationRequest):
 
         # 2.3 Texte absent de la mémoire : conservation du texte source + annotation des termes financiers du glossaire
         else:
-            annotated_masked, has_anno, _ = annotate_glossary_in_masked_text(masked_src, glossary, target_lang)
-            if has_anno:
-                candidate_text = annotated_masked
-                item_status = "machine_suggested"
-                novel_annotated = True
-                novel_badge = "contenu inédit : termes annotés, phrase non traduite"
-            else:
+            if is_sec_alert and not annotate_sec_setting:
+                # Réglage ANNOTATE_SECURITY_ALERTS = false :
+                # Les avertissements de sécurité et alertes restent en français sans annotation,
+                # avec le badge « avertissement affiché en français : traduction non validée ».
                 candidate_text = masked_src
                 item_status = "fallback_source"
                 novel_annotated = False
-                novel_badge = None
+                novel_badge = "avertissement affiché en français : traduction non validée"
+            else:
+                annotated_masked, has_anno, _ = annotate_glossary_in_masked_text(masked_src, glossary, target_lang)
+                if has_anno:
+                    candidate_text = annotated_masked
+                    item_status = "machine_suggested"
+                    novel_annotated = True
+                    novel_badge = "contenu inédit : termes annotés, phrase non traduite"
+                else:
+                    candidate_text = masked_src
+                    item_status = "fallback_source"
+                    novel_annotated = False
+                    novel_badge = None
+
 
         # ÉTAPE 3 : Restauration et contrôle d'intégrité strict
         restored_text, is_valid = restore_sensitive_data(candidate_text, token_map, src_raw)
