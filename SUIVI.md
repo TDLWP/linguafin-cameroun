@@ -74,7 +74,27 @@
 
 ## Fait
 
+- 2026-11-16 17:23 — Mesure de couverture de traduction par écran (Playwright Edge, branche `amelioration`) :
+  1. `scripts/mesurer_couverture.py` : navigation complète (Tableau de bord, Frais, Bénéficiaire, Récapitulatif, Reçu, Alertes/Erreurs) SANS extension (textes FR natifs), comparaison avec `catalogue/translations.csv` et `catalogue/glossaire.csv`. Sortie brute mesurée via exécution réelle.
+  2. **Sorties brutes certifiées** : 91 chaînes FR visibles (tous écrans, dédoublonnées).
+     - `dua` : mémoire=70 (77%), glossaire=0, non couverts=21 (23%)
+     - `bas` : mémoire=70 (77%), glossaire=0, non couverts=21 (23%)
+  3. **Couverture par écran** (réelle mesurée) :
+     | Écran | Visibles | dua% couvert | bas% couvert |
+     |---|:---:|:---:|:---:|
+     | Tableau de bord | 37 | 83% | 83% |
+     | Consultation des frais | 32 | 93% | 93% |
+     | Bénéficiaire | 28 | 92% | 92% |
+     | Récapitulatif | 30 | 90% | 90% |
+     | Reçu | 28 | 89% | 89% |
+     | Alertes / Erreurs | 57 | 64% | 64% |
+  4. **Chaînes non couvertes** : noms propres (Amina Ngo Bell, Jean-Paul Mbarga), numéro de compte (CM 001...), montants signés avec espace (+180 000 FCFA, -12 500 FCFA), textes internes du panneau jury (hors portée traduction).
+  5. **Interface EN** : bouton EN détecté et actif. Les chaînes collectées en anglais ont la même couverture mémoire car le texte affiché reste en français (le bouton EN ne change pas la langue du contenu bancaire). Catalogue indexé sur FR : couverture EN = couverture FR.
+  6. Aucune modification du catalogue. Valeurs « non mesuré » non utilisées (tous les écrans ont pu être navigués).
+  7. `docs/couverture_mesuree.md` généré. Commit ciblé : `git add scripts/mesurer_couverture.py docs/couverture_mesuree.md SUIVI.md`.
+
 - 2026-11-16 16:30 — Adaptation de l'importateur de validation aux fiches kit_validation (branche `amelioration`) :
+
   1. `scripts/importer_validation.py` refondé : normalisation NFKD des en-têtes (accents, ponctuation, implosive Ɓ), reconnaissance de tous les en-têtes réels (`N°`, `Clé / Contexte`, `Texte Source (Français)`, `Proposition Traduction (Duálá)`, `Proposition Traduction (Ɓàsàa)`, `Correction du validateur`, `Validation (OK / KO)`, `Commentaire linguistique`).
   2. Ajout des options CLI `--langue` (obligatoire, `dua` ou `bas`), `--validateur` (code validateur), `--date` (AAAA-MM-JJ), applicables à l'intégralité de la fiche.
   3. Correspondance par `(cle, langue)` exclusivement — jamais par source seule. Clé introuvable = erreur signalée, jamais créée.
