@@ -90,3 +90,15 @@
 3. Video <= 3 minutes.
 4. Note technique (architecture, integration, dependances, limites).
 5. Langue(s) supportee(s) + methode de validation linguistique.
+
+---
+
+## 10. Règles de la branche amelioration
+
+1. **Branche et tags** : Avant toute action : `git branch --show-current` doit afficher `amelioration`. Sinon, arrête-toi. Ne touche jamais au tag `v1.0-soumission-14nov` ni à la branche `main`.
+2. **Discipline Git** : Aucun commit avec `git add -A` : seulement les fichiers listés. Une tâche = un commit ciblé. À la fin : `git push origin amelioration` ; en cas d'échec réseau, signale-le sans boucler.
+3. **Statut linguistique** : Aucune traduction en langue locale ne doit être inventée ni présentée comme validée. Statut `machine_suggested` par défaut ; `human_validated` uniquement via `scripts/importer_validation.py`.
+4. **Véracité des métriques** : Tout chiffre rapporté doit venir d'une exécution réelle ; sinon écris « non mesuré ». Montre les sorties brutes des tests.
+5. **Dépendances et téléchargements** : Annonce la taille de tout téléchargement avant de l'installer et déclare tout nouveau composant dans `THIRD_PARTY.md`.
+6. **Préservation de la version soumise** : Les fichiers de la version soumise ne sont pas réécrits : on ajoute des fichiers, on corrige les défauts, on documente.
+7. **Encodage d'affichage** : Python avec `sys.stdout.reconfigure(encoding="utf-8")` pour tout affichage de texte local.
