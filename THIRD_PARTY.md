@@ -35,6 +35,17 @@ Toutes les dépendances sont déclarées dans [`backend/requirements.txt`](backe
 
 ---
 
+## 2.1 Outils de Test et d'Audit d'Accessibilité (Tests Uniquement — Hors Production)
+
+| Bibliothèque | Version | Licence | Usage | Taille exacte / approx. |
+|---|---|---|---|---|
+| **playwright** | `>=1.40.0` | Apache-2.0 | Automatisation des tests E2E navigateur (Microsoft Edge) | ~35 Mo |
+| **axe-playwright-python** | `0.1.8` | MIT | Audit d'accessibilité WCAG automatisé sur Shadow DOM (tests uniquement) | 156,92 Ko (160 681 octets) |
+
+> **Précision** : `axe-playwright-python` est utilisé **strictement comme outil de test et d'audit automatisé**. Il n'est pas embarqué dans l'extension client ni requis pour le backend en production.
+
+---
+
 ## 3. Modèles de Traduction Automatique Locale (Contenu Inédit)
 
 | Modèle | Source / Auteur | Sous-dossier | Licence | Usage et Statut | Taille exacte |

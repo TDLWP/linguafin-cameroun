@@ -1,0 +1,290 @@
+{
+  "timestamp": "2026-11-16 22:38:00",
+  "mock_bank": {
+    "url": "file:///c:/Users/FLEX ZONE/Desktop/linguafin-cameroun/tests/mock_bank.html",
+    "axe_violations": [
+      {
+        "id": "landmark-one-main",
+        "impact": "moderate",
+        "description": "Ensure the document has a main landmark",
+        "nodes_count": 1,
+        "widget_related": false,
+        "nodes": [
+          "<html lang=\"fr\">"
+        ]
+      },
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "nodes_count": 1,
+        "widget_related": false,
+        "nodes": [
+          "<html lang=\"fr\">"
+        ]
+      },
+      {
+        "id": "region",
+        "impact": "moderate",
+        "description": "Ensure all page content is contained by landmarks",
+        "nodes_count": 12,
+        "widget_related": true,
+        "nodes": [
+          "<div class=\"banner\" id=\"topBanner\" data-safinum-translated=\"true\" data-safinum-orig=\"Environnement de test — données fic",
+          "<div class=\"header-title\">",
+          "<div class=\"header-sub safinum-highlight-security\" data-safinum-translated=\"true\" data-safinum-orig=\"Consultez votre sol",
+          "<div class=\"balance-box\">",
+          "<div class=\"form-group\">",
+          "<div class=\"form-group\">",
+          "<div class=\"form-group\">",
+          "<div class=\"form-group\">",
+          "<div class=\"warning-box safinum-...\" id=\"novelNotification\" style=\"border-left: 4px sol...\" data-safinum-transla...=\"tru",
+          "<div class=\"warning-box\" id=\"secWarning\" data-safinum-translated=\"true\" data-safinum-orig=\"Ce bénéficiaire n'a jamais ét",
+          "<table class=\"summary-table\">",
+          "<div class=\"footer\" id=\"footerText\" data-safinum-translated=\"true\" data-safinum-orig=\"Safinum Pay — environnement de dém"
+        ]
+      }
+    ],
+    "keyboard_nav": {
+      "badge_focus_tab": true,
+      "open_via_enter": true,
+      "close_via_escape": true,
+      "open_via_space": true,
+      "tab_sequence": [
+        "btnToggleTranslate",
+        "checkBilingual",
+        "checkExperimental",
+        "badge",
+        null,
+        null
+      ],
+      "shift_tab_sequence": [
+        null,
+        "badge",
+        "checkExperimental"
+      ]
+    },
+    "target_sizes": {
+      "badge": {
+        "name": "Badge déclencheur",
+        "width": 151.1,
+        "height": 44.8,
+        "valid_44px": true
+      },
+      "btnClose": {
+        "name": "Bouton fermer",
+        "width": 21.1,
+        "height": 29.6,
+        "valid_44px": false
+      },
+      "langSelect": {
+        "name": "Sélecteur de langue",
+        "width": 306.4,
+        "height": 33.6,
+        "valid_44px": true
+      },
+      "btnToggleTranslate": {
+        "name": "Bouton bascule traduction",
+        "width": 306.4,
+        "height": 37.6,
+        "valid_44px": true
+      },
+      "checkBilingual": {
+        "name": "Interrupteur bilingue",
+        "width": 38,
+        "height": 22,
+        "valid_44px": false
+      },
+      "checkExperimental": {
+        "name": "Interrupteur expérimental",
+        "width": 38,
+        "height": 22,
+        "valid_44px": false
+      }
+    },
+    "contrast_checks": {
+      "badge": {
+        "label": "Badge texte sur fond",
+        "fg": "rgb(2, 18, 38)",
+        "bg": "rgb(0, 191, 255)",
+        "parent_bg": "rgba(0, 0, 0, 0)"
+      },
+      "label": {
+        "label": "Libellé de section",
+        "fg": "rgb(148, 163, 184)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "parent_bg": "rgba(0, 0, 0, 0)"
+      },
+      "banner": {
+        "label": "Bandeau avertissement IA",
+        "fg": "rgb(254, 243, 199)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "parent_bg": "rgb(69, 26, 3)"
+      },
+      "btnToggle": {
+        "label": "Bouton de bascule actif",
+        "fg": "rgb(2, 18, 38)",
+        "bg": "rgb(16, 185, 129)",
+        "parent_bg": "rgba(0, 0, 0, 0)"
+      },
+      "title": {
+        "label": "Titre du panneau",
+        "fg": "rgb(0, 191, 255)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "parent_bg": "rgba(0, 0, 0, 0)"
+      }
+    },
+    "aria_roles": {},
+    "responsive_360": {
+      "panel_width": 331.20001220703125,
+      "panel_left": -4.400000095367432,
+      "panel_right": 326.8000121116638,
+      "viewport_width": 360,
+      "fits_horizontally": false,
+      "has_horizontal_scrollbar": false
+    },
+    "zoom_200": {
+      "panel_height": 417,
+      "viewport_height": 400,
+      "fits_vertically": false
+    },
+    "reduced_motion": {
+      "badge_transition": "transform 0.18s, box-shadow 0.18s",
+      "panel_animation": "none",
+      "has_reduced_motion_query": true
+    }
+  },
+  "remote_site": {
+    "url": "https://safinum.cm/hackathon-test",
+    "axe_violations": [
+      {
+        "id": "landmark-one-main",
+        "impact": "moderate",
+        "description": "Ensure the document has a main landmark",
+        "nodes_count": 1,
+        "widget_related": false,
+        "nodes": [
+          "<html lang=\"fr\">"
+        ]
+      },
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "nodes_count": 1,
+        "widget_related": false,
+        "nodes": [
+          "<html lang=\"fr\">"
+        ]
+      }
+    ],
+    "keyboard_nav": {
+      "badge_focus_tab": true,
+      "open_via_enter": true,
+      "close_via_escape": true,
+      "open_via_space": true,
+      "tab_sequence": [
+        "btnToggleTranslate",
+        "checkBilingual",
+        "checkExperimental",
+        "badge",
+        null,
+        "btnClose"
+      ],
+      "shift_tab_sequence": [
+        null,
+        "badge",
+        "checkExperimental"
+      ]
+    },
+    "target_sizes": {
+      "badge": {
+        "name": "Badge déclencheur",
+        "width": 151.1,
+        "height": 44.8,
+        "valid_44px": true
+      },
+      "btnClose": {
+        "name": "Bouton fermer",
+        "width": 21.1,
+        "height": 29.6,
+        "valid_44px": false
+      },
+      "langSelect": {
+        "name": "Sélecteur de langue",
+        "width": 306.4,
+        "height": 33.6,
+        "valid_44px": true
+      },
+      "btnToggleTranslate": {
+        "name": "Bouton bascule traduction",
+        "width": 306.4,
+        "height": 37.6,
+        "valid_44px": true
+      },
+      "checkBilingual": {
+        "name": "Interrupteur bilingue",
+        "width": 38,
+        "height": 22,
+        "valid_44px": false
+      },
+      "checkExperimental": {
+        "name": "Interrupteur expérimental",
+        "width": 38,
+        "height": 22,
+        "valid_44px": false
+      }
+    },
+    "contrast_checks": {
+      "badge": {
+        "label": "Badge texte sur fond",
+        "fg": "rgb(2, 18, 38)",
+        "bg": "rgb(0, 191, 255)",
+        "parent_bg": "rgba(0, 0, 0, 0)"
+      },
+      "label": {
+        "label": "Libellé de section",
+        "fg": "rgb(148, 163, 184)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "parent_bg": "rgba(0, 0, 0, 0)"
+      },
+      "banner": {
+        "label": "Bandeau avertissement IA",
+        "fg": "rgb(254, 243, 199)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "parent_bg": "rgb(69, 26, 3)"
+      },
+      "btnToggle": {
+        "label": "Bouton de bascule actif",
+        "fg": "rgb(2, 18, 38)",
+        "bg": "rgb(16, 185, 129)",
+        "parent_bg": "rgba(0, 0, 0, 0)"
+      },
+      "title": {
+        "label": "Titre du panneau",
+        "fg": "rgb(0, 191, 255)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "parent_bg": "rgba(0, 0, 0, 0)"
+      }
+    },
+    "aria_roles": {},
+    "responsive_360": {
+      "panel_width": 331.20001220703125,
+      "panel_left": 10.800000190734863,
+      "panel_right": 342.0000123977661,
+      "viewport_width": 360,
+      "fits_horizontally": true,
+      "has_horizontal_scrollbar": false
+    },
+    "zoom_200": {
+      "panel_height": 417,
+      "viewport_height": 400,
+      "fits_vertically": false
+    },
+    "reduced_motion": {
+      "badge_transition": "transform 0.18s, box-shadow 0.18s",
+      "panel_animation": "none",
+      "has_reduced_motion_query": true
+    }
+  }
+}

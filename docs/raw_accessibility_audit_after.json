@@ -1,0 +1,409 @@
+{
+  "timestamp": "2026-11-16 22:53:09",
+  "mock_bank": {
+    "url": "file:///c:/Users/FLEX ZONE/Desktop/linguafin-cameroun/tests/mock_bank.html",
+    "axe_violations": [
+      {
+        "id": "landmark-one-main",
+        "impact": "moderate",
+        "description": "Ensure the document has a main landmark",
+        "nodes_count": 1,
+        "widget_related": false,
+        "nodes": [
+          "<html lang=\"fr\">"
+        ]
+      },
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "nodes_count": 1,
+        "widget_related": false,
+        "nodes": [
+          "<html lang=\"fr\">"
+        ]
+      },
+      {
+        "id": "region",
+        "impact": "moderate",
+        "description": "Ensure all page content is contained by landmarks",
+        "nodes_count": 12,
+        "widget_related": true,
+        "nodes": [
+          "<div class=\"banner\" id=\"topBanner\" data-safinum-translated=\"true\" data-safinum-orig=\"Environnement de test — données fic",
+          "<div class=\"header-title\">",
+          "<div class=\"header-sub safinum-highlight-security\" data-safinum-translated=\"true\" data-safinum-orig=\"Consultez votre sol",
+          "<div class=\"balance-box\">",
+          "<div class=\"form-group\">",
+          "<div class=\"form-group\">",
+          "<div class=\"form-group\">",
+          "<div class=\"form-group\">",
+          "<div class=\"warning-box safinum-...\" id=\"novelNotification\" style=\"border-left: 4px sol...\" data-safinum-transla...=\"tru",
+          "<div class=\"warning-box\" id=\"secWarning\" data-safinum-translated=\"true\" data-safinum-orig=\"Ce bénéficiaire n'a jamais ét",
+          "<table class=\"summary-table\">",
+          "<div class=\"footer\" id=\"footerText\" data-safinum-translated=\"true\" data-safinum-orig=\"Safinum Pay — environnement de dém"
+        ]
+      }
+    ],
+    "keyboard_nav": {
+      "badge_focus_tab": true,
+      "open_via_enter": true,
+      "close_via_escape": true,
+      "open_via_space": true,
+      "tab_sequence": [
+        "langSelect",
+        "btnToggleTranslate",
+        "checkBilingual",
+        "checkExperimental",
+        "btnClose",
+        "langSelect"
+      ],
+      "shift_tab_sequence": [
+        "btnClose",
+        "checkExperimental",
+        "checkBilingual"
+      ]
+    },
+    "target_sizes": {
+      "badge": {
+        "name": "Badge déclencheur",
+        "width": 155.1,
+        "height": 44.8,
+        "valid_44px": true
+      },
+      "btnClose": {
+        "name": "Bouton fermer",
+        "width": 44,
+        "height": 44,
+        "valid_44px": true
+      },
+      "langSelect": {
+        "name": "Sélecteur de langue",
+        "width": 286.4,
+        "height": 44,
+        "valid_44px": true
+      },
+      "btnToggleTranslate": {
+        "name": "Bouton bascule traduction",
+        "width": 286.4,
+        "height": 44,
+        "valid_44px": true
+      },
+      "checkBilingual": {
+        "name": "Interrupteur bilingue",
+        "width": 48,
+        "height": 44,
+        "valid_44px": true
+      },
+      "checkExperimental": {
+        "name": "Interrupteur expérimental",
+        "width": 48,
+        "height": 44,
+        "valid_44px": true
+      }
+    },
+    "contrast_checks": {
+      "badge": {
+        "label": "Badge texte sur fond cyan",
+        "fg": "rgb(2, 18, 38)",
+        "bg": "rgb(0,191,255)",
+        "ratio": 8.86,
+        "valid_contrast": true
+      },
+      "btnClose": {
+        "label": "Bouton fermer",
+        "fg": "rgb(255, 255, 255)",
+        "bg": "rgb(30,41,59)",
+        "ratio": 14.63,
+        "valid_contrast": true
+      },
+      "label": {
+        "label": "Libellé de section",
+        "fg": "rgb(203, 213, 225)",
+        "bg": "rgb(10,25,47)",
+        "ratio": 11.86,
+        "valid_contrast": true
+      },
+      "banner": {
+        "label": "Bandeau avertissement IA",
+        "fg": "rgb(254, 243, 199)",
+        "bg": "rgb(69,26,3)",
+        "ratio": 13.45,
+        "valid_contrast": true
+      },
+      "btnToggle": {
+        "label": "Bouton de bascule actif",
+        "fg": "rgb(2, 18, 38)",
+        "bg": "rgb(16,185,129)",
+        "ratio": 7.41,
+        "valid_contrast": true
+      },
+      "title": {
+        "label": "Titre du panneau",
+        "fg": "rgb(0, 191, 255)",
+        "bg": "rgb(10,25,47)",
+        "ratio": 8.3,
+        "valid_contrast": true
+      }
+    },
+    "aria_roles": {},
+    "responsive_360": {
+      "panel_width": 320,
+      "panel_left": 12.800000190734863,
+      "panel_right": 332.80000019073486,
+      "viewport_width": 360,
+      "fits_horizontally": true,
+      "has_horizontal_scrollbar": false
+    },
+    "zoom_200": {
+      "panel_height": 320,
+      "viewport_height": 400,
+      "fits_vertically": true
+    },
+    "reduced_motion": {
+      "badge_transition": "none 1e-06s",
+      "panel_animation": "1e-06s",
+      "has_reduced_motion_query": true
+    }
+  },
+  "remote_site": {
+    "url": "https://safinum.cm/hackathon-test?jury=1",
+    "axe_violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "nodes_count": 33,
+        "widget_related": true,
+        "nodes": [
+          "<span class=\"text-slate-400 dark:text-white/35\" data-safinum-translated=\"true\" data-safinum-orig=\"Frais\" title=\"Original",
+          "<span class=\"text-slate-400 dark:text-white/35\" data-safinum-translated=\"true\" data-safinum-orig=\"Bénéficiaire\" title=\"O",
+          "<span class=\"text-slate-400 dark:text-white/35\" data-safinum-translated=\"true\" data-safinum-orig=\"Récapitulatif\" title=\"",
+          "<span class=\"text-slate-400 dark:text-white/35\" data-safinum-translated=\"true\" data-safinum-orig=\"Confirmation\" title=\"O",
+          "<p class=\"text-xs font-semibold uppercase tracking-widest text-[#00BFFF]\" data-safinum-translated=\"true\" data-safinum-or",
+          "<p class=\"mt-1 text-sm text-slate-500 dark:text-white/45 safinum-highlight-security\" data-safinum-translated=\"true\" data",
+          "<h2 class=\"text-sm font-bold uppercase tracking-widest text-slate-400\" data-safinum-translated=\"true\" data-safinum-orig=",
+          "<p class=\"text-xs text-slate-400\" data-safinum-translated=\"true\" data-safinum-orig=\"05 nov. 2026\" title=\"Original : 05 n",
+          "<p class=\"text-xs text-slate-400\" data-safinum-translated=\"true\" data-safinum-orig=\"04 nov. 2026\" title=\"Original : 04 n",
+          "<p class=\"text-sm font-bold text-emerald-500 safinum-highlight-amount\" data-safinum-translated=\"true\" data-safinum-orig=",
+          "<p class=\"text-xs text-slate-400\" data-safinum-translated=\"true\" data-safinum-orig=\"02 nov. 2026\" title=\"Original : 02 n",
+          "<p class=\"text-sm font-bold text-emerald-500 safinum-highlight-amount\" data-safinum-translated=\"true\" data-safinum-orig=",
+          "<p class=\"text-xs text-slate-400\" data-safinum-translated=\"true\" data-safinum-orig=\"31 oct. 2026\" title=\"Original : 31 o",
+          "<h2 class=\"text-sm font-bold uppercase tracking-widest text-slate-400\" data-safinum-translated=\"true\" data-safinum-orig=",
+          "<p class=\"text-xs text-slate-400\" data-safinum-translated=\"true\" data-safinum-orig=\"Compte courant\" title=\"Original : Co",
+          "<p class=\"text-[11px] uppercase tracking-widest text-slate-400\" data-safinum-translated=\"true\" data-safinum-orig=\"Solde ",
+          "<p class=\"mt-3 font-mono text-[11px] text-slate-400\" data-safinum-translated=\"true\" data-safinum-orig=\"CM 001 2345 6789 ",
+          "<p class=\"mt-2 text-xs leading...\" data-safinum-transla...=\"true\" data-safinum-orig=\"Vérifiez toujours le...\" title=\"Ori",
+          "<p class=\"mt-8 text-center tex...\" data-safinum-transla...=\"true\" data-safinum-orig=\"Safinum Pay — enviro...\" title=\"Ori",
+          "<p class=\"mt-1 text-[11px] text-slate-400 dark:text-white/35\" data-safinum-translated=\"true\" data-safinum-orig=\"Outil in",
+          "<button class=\"border-b-2 px-3 py-3 transition border-[#00BFFF] text-[#00BFFF]\" data-safinum-translated=\"true\" data-safi",
+          "<button class=\"border-b-2 px-3 py-3 transition border-transparent text-slate-400 hover:text-slate-700 dark:text-white/35",
+          "<button class=\"border-b-2 px-3 py-3 transition border-transparent text-slate-400 hover:text-slate-700 dark:text-white/35",
+          "<h3 class=\"mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#9B7FD4]\" data-safinum-transla",
+          "<button class=\"inline-flex items-center gap-1.5 rounded-lg bg-[#9B7FD4] px-3 py-1.5 text-xs font-bold text-white transit",
+          "<p class=\"mt-3 text-xs text-slate-400 dark:text-white/30\" data-safinum-translated=\"true\" data-safinum-orig=\"Aucun conten",
+          "<h3 class=\"mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#00BFFF]\" data-safinum-transla",
+          "<label class=\"mb-1 block text-[11px] font-semibold uppercase tracking-widest text-slate-400\" data-safinum-translated=\"tr",
+          "<button class=\"rounded-lg bg-[#00BFFF] px-3 py-1.5 text-xs font-bold text-white\" data-safinum-translated=\"true\" data-saf",
+          "<label class=\"mb-1 block text-[11px] font-semibold uppercase tracking-widest text-slate-400\" data-safinum-translated=\"tr",
+          "<button class=\"rounded-lg bg-[#00BFFF] px-3 py-1.5 text-xs font-bold text-white\" data-safinum-translated=\"true\" data-saf",
+          "<label class=\"mb-1 block text-[11px] font-semibold uppercase tracking-widest text-slate-400\" data-safinum-translated=\"tr",
+          "<button class=\"rounded-lg bg-[#00BFFF] px-3 py-1.5 text-xs font-bold text-white\" data-safinum-translated=\"true\" data-saf"
+        ]
+      },
+      {
+        "id": "label",
+        "impact": "critical",
+        "description": "Ensure every form element has a label",
+        "nodes_count": 3,
+        "widget_related": false,
+        "nodes": [
+          "<input type=\"number\" min=\"0\" class=\"min-w-0 flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm da",
+          "<input type=\"number\" min=\"0\" class=\"min-w-0 flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm da",
+          "<input type=\"text\" class=\"min-w-0 flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm dark:border-"
+        ]
+      },
+      {
+        "id": "landmark-one-main",
+        "impact": "moderate",
+        "description": "Ensure the document has a main landmark",
+        "nodes_count": 1,
+        "widget_related": false,
+        "nodes": [
+          "<html lang=\"fr\">"
+        ]
+      },
+      {
+        "id": "landmark-unique",
+        "impact": "moderate",
+        "description": "Ensure landmarks are unique",
+        "nodes_count": 1,
+        "widget_related": false,
+        "nodes": [
+          "<aside class=\"space-y-6\">"
+        ]
+      },
+      {
+        "id": "region",
+        "impact": "moderate",
+        "description": "Ensure all page content is contained by landmarks",
+        "nodes_count": 22,
+        "widget_related": true,
+        "nodes": [
+          "<div class=\"flex flex-wrap items-center justify-center gap-x-4 gap-y-1 bg-[#FFEB3B] px-4 py-2 text-center text-[11px] fo",
+          "<span class=\"flex h-7 w-7 items-center justify-center rounded-full bg-[#00BFFF] text-white\">1</span>",
+          "<span class=\"text-slate-900 dark:text-white\" data-safinum-translated=\"true\" data-safinum-orig=\"Solde\" title=\"Original : ",
+          "<span class=\"flex h-7 w-7 items-center justify-center rounded-full bg-white text-slate-400 dark:bg-white/5 dark:text-whi",
+          "<span class=\"text-slate-400 dark:text-white/35\" data-safinum-translated=\"true\" data-safinum-orig=\"Frais\" title=\"Original",
+          "<span class=\"flex h-7 w-7 items-center justify-center rounded-full bg-white text-slate-400 dark:bg-white/5 dark:text-whi",
+          "<span class=\"text-slate-400 dark:text-white/35\" data-safinum-translated=\"true\" data-safinum-orig=\"Bénéficiaire\" title=\"O",
+          "<span class=\"flex h-7 w-7 items-center justify-center rounded-full bg-white text-slate-400 dark:bg-white/5 dark:text-whi",
+          "<span class=\"text-slate-400 dark:text-white/35\" data-safinum-translated=\"true\" data-safinum-orig=\"Récapitulatif\" title=\"",
+          "<li class=\"flex items-center gap-2\">",
+          "<div>",
+          "<div class=\"mt-6 rounded-2xl bg-gradient-to-br from-[#2D1B69] to-[#0A0A0A] p-6 text-white\">",
+          "<h2 class=\"text-sm font-bold uppercase tracking-widest text-slate-400\" data-safinum-translated=\"true\" data-safinum-orig=",
+          "<div>",
+          "<p class=\"text-sm font-bold text-slate-700 dark:text-white/70 safinum-highlight-amount\" data-safinum-translated=\"true\" d",
+          "<div>",
+          "<p class=\"text-sm font-bold text-emerald-500 safinum-highlight-amount\" data-safinum-translated=\"true\" data-safinum-orig=",
+          "<div>",
+          "<p class=\"text-sm font-bold text-emerald-500 safinum-highlight-amount\" data-safinum-translated=\"true\" data-safinum-orig=",
+          "<div>",
+          "<p class=\"text-sm font-bold text-slate-700 dark:text-white/70 safinum-highlight-amount\" data-safinum-translated=\"true\" d",
+          "<p class=\"mt-8 text-center tex...\" data-safinum-transla...=\"true\" data-safinum-orig=\"Safinum Pay — enviro...\" title=\"Ori"
+        ]
+      },
+      {
+        "id": "select-name",
+        "impact": "critical",
+        "description": "Ensure select element has an accessible name",
+        "nodes_count": 1,
+        "widget_related": false,
+        "nodes": [
+          "<select class=\"rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs font-medium text-slate-700 dark:border-wh"
+        ]
+      }
+    ],
+    "keyboard_nav": {
+      "badge_focus_tab": true,
+      "open_via_enter": true,
+      "close_via_escape": true,
+      "open_via_space": true,
+      "tab_sequence": [
+        "langSelect",
+        "btnToggleTranslate",
+        "checkBilingual",
+        "checkExperimental",
+        "btnClose",
+        "langSelect"
+      ],
+      "shift_tab_sequence": [
+        "btnClose",
+        "checkExperimental",
+        "checkBilingual"
+      ]
+    },
+    "target_sizes": {
+      "badge": {
+        "name": "Badge déclencheur",
+        "width": 155.1,
+        "height": 44.8,
+        "valid_44px": true
+      },
+      "btnClose": {
+        "name": "Bouton fermer",
+        "width": 44,
+        "height": 44,
+        "valid_44px": true
+      },
+      "langSelect": {
+        "name": "Sélecteur de langue",
+        "width": 286.4,
+        "height": 44,
+        "valid_44px": true
+      },
+      "btnToggleTranslate": {
+        "name": "Bouton bascule traduction",
+        "width": 286.4,
+        "height": 44,
+        "valid_44px": true
+      },
+      "checkBilingual": {
+        "name": "Interrupteur bilingue",
+        "width": 48,
+        "height": 44,
+        "valid_44px": true
+      },
+      "checkExperimental": {
+        "name": "Interrupteur expérimental",
+        "width": 48,
+        "height": 44,
+        "valid_44px": true
+      }
+    },
+    "contrast_checks": {
+      "badge": {
+        "label": "Badge texte sur fond cyan",
+        "fg": "rgb(2, 18, 38)",
+        "bg": "rgb(0,191,255)",
+        "ratio": 8.86,
+        "valid_contrast": true
+      },
+      "btnClose": {
+        "label": "Bouton fermer",
+        "fg": "rgb(255, 255, 255)",
+        "bg": "rgb(30,41,59)",
+        "ratio": 14.63,
+        "valid_contrast": true
+      },
+      "label": {
+        "label": "Libellé de section",
+        "fg": "rgb(203, 213, 225)",
+        "bg": "rgb(10,25,47)",
+        "ratio": 11.86,
+        "valid_contrast": true
+      },
+      "banner": {
+        "label": "Bandeau avertissement IA",
+        "fg": "rgb(254, 243, 199)",
+        "bg": "rgb(69,26,3)",
+        "ratio": 13.45,
+        "valid_contrast": true
+      },
+      "btnToggle": {
+        "label": "Bouton de bascule actif",
+        "fg": "rgb(2, 18, 38)",
+        "bg": "rgb(16,185,129)",
+        "ratio": 7.41,
+        "valid_contrast": true
+      },
+      "title": {
+        "label": "Titre du panneau",
+        "fg": "rgb(0, 191, 255)",
+        "bg": "rgb(10,25,47)",
+        "ratio": 8.3,
+        "valid_contrast": true
+      }
+    },
+    "aria_roles": {},
+    "responsive_360": {
+      "panel_width": 320,
+      "panel_left": 28,
+      "panel_right": 348,
+      "viewport_width": 360,
+      "fits_horizontally": true,
+      "has_horizontal_scrollbar": false
+    },
+    "zoom_200": {
+      "panel_height": 320,
+      "viewport_height": 400,
+      "fits_vertically": true
+    },
+    "reduced_motion": {
+      "badge_transition": "none 1e-06s",
+      "panel_animation": "1e-06s",
+      "has_reduced_motion_query": true
+    }
+  }
+}

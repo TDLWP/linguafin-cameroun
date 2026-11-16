@@ -74,6 +74,33 @@
 
 ## Fait
 
+- 2026-11-16 23:05 — Audit et mise en conformité d'accessibilité du widget Shadow DOM (WCAG 2.1 AA, branche `amelioration`) :
+  1. **Dépendance d'audit** : `pip install axe-playwright-python` (version 0.1.8, 156,92 Ko / 160 681 octets annoncés avant téléchargement), déclarée dans `THIRD_PARTY.md` section 2.1 comme outil de test uniquement (hors production).
+  2. **Audit initial mesuré** (`docs/raw_accessibility_audit_before.json`) :
+     - Target size : bouton fermer (21.1 × 29.6 px), switch bilingue/expérimental (38 × 22 px), sélecteur (h=33.6 px) et bouton bascule (h=37.6 px) sous le seuil WCAG 2.5.5 de 44 px.
+     - Contraste : `#94A3B8` limite sur fond `#0A192F` ; focus invisible sur switch slider.
+     - Clavier : fuite de focus hors du panneau (absence de focus trap).
+     - Responsive & Zoom : débordement à 360 px (349.2 px total), contrôles masqués au zoom 200 % (absence de `overflow-y: auto`).
+     - Reduced motion : transitions actives malgré `prefers-reduced-motion: reduce`.
+     - ARIA-live : conteneur de statut avec `aria-live="polite"` polluant la synthèse vocale.
+  3. **Mise en conformité du widget Shadow DOM** (`extension/content.js`) :
+     - **Cibles tactiles >= 44 px** : `min-width: 44px; min-height: 44px;` sur `#btnClose`, `#langSelect`, `#btnToggleTranslate`, et `.switch` (48 × 44 px).
+     - **Contraste WCAG AAA (7.41:1 à 14.63:1)** : rehaussement des libellés à `#CBD5E1` (11.86:1), bouton fermer `#FFFFFF` sur `#1E293B` (14.63:1), bandeau `#FEF3C7` sur `#451A03` (13.45:1).
+     - **Navigation clavier & Focus Trap** : cycle fermé strict `['langSelect', 'btnToggleTranslate', 'checkBilingual', 'checkExperimental', 'btnClose', 'langSelect']` (Tab et Maj+Tab), ouverture par Entrée/Espace, fermeture Échap avec retour de focus sur le badge.
+     - **Indicateurs de focus** : `*:focus-visible` et `input:focus-visible + .slider` avec outline cyan `#00BFFF` 2px et décalage contrasté.
+     - **Responsive 360 px & Zoom 200 %** : largeur panneau 320 px + 12 px marge (s'inscrit sans défilement horizontal), `max-height: calc(100vh - 80px); overflow-y: auto;` (accessible au zoom 200 %).
+     - **Prefers-reduced-motion** : `@media (prefers-reduced-motion: reduce)` désactivant strictement transitions (`none 1e-06s`) et animations.
+     - **Live Announcer** : région dédiée `<div id="liveAnnouncer" class="sr-only" aria-live="polite" aria-atomic="true">` avec déduplication de message et debounce.
+  4. **Validation et documentation** :
+     - `scripts/audit_accessibilite.py` : script d'audit automatisé Playwright Edge + Axe-core.
+     - `tests/test_widget_accessibility.py` : suite de 7 tests automatisés (`Ran 7 tests in 15.711s — OK`).
+     - `docs/accessibilite_mesuree.md` : rapport complet avant/après avec chiffres réels certifiés et mention « non mesuré » pour les lecteurs d'écran réels physiques (NVDA/Narrator).
+  5. **Sorties brutes réelles certifiées** :
+     - Tests backend : `Ran 155 tests in 0.312s — OK`.
+     - Tests accessibilité : `Ran 7 tests in 15.711s — OK`.
+     - Tests régression live jury : `Ran 3 tests — OK` (0 compromis).
+
+
 - 2026-11-16 20:18 — Réglage ANNOTATE_SECURITY_ALERTS et correction de l'espacement du badge (branche `amelioration`) :
   1. **Factorisation des mots-clés de sécurité** :
      - `backend/protect.py` : création de `SECURITY_ALERT_KEYWORDS` et `is_security_alert_text(text)` factorisés (mots-clés : `alerte`, `sécurité`, `securite`, `attention`, `fraude`, `suspect`, `danger`, `bloqué`, `bloque`, `confidentialité`, `confidentiel`, `warning`, `alert`, `security`, `fraud`, `avertissement`).

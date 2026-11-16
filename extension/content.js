@@ -675,8 +675,8 @@
       host.id = 'safinum-accessibility-host';
       host.style.all = 'initial';
       host.style.position = 'fixed';
-      host.style.bottom = '18px';
-      host.style.right = '18px';
+      host.style.bottom = '12px';
+      host.style.right = '12px';
       host.style.zIndex = '2147483647';
       document.body.appendChild(host);
     }
@@ -688,60 +688,99 @@
       :host { all: initial; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size: 13px; }
       * { box-sizing: border-box; margin: 0; padding: 0; }
       
+      .sr-only {
+        position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+        overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+      }
+
+      *:focus-visible {
+        outline: 2px solid #00BFFF !important;
+        outline-offset: 2px !important;
+      }
+
       .safinum-badge {
         display: inline-flex; align-items: center; gap: 8px;
         background: #00BFFF; color: #021226; font-weight: 700;
-        padding: 10px 16px; border-radius: 9999px; cursor: pointer;
+        min-height: 44px; min-width: 44px;
+        padding: 10px 18px; border-radius: 9999px; cursor: pointer;
         box-shadow: 0 4px 14px rgba(0, 191, 255, 0.45);
         border: 2px solid #FFFFFF; user-select: none;
         transition: transform 0.18s, box-shadow 0.18s;
       }
       .safinum-badge:hover, .safinum-badge:focus-visible {
         transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 191, 255, 0.65);
-        outline: 2px solid #00BFFF; outline-offset: 2px;
+        outline: 3px solid #00BFFF; outline-offset: 3px;
       }
 
       .safinum-panel {
-        display: none; width: min(340px, 92vw); background: #0A192F; color: #F1F5F9;
+        display: none; width: 320px; max-width: calc(100vw - 24px);
+        background: #0A192F; color: #F1F5F9;
         border: 1px solid rgba(0, 191, 255, 0.35); border-radius: 16px;
         padding: 16px; box-shadow: 0 12px 36px rgba(0,0,0,0.65);
         margin-bottom: 12px;
+        max-height: calc(100vh - 80px);
+        overflow-y: auto;
       }
       .safinum-panel.open { display: block; animation: popIn 0.2s ease-out; }
       @keyframes popIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
       .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1E293B; padding-bottom: 8px; margin-bottom: 12px; }
       .title { font-size: 14px; font-weight: 800; color: #00BFFF; display: flex; align-items: center; gap: 6px; }
-      .btn-icon { background: transparent; border: none; color: #94A3B8; font-size: 16px; cursor: pointer; padding: 4px; border-radius: 4px; }
-      .btn-icon:hover, .btn-icon:focus-visible { color: #FFF; background: #1E293B; }
+      
+      .btn-icon {
+        background: transparent; border: none; color: #CBD5E1; font-size: 18px;
+        min-width: 44px; min-height: 44px; cursor: pointer; border-radius: 8px;
+        display: inline-flex; align-items: center; justify-content: center;
+        transition: color 0.15s, background 0.15s;
+      }
+      .btn-icon:hover, .btn-icon:focus-visible { color: #FFFFFF; background: #1E293B; }
 
       .section { margin-bottom: 12px; }
-      .label { display: block; font-size: 11px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+      .label { display: block; font-size: 12px; font-weight: 700; color: #CBD5E1; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
       
       .select-input {
-        width: 100%; padding: 8px 10px; background: #1E293B; color: #FFF;
+        width: 100%; min-height: 44px; padding: 10px 12px; background: #1E293B; color: #FFF;
         border: 1px solid #334155; border-radius: 8px; font-size: 13px; font-weight: 600;
-        outline: none;
+        outline: none; cursor: pointer;
       }
-      .select-input:focus-visible { border-color: #00BFFF; box-shadow: 0 0 0 2px rgba(0, 191, 255, 0.3); }
+      .select-input:focus-visible { border-color: #00BFFF; box-shadow: 0 0 0 2px rgba(0, 191, 255, 0.4); }
 
       /* Bouton Bascule Original / Traduit */
       .toggle-action-btn {
-        width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
-        padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 700;
+        width: 100%; min-height: 44px; display: flex; align-items: center; justify-content: center; gap: 8px;
+        padding: 12px 14px; border-radius: 8px; font-size: 13px; font-weight: 700;
         cursor: pointer; border: none; transition: background 0.2s; user-select: none;
       }
       .toggle-action-btn.active { background: #10B981; color: #021226; }
       .toggle-action-btn.inactive { background: #334155; color: #F1F5F9; }
       .toggle-action-btn:focus-visible { outline: 2px solid #00BFFF; outline-offset: 2px; }
 
-      .switch-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 12px; }
-      .switch { position: relative; display: inline-block; width: 38px; height: 22px; }
-      .switch input { opacity: 0; width: 0; height: 0; }
-      .slider { position: absolute; cursor: pointer; inset: 0; background-color: #334155; transition: .25s; border-radius: 22px; }
-      .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .25s; border-radius: 50%; }
+      .switch-row {
+        display: flex; justify-content: space-between; align-items: center;
+        min-height: 44px; margin-top: 6px; font-size: 13px; color: #F1F5F9;
+      }
+      .switch {
+        position: relative; display: inline-flex; align-items: center; justify-content: center;
+        width: 48px; height: 44px; cursor: pointer;
+      }
+      .switch input {
+        position: absolute; width: 48px; height: 44px; opacity: 0; margin: 0;
+        cursor: pointer; z-index: 2;
+      }
+      .slider {
+        position: absolute; width: 44px; height: 24px; background-color: #334155;
+        transition: .2s ease-in-out; border-radius: 24px; pointer-events: none;
+      }
+      .slider:before {
+        position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+        background-color: white; transition: .2s ease-in-out; border-radius: 50%;
+      }
       input:checked + .slider { background-color: #00BFFF; }
-      input:checked + .slider:before { transform: translateX(16px); }
+      input:checked + .slider:before { transform: translateX(20px); }
+      input:focus-visible + .slider {
+        outline: 2px solid #00BFFF; outline-offset: 3px;
+        box-shadow: 0 0 0 3px rgba(0, 191, 255, 0.4);
+      }
 
       /* Bandeau permanent de transparence IA */
       .ai-disclaimer-banner {
@@ -763,12 +802,35 @@
 
       /* Statuts d'intégrité */
       .status-box { background: rgba(15, 23, 42, 0.6); border: 1px solid #1E293B; border-radius: 8px; padding: 10px; margin-top: 12px; }
-      .status-line { display: flex; justify-content: space-between; align-items: center; font-size: 11px; margin-bottom: 5px; }
+      .status-line { display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 6px; }
       .status-line:last-child { margin-bottom: 0; }
-      .pill { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; }
+      .pill { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; color: #CBD5E1; }
       .dot-green { width: 7px; height: 7px; border-radius: 50%; background: #10B981; }
       .dot-amber { width: 7px; height: 7px; border-radius: 50%; background: #F59E0B; }
       .dot-gray { width: 7px; height: 7px; border-radius: 50%; background: #94A3B8; }
+
+      @media (max-width: 480px) {
+        .safinum-panel {
+          width: calc(100vw - 20px) !important;
+          max-width: 320px !important;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation: none !important;
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition: none !important;
+          transition-duration: 0.001ms !important;
+        }
+        .safinum-badge:hover, .safinum-badge:focus-visible {
+          transform: none !important;
+        }
+        .safinum-panel.open {
+          animation: none !important;
+        }
+      }
     `;
 
     const widget = document.createElement('div');
@@ -776,13 +838,15 @@
     widget.setAttribute('aria-label', 'Accessibilité linguistique SAFINUM');
 
     widget.innerHTML = `
-      <div class="safinum-panel" id="panel" role="dialog" aria-modal="false" aria-label="Paramètres linguistiques">
+      <div id="liveAnnouncer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+      
+      <div class="safinum-panel" id="panel" role="dialog" aria-modal="true" aria-label="Paramètres linguistiques SAFINUM">
         <div class="header">
           <div class="title">
             <span aria-hidden="true">🇨🇲</span>
             <span>SAFINUM Accessibilité</span>
           </div>
-          <button class="btn-icon" id="btnClose" aria-label="Fermer le panneau d'accessibilité">✕</button>
+          <button class="btn-icon" id="btnClose" aria-label="Fermer le panneau d'accessibilité" title="Fermer (Échap)">✕</button>
         </div>
 
         <div class="ai-disclaimer-banner" role="note">
@@ -791,8 +855,8 @@
         </div>
 
         <div class="section">
-          <label class="label" for="langSelect">Langue camerounaise</label>
-          <select class="select-input" id="langSelect">
+          <label class="label" for="langSelect" id="langSelectLabel">Langue camerounaise</label>
+          <select class="select-input" id="langSelect" aria-labelledby="langSelectLabel">
             <option value="dua" selected>Duálá (Duala)</option>
             <option value="bas">Ɓàsàa (Bassa'a)</option>
             <option value="fr">Français (Langue source)</option>
@@ -807,24 +871,24 @@
         </div>
 
         <div class="switch-row">
-          <span>Affichage bilingue au survol</span>
-          <label class="switch">
-            <input type="checkbox" id="checkBilingual" checked aria-label="Activer l'affichage bilingue au survol">
-            <span class="slider"></span>
+          <span id="labelBilingual">Affichage bilingue au survol</span>
+          <label class="switch" for="checkBilingual">
+            <input type="checkbox" id="checkBilingual" checked aria-labelledby="labelBilingual">
+            <span class="slider" aria-hidden="true"></span>
           </label>
         </div>
 
         <div class="switch-row" style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #334155;">
-          <span>Mode expérimental (IA non calibrée)</span>
-          <label class="switch">
-            <input type="checkbox" id="checkExperimental" aria-label="Activer le mode expérimental">
-            <span class="slider"></span>
+          <span id="labelExperimental">Mode expérimental (IA non calibrée)</span>
+          <label class="switch" for="checkExperimental">
+            <input type="checkbox" id="checkExperimental" aria-labelledby="labelExperimental">
+            <span class="slider" aria-hidden="true"></span>
           </label>
         </div>
 
-        <div class="status-box" aria-live="polite">
+        <div class="status-box">
           <div class="status-line">
-            <span>Intégrité financière :</span>
+            <span style="color: #CBD5E1;">Intégrité financière :</span>
             <span style="color:#10B981; font-weight:800;">100% Inviolée</span>
           </div>
           <div class="status-line">
@@ -842,7 +906,7 @@
         </div>
       </div>
 
-      <div class="safinum-badge" id="badge" tabindex="0" role="button" aria-expanded="false" aria-label="Ouvrir le panneau d'accessibilité linguistique">
+      <div class="safinum-badge" id="badge" tabindex="0" role="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Ouvrir le panneau d'accessibilité linguistique SAFINUM">
         <span aria-hidden="true">🇨🇲</span>
         <span id="badgeLabel">Duálá (Actif)</span>
       </div>
@@ -858,12 +922,47 @@
     const langSelect = shadowRoot.getElementById('langSelect');
     const btnToggleTranslate = shadowRoot.getElementById('btnToggleTranslate');
     const checkBilingual = shadowRoot.getElementById('checkBilingual');
+    const checkExperimental = shadowRoot.getElementById('checkExperimental');
+    const liveAnnouncer = shadowRoot.getElementById('liveAnnouncer');
+
+    let lastAnnouncedMessage = '';
+    let announceTimeout = null;
+    function announceLive(message) {
+      if (!message || message === lastAnnouncedMessage) return;
+      lastAnnouncedMessage = message;
+      if (announceTimeout) clearTimeout(announceTimeout);
+      announceTimeout = setTimeout(() => {
+        if (liveAnnouncer) {
+          liveAnnouncer.textContent = '';
+          setTimeout(() => { liveAnnouncer.textContent = message; }, 40);
+        }
+      }, 200);
+    }
+
+    function getFocusableElements() {
+      return Array.from(panel.querySelectorAll('button, select, input[type="checkbox"], [tabindex="0"]'))
+        .filter(el => !el.disabled && el.offsetParent !== null);
+    }
+
+    function openPanel() {
+      panel.classList.add('open');
+      badge.setAttribute('aria-expanded', 'true');
+      btnClose.focus();
+      announceLive("Panneau des paramètres d'accessibilité linguistique ouvert");
+    }
+
+    function closePanel() {
+      panel.classList.remove('open');
+      badge.setAttribute('aria-expanded', 'false');
+      badge.focus();
+      announceLive("Panneau des paramètres fermé");
+    }
 
     function togglePanel() {
-      const isOpen = panel.classList.toggle('open');
-      badge.setAttribute('aria-expanded', String(isOpen));
-      if (isOpen) {
-        langSelect.focus();
+      if (panel.classList.contains('open')) {
+        closePanel();
+      } else {
+        openPanel();
       }
     }
 
@@ -875,17 +974,32 @@
       }
     });
 
-    btnClose.addEventListener('click', () => {
-      panel.classList.remove('open');
-      badge.setAttribute('aria-expanded', 'false');
-      badge.focus();
-    });
+    btnClose.addEventListener('click', closePanel);
 
+    // Navigation Clavier avec Piège de Focus (Focus Trap) dans le panneau ouvert
     panel.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        panel.classList.remove('open');
-        badge.setAttribute('aria-expanded', 'false');
-        badge.focus();
+        e.preventDefault();
+        closePanel();
+        return;
+      }
+      if (e.key === 'Tab') {
+        const focusables = getFocusableElements();
+        if (focusables.length === 0) return;
+        const firstEl = focusables[0];
+        const lastEl = focusables[focusables.length - 1];
+
+        if (e.shiftKey) {
+          if (shadowRoot.activeElement === firstEl || shadowRoot.activeElement === panel) {
+            e.preventDefault();
+            lastEl.focus();
+          }
+        } else {
+          if (shadowRoot.activeElement === lastEl) {
+            e.preventDefault();
+            firstEl.focus();
+          }
+        }
       }
     });
 
@@ -896,20 +1010,23 @@
       } else {
         state.isTranslated = true;
       }
+      const langName = state.currentLang === 'dua' ? 'Duálá' : (state.currentLang === 'bas' ? 'Ɓàsàa' : (state.currentLang === 'ful' ? 'Fulfulde' : 'Français'));
+      announceLive(`Langue sélectionnée : ${langName}`);
       processDOMTranslation();
     });
 
     btnToggleTranslate.addEventListener('click', () => {
       state.isTranslated = !state.isTranslated;
+      announceLive(state.isTranslated ? "Traduction activée" : "Mode original français activé");
       processDOMTranslation();
     });
 
     checkBilingual.addEventListener('change', (e) => {
       state.bilingualMode = e.target.checked;
+      announceLive(state.bilingualMode ? "Affichage bilingue au survol activé" : "Affichage bilingue au survol désactivé");
       processDOMTranslation();
     });
 
-    const checkExperimental = shadowRoot.getElementById('checkExperimental');
     checkExperimental.addEventListener('change', (e) => {
       state.experimentalMode = e.target.checked;
       const optFul = langSelect.querySelector('option[value="ful"]');
@@ -920,6 +1037,7 @@
           opt.textContent = 'Fulfulde (Expérimental)';
           langSelect.insertBefore(opt, langSelect.querySelector('option[value="fr"]'));
         }
+        announceLive("Mode expérimental activé : langue Fulfulde disponible");
       } else {
         if (optFul) {
           if (state.currentLang === 'ful') {
@@ -928,6 +1046,7 @@
           }
           optFul.remove();
         }
+        announceLive("Mode expérimental désactivé");
       }
       updateWidgetUI();
       processDOMTranslation();
