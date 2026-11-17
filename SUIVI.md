@@ -74,6 +74,31 @@
 
 ## Fait
 
+- 2026-11-17 12:40 — Mesures de performance réelles et audit de réactivité DOM (Playwright Edge, branche `amelioration`) :
+  1. **Environnement matériel et logiciel certifié** :
+     - OS : Microsoft Windows 11 Pro 64-bit (build 10.0.26200).
+     - Processeur : Intel(R) Core(TM) i7-12850HX (16 cœurs, 24 threads, base 2,1 GHz / turbo 4,8 GHz).
+     - RAM : 32 Go DDR5 (33 231 604 Ko visibles).
+     - GPU : NVIDIA RTX A1000 Laptop GPU (4 Go VRAM) + Intel UHD Graphics.
+     - Navigateur : Microsoft Edge version 157.0.4341.60 (Chromium 157 / moteur Blink).
+  2. **(1) Temps de premier rendu traduit (12 itérations par mode)** :
+     - **Backend arrêté (mode catalogue hors-ligne)** : Médiane = **234,31 ms**, P95 = **316,82 ms** (min = 154,40 ms, max = 324,29 ms).
+     - **Backend lancé (API FastAPI uvicorn)** : Médiane = **223,95 ms**, P95 = **335,55 ms** (min = 169,84 ms, max = 342,84 ms).
+  3. **(2) Latence de `/translate/batch` sur 200 appels locaux consécutifs (8 phrases financières)** :
+     - **Duálá (`dua`)** : Médiane = **15,99 ms**, P95 = **25,42 ms**, P99 = 26,61 ms (min = 1,91 ms, max = 28,62 ms).
+     - **Ɓàsàa (`bas`)** : Médiane = **16,21 ms**, P95 = **25,54 ms**, P99 = 27,46 ms (min = 2,21 ms, max = 28,13 ms).
+  4. **(3) Mutations DOM et absence de boucle d'observation** :
+     - Total de **41 mutations** traitées en 5 lots sur un parcours bancaire complet de 5 étapes (Solde 21, Frais +8, Bénéficiaire +4, Récapitulatif +4, Reçu +4).
+     - Test de convergence : **0 mutation résiduelle** mesurée après stabilisation (absence de boucle infinie formellement prouvée via verrous atomiques et debounce 160 ms).
+  5. **(4) Temps de retour à la langue source (`revertToSource`)** :
+     - Médiane = **0,80 ms**, P95 = **1,00 ms** (15 itérations, 24 nœuds textuels restaurés).
+  6. **Rapports et alignement documentaire** :
+     - `docs/raw_performance_metrics.json` : données brutes complètes.
+     - `docs/mesures_performance.md` : rapport complet avant/après.
+     - `README.md`, `docs/note_technique.md`, `THIRD_PARTY.md` : remplacement de « non mesuré » par un renvoi vers `docs/mesures_performance.md` uniquement pour les points mesurés (PC / Edge / local), maintien strict de « non mesuré » pour smartphones d'entrée de gamme, batterie et réseau 2G/EDGE en milieu rural.
+     - `tests/test_performance_regression.py` : suite de 3 tests automatisés (`Ran 3 tests in 7.786s — OK`).
+
+
 - 2026-11-16 23:05 — Audit et mise en conformité d'accessibilité du widget Shadow DOM (WCAG 2.1 AA, branche `amelioration`) :
   1. **Dépendance d'audit** : `pip install axe-playwright-python` (version 0.1.8, 156,92 Ko / 160 681 octets annoncés avant téléchargement), déclarée dans `THIRD_PARTY.md` section 2.1 comme outil de test uniquement (hors production).
   2. **Audit initial mesuré** (`docs/raw_accessibility_audit_before.json`) :

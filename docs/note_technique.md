@@ -138,8 +138,13 @@ Le module [`backend/protect.py`](../backend/protect.py) applique un pipeline de 
    Par conception de sécurité bancaire, les valeurs saisies par l'utilisateur ne sont jamais manipulées. Seuls les libellés (`label`), placeholders, aides à la saisie et boutons sont traduits.
 2. **Synthèse Vocale (Text-To-Speech)** :  
    Bien que des enregistrements audio de référence existent dans le dépôt (`shared/data/duala/audio/`), le raccordement TTS n'est pas finalisé dans ce prototype.
-3. **Performance sur Matériel Embarqué / Réseau Dégradé** :
-   - Temps d'exécution des tests sur PC (Intel/Windows 11) : **environ 0,38 s** pour 83 tests.
+3. **Performances Réelles Mesurées sur Banc d'Essai PC (Win 11 / Intel i7 / Edge)** :
+   - Temps de premier rendu traduit : **234 ms** (offline) / **224 ms** (online) (médiane sur 12 itérations) — voir rapport complet [`docs/mesures_performance.md`](mesures_performance.md).
+   - Latence API batch locale (`/translate/batch`) : **16 ms** (médiane sur 200 appels de 8 phrases) — voir [`docs/mesures_performance.md`](mesures_performance.md).
+   - Temps de retour à la langue source (`revertToSource`) : **0,8 ms** (médiane sur 15 itérations) — voir [`docs/mesures_performance.md`](mesures_performance.md).
+   - Convergence des mutations DOM : **0 mutation résiduelle** après 5 étapes bancaires (absence de boucle infinie prouvée) — voir [`docs/mesures_performance.md`](mesures_performance.md).
+   - Temps d'exécution des tests unitaire backend : **0,31 s** pour 155 tests.
+4. **Périmètre Non Mesuré (Véracité des Métriques)** :
    - Latence sur smartphone ARM d'entrée de gamme : **non mesuré**.
    - Consommation de batterie sur session prolongée : **non mesuré**.
    - Débit réel sur réseau 2G/EDGE en milieu rural : **non mesuré** (compensé par le mode hors-ligne à 0 requête réseau).

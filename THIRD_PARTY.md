@@ -94,5 +94,5 @@ Conformément aux exigences de conformité et de traçabilité, chaque jeu de do
 
 * **Taux d'erreur grammaticale intrinsèque des modèles d'IA sur le Duálá ancien vs moderne** : **Non mesuré**.
 * **Consommation énergétique de l'inférence des modèles sur serveurs distants** : **Non mesuré**.
-* **Latence moyenne d'un appel API en direct vers les moteurs LLM en conditions de réseau rural camerounais** : **Non mesuré** (le prototype s'exécute en local/offline).
+* **Latence moyenne d'un appel API en direct vers les moteurs LLM en conditions de réseau rural camerounais** : **Non mesuré** (le prototype s'exécute en local/offline ; les mesures de latence locale de `/translate/batch` sont documentées dans [`docs/mesures_performance.md`](docs/mesures_performance.md)).
 

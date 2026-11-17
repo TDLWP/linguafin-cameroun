@@ -71,6 +71,9 @@ Start-Process msedge "https://safinum.cm/hackathon-test?jury=1"
 | **Temps d'exécution regex (anti-ReDoS)** | **< 0,01 ms** sur chaîne piège | Benchmark `time.time()` |
 | **Empreinte de l'extension client** | **environ 134 Ko** (zéro dépendance externe) | Mesuré sur dossier `extension/` |
 | **Temps de bascule hors ligne** | **Instantané** (mémoire cache) | Mesuré via mock bank Playwright |
+| **Premier rendu traduit (offline / online)** | **234 ms** (offline) / **224 ms** (online) | Médiane 12 runs — [`docs/mesures_performance.md`](docs/mesures_performance.md) |
+| **Latence `/translate/batch` (local)** | **16 ms** (médiane), **25 ms** (P95) | 200 appels batch — [`docs/mesures_performance.md`](docs/mesures_performance.md) |
+| **Temps de retour langue source** | **0,8 ms** (médiane sur 15 itérations) | `performance.now()` — [`docs/mesures_performance.md`](docs/mesures_performance.md) |
 | **Consommation mémoire sur smartphone bas de gamme** | **Non mesuré** | Environnement de banc d'essai PC (Win 11) |
 | **Taux de rétention usagers ruraux en conditions réelles** | **Non mesuré** | Expérimentation terrain post-challenge requise |
 
