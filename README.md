@@ -40,6 +40,20 @@ Start-Process msedge "https://safinum.cm/hackathon-test?jury=1"
 3. Sélectionnez le sous-dossier : `C:\Users\FLEX ZONE\Models_Langues\extension`.
 4. L'extension *SAFINUM Accessibility — Couche Linguistique Nationale* est immédiatement active.
 
+### Scripts d'Automatisation & Packaging v2
+Pour simplifier l'évaluation, trois scripts prêts à l'emploi sont mis à disposition :
+
+* **`powershell -ExecutionPolicy Bypass -File scripts/lancer_demo.ps1`** :
+  Démarre le backend souverain FastAPI (port 8000), attend que `/health` réponde, et ouvre automatiquement Microsoft Edge avec l'extension préchargée via un profil temporaire isolé sur `https://safinum.cm/hackathon-test?jury=1` (avec repli local automatique sur `tests/mock_bank.html` si le réseau distant est indisponible).
+
+* **`powershell -ExecutionPolicy Bypass -File scripts/run_all_checks.ps1`** :
+  Exécute séquentiellement l'intégralité des 5 suites de tests de validation (backend unitaire & sécurité v2, intégrité jury & maquette Playwright, accessibilité WCAG Shadow DOM, performances & latence, régression jury live avec skip propre si réseau indisponible) et affiche un tableau récapitulatif détaillé.
+
+* **`python scripts/package_release.py`** :
+  Génère les archives officielles de distribution dans `dist/` :
+  - `dist/extension_linguafin_v2.zip` : extension décompressable avec `manifest.json` à la racine (prête pour les stores ou le chargement navigateur).
+  - `dist/linguafin_v2_source.zip` : code source complet avec exclusions strictes (modèles lourds, `.env`, `.git`, `__pycache__`), scan anti-secrets (0 token hf_/sk-/api_key), contrôle de taille et décompression test en sandbox.
+
 ---
 
 ## 2. Parcours de Démonstration Reproductible

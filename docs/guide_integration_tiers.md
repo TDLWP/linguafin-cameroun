@@ -18,12 +18,22 @@ Deux modes d'intégration complémentaires sont disponibles :
 ## 2. Intégration en Cinq Étapes
 
 ### Étape 1 : Charger l'extension dans le navigateur (Edge / Chrome)
+
+#### Option A : Chargement automatisé via script (Recommandé pour démonstration)
+Exécutez le script prêt à l'emploi :
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/lancer_demo.ps1
+```
+Ce script démarre le backend souverain (FastAPI, port 8000), vérifie `/health`, et lance Edge avec un profil temporaire isolé (`--user-data-dir` et `--load-extension`), ouvrant directement `https://safinum.cm/hackathon-test?jury=1` (avec repli local automatique sur `tests/mock_bank.html` en cas d'indisponibilité réseau).
+
+#### Option B : Procédure manuelle via l'interface du navigateur
+> **Note de compatibilité Edge v157+** : Sur les versions récentes de Microsoft Edge Stable, le commutateur `--load-extension` est restreint sur le profil utilisateur existant pour des raisons de politique de sécurité Chromium. L'installation standard sur votre profil courant s'effectue donc via l'interface développeur :
 1. Ouvrez Microsoft Edge (ou Google Chrome) et rendez-vous sur la page des extensions :
    - Edge : `edge://extensions/`
    - Chrome : `chrome://extensions/`
 2. Activez le **Mode développeur** (interrupteur en bas à gauche sur Edge ou en haut à droite sur Chrome).
 3. Cliquez sur le bouton **Charger le dossier décompressé** (*Load unpacked*).
-4. Sélectionnez le répertoire `extension/` du dépôt `linguafin-cameroun`.
+4. Sélectionnez le sous-dossier `extension/` du dépôt `linguafin-cameroun`.
 5. L'extension « **SAFINUM - Couche d'Accessibilité Financière en Langues Camerounaises** » (v1.0.0) apparaît active dans la liste.
 
 > **Garantie d'étanchéité** : Le widget et ses feuilles de style résident dans un Shadow DOM fermé (`mode: "closed"`). Aucun style CSS de l'extension ne déborde sur l'application hôte, et aucun style de l'hôte ne perturbe le widget.

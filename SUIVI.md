@@ -74,6 +74,23 @@
 
 ## Fait
 
+- 2026-11-18 10:15 — Outillage d'automatisation, lanceur de démo, vérification globale et packaging release v2 (branche `amelioration`) :
+  1. **Lanceur de démonstration (`scripts/lancer_demo.ps1`)** :
+     - Démarre automatiquement le backend FastAPI souverain (uvicorn, port 8000), sonde l'endpoint `/health` jusqu'à réponse (max 30s).
+     - Gère la politique de sécurité de Microsoft Edge Stable (v157+) : charge l'extension via un profil utilisateur temporaire isolé (`--user-data-dir` et `--load-extension`).
+     - Vérifie l'accessibilité du site cible `https://safinum.cm/hackathon-test?jury=1` et bascule automatiquement sur `tests/mock_bank.html` en local si le réseau est indisponible.
+     - Documente et guide la procédure manuelle alternative via `edge://extensions`.
+  2. **Script de vérification globale de toutes les suites (`scripts/run_all_checks.ps1`)** :
+     - Exécute séquentiellement les 5 suites de tests du projet : (1) Backend unitaire & API, (2) Intégrité jury & maquette racine Playwright, (3) Accessibilité Shadow DOM WCAG, (4) Performances & régression DOM, (5) Parcours jury live complet sur `safinum.cm` avec gestion propre du skip en cas d'indisponibilité réseau.
+     - Affiche un tableau récapitulatif formaté : **187/187 tests exécutés avec succès, 0 échec (SUCCÈS 100%)**.
+  3. **Générateur de release de distribution (`scripts/package_release.py`)** :
+     - Produit `dist/extension_linguafin_v2.zip` (30,9 Ko, 4 fichiers) avec `manifest.json` strictement positionné à la racine du zip.
+     - Produit `dist/linguafin_v2_source.zip` (4,84 Mo, 116 fichiers) avec exclusions strictes (`backend/models`, `.env`, `.git`, `__pycache__`, `dist/`).
+     - Intègre un audit anti-secrets (0 clé d'API, 0 token `hf_`/`sk-`), un contrôle strict des tailles maximales et une décompression de test en sandbox temporaire.
+  4. **Documentation et modes d'emploi** :
+     - Mise à jour de `README.md` avec la section des scripts d'automatisation et de packaging.
+     - Mise à jour de `docs/guide_integration_tiers.md` avec les options de chargement de l'extension (automatisé vs manuel).
+
 - 2026-11-18 09:10 — Alignement et test de contrat OpenAPI, guide d'intégration tiers et schéma Mermaid d'architecture (branche `amelioration`) :
   1. **Alignement strict du contrat OpenAPI (`openapi.yaml` vs `app.openapi()`)** :
      - Ajout du paramètre query `include_experimental` sur `GET /languages`.
