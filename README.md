@@ -1,4 +1,17 @@
-> **Versions du dépôt** : le tag `v1.0-soumission-14nov` correspond à la version soumise au SAFINUM Innovate Challenge le 14 novembre 2026. Les commits postérieurs corrigent un défaut constaté après l'envoi (crochets bilingues autour des montants en mode backend actif). Les travaux d'amélioration ultérieurs sont sur la branche `amelioration` et ne font pas partie de la soumission.
+> **Versions du dépôt** :
+> - **Tag `v1.0-soumission-14nov`** : Version officielle soumise au SAFINUM Innovate Challenge le 14 novembre 2026 (23h59).
+> - **Branche `main`** : Version de base de la soumission, incluant le correctif immédiat post-envoi (suppression des crochets bilingues autour des montants purs).
+> - **Branche `amelioration` (Travaux v2.0)** : Travaux d'amélioration continue, d'accessibilité et de durcissement menés après la soumission (ne faisant pas partie de la soumission initiale) :
+>   - **Garantie d'intégrité jury** : 0 compromis sur 100 % du parcours bancaire officiel et sur les contenus inédits injectés.
+>   - **Bilinguisme source EN / FR** : Détection et normalisation des segments bancaires anglophones (`data/en_to_fr_index.json`).
+>   - **Sécurité des alertes critiques** : Sanctuarisation des avertissements de sécurité en français (`ANNOTATE_SECURITY_ALERTS=false`) avec badge explicite et correction d'espacement des badges.
+>   - **Audit de sécurité indépendant v2** : 0 CVE (`pip-audit`), 0 secret dans l'historique Git, permissions minimales Manifest V3, éradication d'`innerHTML`/`eval` dans l'extension, rate limiting en mémoire et anonymisation des logs.
+>   - **Accessibilité Shadow DOM mesurée (WCAG AA)** : Navigation clavier complète, piège de focus, contrastes ≥ 4,5:1, cibles tactiles ≥ 44 px, support mobile 360 px, zoom 200 % et `prefers-reduced-motion`.
+>   - **Métriques de performance réelles** : Premier rendu traduit mesuré à 224 ms (online) / 234 ms (offline), latence batch de 16 ms, absence de boucle DOM prouvée ([`docs/mesures_performance.md`](docs/mesures_performance.md)).
+>   - **Alignement de contrat OpenAPI** : Tests automatisés `openapi.yaml` vs API FastAPI (`backend/tests/test_openapi_contract.py`).
+>   - **Kit de validation linguistique natif** : Fiches PDF/CSV prêtes pour la relecture humaine, guide du validateur ([`catalogue/kit_validation/GUIDE_VALIDATEUR.md`](catalogue/kit_validation/GUIDE_VALIDATEUR.md)) et modèles de sollicitation ([`docs/modeles_messages_validateurs.md`](docs/modeles_messages_validateurs.md)).
+>   - **Automatisation & Packaging v2** : Scripts `lancer_demo.ps1`, `run_all_checks.ps1` (187 tests passants, 0 échec) et `package_release.py` (archives officielles `dist/` certifiées anti-secrets).
+
 # SAFINUM 2026 — Couche d'Accessibilité Linguistique pour Services Financiers
 
 > **Challenge** : SAFINUM Innovate Challenge 2026  

@@ -74,6 +74,22 @@
 
 ## Fait
 
+- 2026-11-18 10:25 — Kit de validation locuteurs natifs, modèles de sollicitation, script vidéo v2 et alignement des versions (branche `amelioration`) :
+  1. **Guide du validateur linguistique (`catalogue/kit_validation/GUIDE_VALIDATEUR.md`)** :
+     - Rédigé en français simple et accessible pour les locuteurs natifs du Duálá et du Ɓàsàa.
+     - Détail des 7 colonnes de la fiche, explicitation de la règle essentielle *« Ne rien deviner »*.
+     - Consigne impérative d'utiliser `DOUTE` dès la moindre incertitude (entraînant le rejet automatique de la suggestion pour sanctuariser l'intégrité financière en français).
+     - Clause éthique de consentement éclairé : protection de la vie privée, aucun nom publié sans accord formel préalable, utilisation d'un code validateur pseudonyme (ex: `VAL-DUA-01`).
+  2. **Modèles de messages de sollicitation (`docs/modeles_messages_validateurs.md`)** :
+     - Trois modèles de brouillons non envoyés : message WhatsApp (court/direct), e-mail formel institutionnel et présentation orale directe (pitch 60 s).
+     - Règle stricte respectée : aucun nom de personne physique ni d'organisme tiers non fourni n'est cité (placeholders explicites `[...]`).
+  3. **Script vidéo scénarisé chronométré v2 (`docs/script_video_v2.md`)** :
+     - Durée strictement bornée à 3 minutes (180 s) découpée en 6 séquences chronométrées.
+     - Couvre : le parcours du règlement (Solde, Frais, Destinataire, Récapitulatif, Reçu), la détection et traduction bilingue de sources anglaises via `en_to_fr_index.json`, les contenus inédits avec badge explicite, la préservation des alertes de sécurité en français (`ANNOTATE_SECURITY_ALERTS=false`), l'intégrité absolue des montants (aucun crochet, 0 compromis sur `?jury=1`), le repli hors-ligne et la mention honnête *« 0 chaîne validée par un locuteur natif à ce jour »*.
+     - Basé uniquement sur les composants réellement présents et opérationnels dans le dépôt.
+  4. **Section Versions du README (`README.md`)** :
+     - Clarification exhaustive des différences entre le tag de soumission officiel `v1.0-soumission-14nov`, la branche `main` et la branche `amelioration` (travaux v2.0).
+
 - 2026-11-18 10:15 — Outillage d'automatisation, lanceur de démo, vérification globale et packaging release v2 (branche `amelioration`) :
   1. **Lanceur de démonstration (`scripts/lancer_demo.ps1`)** :
      - Démarre automatiquement le backend FastAPI souverain (uvicorn, port 8000), sonde l'endpoint `/health` jusqu'à réponse (max 30s).
