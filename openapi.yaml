@@ -31,6 +31,14 @@ paths:
       summary: Liste des langues supportées
       description: Retourne la liste des langues camerounaises disponibles avec le statut de validation du catalogue.
       operationId: getSupportedLanguages
+      parameters:
+        - name: include_experimental
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+          description: Inclure les langues au stade expérimental (ex. Fulfulde)
       responses:
         '200':
           description: Liste des langues disponibles
@@ -131,6 +139,7 @@ components:
         - autonym
         - status
         - human_validated_entries
+        - glossary_entries
       properties:
         code:
           type: string
@@ -144,14 +153,14 @@ components:
           example: "Duálá"
         status:
           type: string
-          enum: ["ready", "beta", "experimental"]
-          example: "ready"
+          enum: ["machine_suggested", "human_validated", "beta", "experimental"]
+          example: "machine_suggested"
         human_validated_entries:
           type: integer
-          example: 79
+          example: 0
         glossary_entries:
           type: integer
-          example: 120
+          example: 52
 
     TranslationItemRequest:
       type: object
@@ -161,6 +170,7 @@ components:
       properties:
         id:
           type: string
+          maxLength: 100
           description: Identifiant unique ou hash du nœud DOM
           example: "node_step2_amount_label"
         text:
@@ -169,6 +179,7 @@ components:
           example: "Frais de 1,5 % (min. 100 FCFA, max. 2 500 FCFA)"
         screen_context:
           type: string
+          maxLength: 100
           description: Écran d'origine pour désambiguïsation contextuelle
           example: "transfer_fees"
         is_critical_security:
@@ -179,23 +190,30 @@ components:
     BatchTranslationRequest:
       type: object
       required:
-        - source_lang
-        - target_lang
         - items
       properties:
         source_lang:
           type: string
+          maxLength: 10
+          default: "fr"
           enum: ["fr", "en"]
           example: "fr"
         target_lang:
           type: string
+          maxLength: 10
+          default: "dua"
           example: "dua"
         allow_machine_translation:
           type: boolean
           default: true
           description: Si faux, renvoie le repli source pour les segments non validés
+        allow_experimental:
+          type: boolean
+          default: false
+          description: Autorise l'utilisation de modèles d'IA non calibrés (ex. Fulfulde)
         annotate_security_alerts:
           type: boolean
+          nullable: true
           default: false
           description: Si faux (défaut), les avertissements de sécurité et alertes restent en français sans annotation
         items:
@@ -211,6 +229,8 @@ components:
         - target_text
         - status
         - integrity_verified
+        - masked_tokens_count
+        - bilingual_required
       properties:
         id:
           type: string
@@ -236,6 +256,17 @@ components:
           type: boolean
           description: Vrai si la règle de sécurité impose l'affichage parallèle du texte source
           example: false
+        novel_annotated:
+          type: boolean
+          nullable: true
+          default: false
+          description: Vrai si la phrase contient des termes financiers du glossaire annotés individuellement entre crochets
+          example: false
+        badge:
+          type: string
+          nullable: true
+          description: Libellé textuel explicatif du badge de sécurité ou de contenu inédit
+          example: "contenu inédit : termes annotés, phrase non traduite"
 
     BatchTranslationResponse:
       type: object
@@ -311,3 +342,35 @@ components:
         detail:
           type: string
           example: "Langue cible non supportée ou payload corrompu."
+
+    HTTPValidationError:
+      type: object
+      properties:
+        detail:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+      title: HTTPValidationError
+
+    ValidationError:
+      type: object
+      required:
+        - loc
+        - msg
+        - type
+      properties:
+        loc:
+          type: array
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      title: ValidationError

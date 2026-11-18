@@ -36,6 +36,50 @@
 └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
+### Schéma d'Architecture Détaillé
+
+```mermaid
+flowchart TD
+    subgraph APP["Application Bancaire Hôte (Zéro Modification)"]
+        DOM["DOM de l'application (Nœuds Texte & Attributs)"]
+    end
+
+    subgraph EXT["Extension Navigateur (Manifest V3)"]
+        MO["MutationObserver (Anti-rebond 160ms, écoute #app)"]
+        MASK["Masquage Déterministe (Jetons inviolables __SAFE_*)"]
+        RESOLV["Moteur de Résolution Linguistique"]
+        OFFLINE["Catalogue Hors-Ligne Embarqué (JSON)"]
+        RESTORE["Vérification Multi-Ensemble & Restauration Stricte"]
+        SHADOW["Widget d'Accessibilité (Shadow DOM Isolé)"]
+    end
+
+    subgraph BACKEND["Backend Souverain FastAPI (http://127.0.0.1:8000)"]
+        RATELIMIT["Limiteur de Débit (120 req/min) & CORS Restreint"]
+        API["API REST (/translate/batch, /health, /languages, /feedback)"]
+        TM["Mémoire de Traduction Validée (translations.csv)"]
+        GLOSS["Glossaire Financier Certifié (glossaire.csv)"]
+        ENGINE["Moteur Automatique & Annotations Inédites"]
+        PROTECT["Module d'Intégrité Financière (protect.py)"]
+    end
+
+    DOM -->|"Observation passive sans altération"| MO
+    MO --> MASK
+    MASK -->|"Segments avec jetons masqués"| RESOLV
+    RESOLV -.->|"Mode hors-ligne / Repli immédiat"| OFFLINE
+    RESOLV -->|"HTTP POST JSON (/translate/batch)"| RATELIMIT
+    RATELIMIT --> API
+    API --> TM
+    TM --> GLOSS
+    GLOSS --> ENGINE
+    ENGINE --> PROTECT
+    PROTECT -->|"Texte sécurisé avec jetons"| API
+    API -->|"Réponse avec statuts et drapeaux d'intégrité"| RESOLV
+    OFFLINE --> RESTORE
+    RESOLV --> RESTORE
+    RESTORE -->|"Remplacement in-place via nodeValue"| DOM
+    RESTORE -->|"Mise à jour compteurs & statuts"| SHADOW
+```
+
 1. **Zéro intrusion** : Aucune modification du code source cible, ni interception intrusive des requêtes applicatives.
 2. **Étanchéité visuelle** : Le widget d'accessibilité est isolé dans un **Shadow DOM** (`mode: 'open'`) pour empêcher toute collision CSS avec Tailwind.
 3. **Sécurité et intégrité** : Montants, devises, numéros de compte, téléphones, références et noms de tiers sont protégés par jetons inviolables et jamais traduits.

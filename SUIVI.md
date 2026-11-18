@@ -74,6 +74,22 @@
 
 ## Fait
 
+- 2026-11-18 09:10 — Alignement et test de contrat OpenAPI, guide d'intégration tiers et schéma Mermaid d'architecture (branche `amelioration`) :
+  1. **Alignement strict du contrat OpenAPI (`openapi.yaml` vs `app.openapi()`)** :
+     - Ajout du paramètre query `include_experimental` sur `GET /languages`.
+     - Ajout de `allow_experimental` et `annotate_security_alerts` dans `BatchTranslationRequest`.
+     - Alignement complet de `TranslationItemResponse` avec les champs `novel_annotated`, `badge`, `bilingual_required`, `status`.
+     - Déclaration des schémas de validation Pydantic standard `HTTPValidationError` et `ValidationError`.
+  2. **Suite de tests automatisée du contrat OpenAPI (`backend/tests/test_openapi_contract.py`)** :
+     - 5 tests unitaires vérifiant la stricte identité des chemins, méthodes, paramètres de requêtes et propriétés de tous les schémas de données.
+     - Échoue immédiatement en cas de divergence entre l'implémentation FastAPI et le fichier de spécification.
+  3. **Guide d'intégration tiers en cinq étapes (`docs/guide_integration_tiers.md`)** :
+     - Intégration sans aucune modification du code source hôte : (1) Chargement extension Edge/Chrome, (2) Configuration domaines autorisés et CORS, (3) Démarrage API locale, (4) Appel REST avec curl, (5) Appel avec fetch JavaScript.
+     - Exemples testés et exécutés en direct sur l'API uvicorn locale avec reproduction intégrale des sorties réelles constatées (intégrité financière 100% préservée).
+  4. **Schéma Mermaid d'architecture dans `docs/01_architecture.md`** :
+     - Ajout d'un diagramme `flowchart TD` modélisant l'application hôte, l'extension MV3 avec Shadow DOM, le catalogue hors-ligne, et le backend FastAPI avec son pipeline d'intégrité financière `protect.py`.
+  5. **Validation globale** : 166/166 tests backend OK, 7/7 tests d'accessibilité OK, 3/3 tests de performance OK.
+
 - 2026-11-18 07:45 — Audit de sécurité indépendant v2, durcissement anti-DoS et isolation stricte (branche `amelioration`) :
   1. **Dépendance d'audit** : `pip install pip-audit` (version 2.10.1, 60,57 Ko / 62 023 octets annoncés avant installation), déclarée dans `THIRD_PARTY.md` section 2.1 comme outil de test et d'audit uniquement (hors production).
   2. **Audit CVE des dépendances backend** : `pip-audit -r backend/requirements.txt` exécuté avec succès : **0 vulnérabilité connue (0 CVE)** sur l'ensemble de la pile.
