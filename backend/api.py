@@ -22,6 +22,7 @@ from typing import List, Optional, Dict
 from dotenv import load_dotenv
 
 from fastapi import FastAPI, HTTPException, Request, status
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -69,6 +70,59 @@ app.add_middleware(
 # Limites de sécurité
 MAX_BATCH_SIZE = int(os.getenv("MAX_BATCH_SIZE", "100"))
 MAX_TEXT_LENGTH = int(os.getenv("MAX_TEXT_LENGTH", "2000"))
+
+# Limitation de débit (Rate Limiting anti-DoS en mémoire)
+RATE_LIMIT_PER_MINUTE = int(os.getenv("RATE_LIMIT_PER_MINUTE", "120"))
+RATE_LIMIT_ENABLED = os.getenv("RATE_LIMIT_ENABLED", "true").strip().lower() in ("true", "1", "yes")
+
+_request_timestamps_by_ip: Dict[str, List[float]] = {}
+
+
+def check_rate_limit(client_ip: str) -> bool:
+    """Vérifie si une adresse IP a dépassé le quota de requêtes autorisées par minute."""
+    if not RATE_LIMIT_ENABLED:
+        return True
+    now = time.time()
+    window_start = now - 60.0
+    timestamps = _request_timestamps_by_ip.setdefault(client_ip, [])
+    # Élaguer les requêtes antérieures à la fenêtre glissante de 60s
+    timestamps[:] = [t for t in timestamps if t > window_start]
+    if len(timestamps) >= RATE_LIMIT_PER_MINUTE:
+        return False
+    timestamps.append(now)
+    return True
+
+
+def reset_rate_limit():
+    """Réinitialise les compteurs de requêtes par IP (utilitaire de test)."""
+    _request_timestamps_by_ip.clear()
+
+
+@app.middleware("http")
+async def rate_limiting_middleware(request: Request, call_next):
+    # Les requêtes OPTIONS (CORS preflight) ne consomment pas de quota
+    if request.method == "OPTIONS":
+        return await call_next(request)
+
+    client_ip = request.client.host if request.client else "127.0.0.1"
+    if not check_rate_limit(client_ip):
+        logger.warning("Rate limit exceeded for client IP: %s", client_ip)
+        return JSONResponse(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            content={"detail": "Limite de débit dépassée (trop de requêtes). Veuillez patienter."},
+            headers={"Retry-After": "60"}
+        )
+    return await call_next(request)
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception):
+    # Journalisation strictement anonyme de l'incident sans fuite de stack trace ou d'infos techniques
+    logger.error("Unhandled internal exception: %s", type(exc).__name__)
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"detail": "Une erreur interne s'est produite. Aucun détail technique n'est divulgué."}
+    )
 
 START_TIME = time.time()
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -187,15 +241,15 @@ class LanguageInfo(BaseModel):
 
 
 class TranslationItemRequest(BaseModel):
-    id: str
+    id: str = Field(..., max_length=100)
     text: str
-    screen_context: Optional[str] = "global"
+    screen_context: Optional[str] = Field("global", max_length=100)
     is_critical_security: Optional[bool] = False
 
 
 class BatchTranslationRequest(BaseModel):
-    source_lang: str = "fr"
-    target_lang: str = "dua"
+    source_lang: str = Field("fr", max_length=10)
+    target_lang: str = Field("dua", max_length=10)
     allow_machine_translation: bool = True
     allow_experimental: bool = False
     annotate_security_alerts: Optional[bool] = None
@@ -223,12 +277,12 @@ class BatchTranslationResponse(BaseModel):
 
 
 class FeedbackRequest(BaseModel):
-    source_text: str
-    target_lang: str
-    suggested_translation: str
-    screen_context: Optional[str] = "dashboard"
-    validator_code: Optional[str] = None
-    comment: Optional[str] = None
+    source_text: str = Field(..., min_length=1, max_length=2000, description="Texte source")
+    target_lang: str = Field(..., min_length=2, max_length=10, description="Code langue cible")
+    suggested_translation: str = Field(..., min_length=1, max_length=2000, description="Traduction suggérée")
+    screen_context: Optional[str] = Field("dashboard", max_length=100, description="Contexte de l'écran")
+    validator_code: Optional[str] = Field(None, max_length=100, description="Code du validateur")
+    comment: Optional[str] = Field(None, max_length=2000, description="Commentaire optionnel")
 
 
 class FeedbackResponse(BaseModel):

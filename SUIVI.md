@@ -74,6 +74,24 @@
 
 ## Fait
 
+- 2026-11-18 07:45 — Audit de sécurité indépendant v2, durcissement anti-DoS et isolation stricte (branche `amelioration`) :
+  1. **Dépendance d'audit** : `pip install pip-audit` (version 2.10.1, 60,57 Ko / 62 023 octets annoncés avant installation), déclarée dans `THIRD_PARTY.md` section 2.1 comme outil de test et d'audit uniquement (hors production).
+  2. **Audit CVE des dépendances backend** : `pip-audit -r backend/requirements.txt` exécuté avec succès : **0 vulnérabilité connue (0 CVE)** sur l'ensemble de la pile.
+  3. **Audit de l'historique Git complet** : recherche exhaustive sur tous les commits (`git log -p -S / -G` sur `hf_`, `sk-`, `api_key=`, `tokens`) : **0 secret ou clé API divulgué**, fichier `.env.example` propre sans secret.
+  4. **Permissions et Manifest V3 (`extension/manifest.json`)** : `permissions: []` (strictement vide, 0 permission privilégiée), `host_permissions` limité au site officiel (`https://safinum.cm/hackathon-test*`) et aux mocks de développement locaux. Aucun wildcard permissif (`*://*/*` ou `<all_urls>`).
+  5. **Éradication de `innerHTML` et `eval` (`extension/content.js`)** :
+     - Remplacement de `widget.innerHTML` pour le template statique Shadow DOM par un constructeur programmatique sécurisé `createDOMElement` (`document.createElement`, `setAttribute`, `textContent`).
+     - **0 `innerHTML`**, **0 `eval`** dans toute l'extension. Remplacement in-place des nœuds textuels via `nodeValue` sans altération du markup HTML.
+  6. **Durcissement du backend FastAPI (`backend/api.py`)** :
+     - **Rate Limiting anti-DoS** : limiteur en mémoire par adresse IP à fenêtre glissante de 60 secondes (120 req/min, code `HTTP 429 Too Many Requests` avec en-tête `Retry-After: 60`, requêtes OPTIONS pré-vol exemptées).
+     - **Validation des longueurs maximales sur `/feedback`** : contraintes Pydantic strictes (`Field(..., min_length=1, max_length=2000)`) sur `source_text`, `suggested_translation` et `comment` (rejet immédiat en `HTTP 422 Unprocessable Entity`).
+     - **Gestionnaire d'exception 500 sans fuite technique** : `@app.exception_handler(Exception)` masquant les stack traces et chemins système Windows en cas d'erreur inattendue.
+     - **Confidentialité RGPD absolue des logs** : vérifié par test unitaire, aucun texte utilisateur ni montant n'est jamais consigné dans les journaux applicatifs.
+  7. **Rapport et validation** :
+     - Rédaction du rapport complet `docs/04_audit_securite_v2.md`.
+     - Suite automatisée `backend/tests/test_security_audit_v2.py` (6 tests unitaires passants).
+     - Validation globale de non-régression : **161/161 tests backend OK**, **7/7 tests d'accessibilité OK**, **3/3 tests de performance OK**.
+
 - 2026-11-17 12:40 — Mesures de performance réelles et audit de réactivité DOM (Playwright Edge, branche `amelioration`) :
   1. **Environnement matériel et logiciel certifié** :
      - OS : Microsoft Windows 11 Pro 64-bit (build 10.0.26200).

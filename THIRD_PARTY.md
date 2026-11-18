@@ -41,8 +41,9 @@ Toutes les dépendances sont déclarées dans [`backend/requirements.txt`](backe
 |---|---|---|---|---|
 | **playwright** | `>=1.40.0` | Apache-2.0 | Automatisation des tests E2E navigateur (Microsoft Edge) | ~35 Mo |
 | **axe-playwright-python** | `0.1.8` | MIT | Audit d'accessibilité WCAG automatisé sur Shadow DOM (tests uniquement) | 156,92 Ko (160 681 octets) |
+| **pip-audit** | `2.10.1` | Apache-2.0 | Audit statique des vulnérabilités des dépendances Python (CVE) (tests uniquement) | 60,57 Ko (62 023 octets) |
 
-> **Précision** : `axe-playwright-python` est utilisé **strictement comme outil de test et d'audit automatisé**. Il n'est pas embarqué dans l'extension client ni requis pour le backend en production.
+> **Précision** : `axe-playwright-python` et `pip-audit` sont utilisés **strictement comme outils de test et d'audit automatisé**. Ils ne sont pas embarqués dans l'extension client ni requis pour le backend en production.
 
 ---
 

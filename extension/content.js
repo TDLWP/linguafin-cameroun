@@ -837,80 +837,176 @@
     widget.setAttribute('role', 'region');
     widget.setAttribute('aria-label', 'Accessibilité linguistique SAFINUM');
 
-    widget.innerHTML = `
-      <div id="liveAnnouncer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
-      
-      <div class="safinum-panel" id="panel" role="dialog" aria-modal="true" aria-label="Paramètres linguistiques SAFINUM">
-        <div class="header">
-          <div class="title">
-            <span aria-hidden="true">🇨🇲</span>
-            <span>SAFINUM Accessibilité</span>
-          </div>
-          <button class="btn-icon" id="btnClose" aria-label="Fermer le panneau d'accessibilité" title="Fermer (Échap)">✕</button>
-        </div>
+    function createDOMElement(tag, attrs = {}, children = []) {
+      const node = document.createElement(tag);
+      for (const [k, v] of Object.entries(attrs)) {
+        if (k === 'text') {
+          node.textContent = v;
+        } else if (k === 'style' && typeof v === 'object') {
+          Object.assign(node.style, v);
+        } else if (v !== null && v !== undefined) {
+          node.setAttribute(k, v);
+        }
+      }
+      for (const child of children) {
+        if (typeof child === 'string') {
+          node.appendChild(document.createTextNode(child));
+        } else if (child instanceof Node) {
+          node.appendChild(child);
+        }
+      }
+      return node;
+    }
 
-        <div class="ai-disclaimer-banner" role="note">
-          <span aria-hidden="true">⚠️</span>
-          <span id="aiBannerText">Traductions générées par IA, non validées par un locuteur natif.</span>
-        </div>
+    const liveAnnouncerEl = createDOMElement('div', {
+      id: 'liveAnnouncer',
+      class: 'sr-only',
+      'aria-live': 'polite',
+      'aria-atomic': 'true'
+    });
 
-        <div class="section">
-          <label class="label" for="langSelect" id="langSelectLabel">Langue camerounaise</label>
-          <select class="select-input" id="langSelect" aria-labelledby="langSelectLabel">
-            <option value="dua" selected>Duálá (Duala)</option>
-            <option value="bas">Ɓàsàa (Bassa'a)</option>
-            <option value="fr">Français (Langue source)</option>
-          </select>
-        </div>
+    const header = createDOMElement('div', { class: 'header' }, [
+      createDOMElement('div', { class: 'title' }, [
+        createDOMElement('span', { 'aria-hidden': 'true', text: '🇨🇲 ' }),
+        createDOMElement('span', { text: 'SAFINUM Accessibilité' })
+      ]),
+      createDOMElement('button', {
+        class: 'btn-icon',
+        id: 'btnClose',
+        'aria-label': "Fermer le panneau d'accessibilité",
+        title: 'Fermer (Échap)',
+        text: '✕'
+      })
+    ]);
 
-        <div class="section">
-          <button class="toggle-action-btn active" id="btnToggleTranslate" aria-pressed="true">
-            <span aria-hidden="true">🔄</span>
-            <span id="toggleBtnText">Mode Traduit (Duálá)</span>
-          </button>
-        </div>
+    const aiBanner = createDOMElement('div', { class: 'ai-disclaimer-banner', role: 'note' }, [
+      createDOMElement('span', { 'aria-hidden': 'true', text: '⚠️ ' }),
+      createDOMElement('span', {
+        id: 'aiBannerText',
+        text: 'Traductions générées par IA, non validées par un locuteur natif.'
+      })
+    ]);
 
-        <div class="switch-row">
-          <span id="labelBilingual">Affichage bilingue au survol</span>
-          <label class="switch" for="checkBilingual">
-            <input type="checkbox" id="checkBilingual" checked aria-labelledby="labelBilingual">
-            <span class="slider" aria-hidden="true"></span>
-          </label>
-        </div>
+    const sectionLang = createDOMElement('div', { class: 'section' }, [
+      createDOMElement('label', {
+        class: 'label',
+        for: 'langSelect',
+        id: 'langSelectLabel',
+        text: 'Langue camerounaise'
+      }),
+      createDOMElement('select', {
+        class: 'select-input',
+        id: 'langSelect',
+        'aria-labelledby': 'langSelectLabel'
+      }, [
+        createDOMElement('option', { value: 'dua', selected: 'selected', text: 'Duálá (Duala)' }),
+        createDOMElement('option', { value: 'bas', text: "Ɓàsàa (Bassa'a)" }),
+        createDOMElement('option', { value: 'fr', text: 'Français (Langue source)' })
+      ])
+    ]);
 
-        <div class="switch-row" style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #334155;">
-          <span id="labelExperimental">Mode expérimental (IA non calibrée)</span>
-          <label class="switch" for="checkExperimental">
-            <input type="checkbox" id="checkExperimental" aria-labelledby="labelExperimental">
-            <span class="slider" aria-hidden="true"></span>
-          </label>
-        </div>
+    const sectionToggle = createDOMElement('div', { class: 'section' }, [
+      createDOMElement('button', {
+        class: 'toggle-action-btn active',
+        id: 'btnToggleTranslate',
+        'aria-pressed': 'true'
+      }, [
+        createDOMElement('span', { 'aria-hidden': 'true', text: '🔄 ' }),
+        createDOMElement('span', { id: 'toggleBtnText', text: 'Mode Traduit (Duálá)' })
+      ])
+    ]);
 
-        <div class="status-box">
-          <div class="status-line">
-            <span style="color: #CBD5E1;">Intégrité financière :</span>
-            <span style="color:#10B981; font-weight:800;">100% Inviolée</span>
-          </div>
-          <div class="status-line">
-            <span class="pill"><span class="dot-green"></span> Validé (Humain) :</span>
-            <span id="statHuman">0</span>
-          </div>
-          <div class="status-line">
-            <span class="pill"><span class="dot-amber"></span> Suggéré (Auto) :</span>
-            <span id="statMachine">0</span>
-          </div>
-          <div class="status-line">
-            <span class="pill"><span class="dot-gray"></span> Source / Repli :</span>
-            <span id="statFallback">0</span>
-          </div>
-        </div>
-      </div>
+    const switchBilingual = createDOMElement('div', { class: 'switch-row' }, [
+      createDOMElement('span', { id: 'labelBilingual', text: 'Affichage bilingue au survol' }),
+      createDOMElement('label', { class: 'switch', for: 'checkBilingual' }, [
+        createDOMElement('input', {
+          type: 'checkbox',
+          id: 'checkBilingual',
+          checked: 'checked',
+          'aria-labelledby': 'labelBilingual'
+        }),
+        createDOMElement('span', { class: 'slider', 'aria-hidden': 'true' })
+      ])
+    ]);
 
-      <div class="safinum-badge" id="badge" tabindex="0" role="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Ouvrir le panneau d'accessibilité linguistique SAFINUM">
-        <span aria-hidden="true">🇨🇲</span>
-        <span id="badgeLabel">Duálá (Actif)</span>
-      </div>
-    `;
+    const switchExperimental = createDOMElement('div', {
+      class: 'switch-row',
+      style: { marginTop: '8px', paddingTop: '8px', borderTop: '1px dashed #334155' }
+    }, [
+      createDOMElement('span', {
+        id: 'labelExperimental',
+        text: 'Mode expérimental (IA non calibrée)'
+      }),
+      createDOMElement('label', { class: 'switch', for: 'checkExperimental' }, [
+        createDOMElement('input', {
+          type: 'checkbox',
+          id: 'checkExperimental',
+          'aria-labelledby': 'labelExperimental'
+        }),
+        createDOMElement('span', { class: 'slider', 'aria-hidden': 'true' })
+      ])
+    ]);
+
+    const statusBox = createDOMElement('div', { class: 'status-box' }, [
+      createDOMElement('div', { class: 'status-line' }, [
+        createDOMElement('span', { style: { color: '#CBD5E1' }, text: 'Intégrité financière : ' }),
+        createDOMElement('span', { style: { color: '#10B981', fontWeight: '800' }, text: '100% Inviolée' })
+      ]),
+      createDOMElement('div', { class: 'status-line' }, [
+        createDOMElement('span', { class: 'pill' }, [
+          createDOMElement('span', { class: 'dot-green' }),
+          ' Validé (Humain) : '
+        ]),
+        createDOMElement('span', { id: 'statHuman', text: '0' })
+      ]),
+      createDOMElement('div', { class: 'status-line' }, [
+        createDOMElement('span', { class: 'pill' }, [
+          createDOMElement('span', { class: 'dot-amber' }),
+          ' Suggéré (Auto) : '
+        ]),
+        createDOMElement('span', { id: 'statMachine', text: '0' })
+      ]),
+      createDOMElement('div', { class: 'status-line' }, [
+        createDOMElement('span', { class: 'pill' }, [
+          createDOMElement('span', { class: 'dot-gray' }),
+          ' Source / Repli : '
+        ]),
+        createDOMElement('span', { id: 'statFallback', text: '0' })
+      ])
+    ]);
+
+    const panelEl = createDOMElement('div', {
+      class: 'safinum-panel',
+      id: 'panel',
+      role: 'dialog',
+      'aria-modal': 'true',
+      'aria-label': 'Paramètres linguistiques SAFINUM'
+    }, [
+      header,
+      aiBanner,
+      sectionLang,
+      sectionToggle,
+      switchBilingual,
+      switchExperimental,
+      statusBox
+    ]);
+
+    const badgeEl = createDOMElement('div', {
+      class: 'safinum-badge',
+      id: 'badge',
+      tabindex: '0',
+      role: 'button',
+      'aria-haspopup': 'dialog',
+      'aria-expanded': 'false',
+      'aria-label': "Ouvrir le panneau d'accessibilité linguistique SAFINUM"
+    }, [
+      createDOMElement('span', { 'aria-hidden': 'true', text: '🇨🇲 ' }),
+      createDOMElement('span', { id: 'badgeLabel', text: 'Duálá (Actif)' })
+    ]);
+
+    widget.appendChild(liveAnnouncerEl);
+    widget.appendChild(panelEl);
+    widget.appendChild(badgeEl);
 
     shadowRoot.appendChild(styles);
     shadowRoot.appendChild(widget);
