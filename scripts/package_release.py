@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 scripts/package_release.py
 Produit les archives officielles de distribution pour LinguaFin SAFINUM 2026 :
@@ -185,7 +185,9 @@ def verify_and_test_decompression(zip_ext: str, zip_src: str):
         assert "manifest.json" in extracted_files, "ERREUR : manifest.json absent a la racine de l extension !"
         assert "content.js" in extracted_files, "ERREUR : content.js absent de l extension !"
         assert "offline_catalog.json" in extracted_files, "ERREUR : offline_catalog.json absent de l extension !"
+        assert "catalogue_offline.json" not in extracted_files, "ERREUR : catalogue_offline.json (doublon divergent) ne doit pas être présent !"
         print("  -> [CONTROLE OK] manifest.json est bien situe a la racine du zip.")
+        print("  -> [CONTROLE OK] Catalogue unique offline_catalog.json présent sans doublon divergent.")
 
     # 2. Controle linguafin_v2_source.zip
     with tempfile.TemporaryDirectory(prefix="linguafin_src_test_") as tmp_src:

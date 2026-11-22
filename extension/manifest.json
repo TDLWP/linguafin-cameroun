@@ -29,8 +29,7 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "offline_catalog.json",
-        "catalogue_offline.json"
+        "offline_catalog.json"
       ],
       "matches": [
         "https://safinum.cm/hackathon-test*",

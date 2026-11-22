@@ -116,6 +116,31 @@
     <div class="footer" id="footerText">
       Safinum Pay — environnement de démonstration. Ne saisissez aucune donnée personnelle réelle.
     </div>
+
+    <!-- Panneau Jury de Contrôle SAFINUM (Doit être strictement sanctuarisé et exclu de toute traduction) -->
+    <aside id="jury-panel" class="jury-panel" data-safinum-jury="true" style="margin-top:24px; padding:16px; background:#0B132B; border:1px solid #334155; border-radius:12px;">
+      <nav style="display:flex; gap:8px; margin-bottom:12px;">
+        <button type="button" style="padding:6px 12px; background:#1E293B; color:#FFF; border-radius:6px; border:1px solid #334155;">Contrôle</button>
+        <button type="button" style="padding:6px 12px; background:#00BFFF; color:#021226; font-weight:700; border-radius:6px; border:none;">Soumissions</button>
+      </nav>
+      <div class="cards-container">
+        <div class="rounded-xl border submission-card" style="padding:12px; margin-bottom:8px; background:#1E293B; border:1px solid #334155; border-radius:8px;">
+          <div class="card-title" style="font-weight:700; font-size:13px; color:#F8FAFC;">Consultation des frais</div>
+          <div class="card-extract" style="font-size:11px; color:#94A3B8;">amount: 25000 | fee: 0 | total: 25000 | operation: safinum</div>
+          <span class="rounded-full" style="font-size:10px; background:#065F46; color:#6EE7B7; padding:2px 8px; border-radius:10px;">Intègre</span>
+        </div>
+        <div class="rounded-xl border submission-card" style="padding:12px; margin-bottom:8px; background:#1E293B; border:1px solid #334155; border-radius:8px;">
+          <div class="card-title" style="font-weight:700; font-size:13px; color:#F8FAFC;">Préparation du transfert</div>
+          <div class="card-extract" style="font-size:11px; color:#94A3B8;">beneficiary: Jean-Paul Mbarga | phone: +237 6 99 12 34 56</div>
+          <span class="rounded-full" style="font-size:10px; background:#065F46; color:#6EE7B7; padding:2px 8px; border-radius:10px;">Intègre</span>
+        </div>
+        <div class="rounded-xl border submission-card" style="padding:12px; background:#1E293B; border:1px solid #334155; border-radius:8px;">
+          <div class="card-title" style="font-weight:700; font-size:13px; color:#F8FAFC;">Reçu de transfert</div>
+          <div class="card-extract" style="font-size:11px; color:#94A3B8;">reference: SAF-2026-X7Y8Z9 | amount: 25000 | total: 25000</div>
+          <span class="rounded-full" style="font-size:10px; background:#065F46; color:#6EE7B7; padding:2px 8px; border-radius:10px;">Intègre</span>
+        </div>
+      </div>
+    </aside>
   </div>
 </body>
 </html>

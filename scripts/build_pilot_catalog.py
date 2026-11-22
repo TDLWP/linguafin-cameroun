@@ -883,20 +883,22 @@ def build_pilot_catalog():
             "notes": notes
         }
 
+    # Inclusion de l'index bilingue EN->FR si disponible
+    en_index_path = os.path.join(base_dir, "data", "en_to_fr_index.json")
+    if os.path.exists(en_index_path):
+        with open(en_index_path, "r", encoding="utf-8") as f:
+            en_data = json.load(f)
+            offline_catalog["en_index"] = en_data.get("en_to_fr", en_data)
+
     json_path = os.path.join(base_dir, "catalogue", "translations_offline.json")
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(offline_catalog, f, ensure_ascii=False, indent=2)
     print(f"[OK] {json_path} généré.")
 
-    ext_json_path = os.path.join(base_dir, "extension", "catalogue_offline.json")
+    ext_json_path = os.path.join(base_dir, "extension", "offline_catalog.json")
     with open(ext_json_path, "w", encoding="utf-8") as f:
         json.dump(offline_catalog, f, ensure_ascii=False, indent=2)
-    print(f"[OK] {ext_json_path} généré pour l'extension.")
-
-    ext_json_path2 = os.path.join(base_dir, "extension", "offline_catalog.json")
-    with open(ext_json_path2, "w", encoding="utf-8") as f:
-        json.dump(offline_catalog, f, ensure_ascii=False, indent=2)
-    print(f"[OK] {ext_json_path2} généré pour l'extension.")
+    print(f"[OK] {ext_json_path} généré pour l'extension (catalogue unique).")
 
 if __name__ == "__main__":
     build_pilot_catalog()

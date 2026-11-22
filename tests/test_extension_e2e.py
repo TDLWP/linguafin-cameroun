@@ -101,6 +101,58 @@ class TestExtensionCoverageAndMockBank(unittest.TestCase):
         for src, item in bas_translations.items():
             self.assertEqual(item["status"], "machine_suggested", f"Entrée Bassa'a '{src}' non conforme: {item['status']}")
 
+    def test_content_js_jury_exclusion_safeguards(self):
+        """Vérifie que le sélecteur configurable d'exclusion et la sanctuarisation du jury sont codés dans content.js."""
+        self.assertIn("isInExcludedZone", self.content_js)
+        self.assertIn("getExcludedSelectors", self.content_js)
+        self.assertIn("'aside'", self.content_js)
+        self.assertIn("SAFINUM_EXCLUDED_SELECTORS", self.content_js)
+        self.assertIn("window.SAFINUM_IS_IN_EXCLUDED_ZONE", self.content_js)
+
+    def test_no_divergent_embedded_catalogs(self):
+        """
+        Vérifie qu'aucun catalogue embarqué ne diverge dans extension/.
+        Échoue si deux catalogues embarqués existent dans extension/ et divergent,
+        ou si offline_catalog.json manque des sections critiques (translations, glossary, en_index).
+        """
+        ext_dir = os.path.join(BASE_DIR, "extension")
+        canonical_path = os.path.join(ext_dir, "offline_catalog.json")
+        self.assertTrue(os.path.isfile(canonical_path), "offline_catalog.json doit être présent dans extension/")
+
+        with open(canonical_path, "r", encoding="utf-8") as f:
+            canonical_data = json.load(f)
+
+        # Vérification des sections obligatoires
+        self.assertIn("translations", canonical_data, "offline_catalog.json doit contenir 'translations'")
+        self.assertIn("glossary", canonical_data, "offline_catalog.json doit contenir 'glossary'")
+        self.assertIn("en_index", canonical_data, "offline_catalog.json doit contenir 'en_index'")
+        self.assertGreater(len(canonical_data["en_index"]), 50, "en_index doit contenir au moins 50 correspondances EN->FR")
+
+        # Recherche de tout autre catalogue JSON dans extension/
+        ext_files = os.listdir(ext_dir)
+        catalog_files = [f for f in ext_files if f.endswith(".json") and ("catalog" in f.lower() or "catalogue" in f.lower())]
+
+        for cat_file in catalog_files:
+            if cat_file == "offline_catalog.json":
+                continue
+            cat_path = os.path.join(ext_dir, cat_file)
+            with open(cat_path, "r", encoding="utf-8") as f:
+                other_data = json.load(f)
+
+            # Si un second fichier existe, il DOIT être strictement identique sous peine d'échec
+            self.assertEqual(
+                canonical_data,
+                other_data,
+                f"ERREUR CRITIQUE : Le catalogue embarqué '{cat_file}' diverge de 'offline_catalog.json' ! "
+                f"L'extension ne doit jamais comporter de catalogues divergents."
+            )
+
+        # Test de sécurité : prouver qu'une divergence simulée déclenche bien une AssertionError
+        divergent_mock = dict(canonical_data)
+        divergent_mock["en_index"] = {}  # simuler l'absence de l'index EN
+        with self.assertRaises(AssertionError, msg="Une divergence entre deux catalogues doit déclencher un échec de test"):
+            self.assertEqual(canonical_data, divergent_mock)
+
 
 if __name__ == "__main__":
     unittest.main()

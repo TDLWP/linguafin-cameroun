@@ -737,12 +737,19 @@ def main():
             "ewo": g["ewo"]
         }
 
+    # Inclusion de l'index bilingue EN->FR si disponible
+    en_index_path = os.path.join("data", "en_to_fr_index.json")
+    if os.path.exists(en_index_path):
+        with open(en_index_path, "r", encoding="utf-8") as f:
+            en_data = json.load(f)
+            offline_catalog["en_index"] = en_data.get("en_to_fr", en_data)
+
     json_path = os.path.join("catalogue", "translations_offline.json")
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(offline_catalog, f, ensure_ascii=False, indent=2)
     print(f"[OK] {json_path} généré.")
 
-    ext_json_path = os.path.join("extension", "catalogue_offline.json")
+    ext_json_path = os.path.join("extension", "offline_catalog.json")
     with open(ext_json_path, "w", encoding="utf-8") as f:
         json.dump(offline_catalog, f, ensure_ascii=False, indent=2)
     print(f"[OK] {ext_json_path} embarqué pour l'extension Manifest V3.")

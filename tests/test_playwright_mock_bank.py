@@ -41,6 +41,11 @@ class TestPlaywrightMockBank(unittest.TestCase):
             self.assertEqual(page.locator("#beneficiaryInput").input_value(), "Jean-Paul Mbarga")
             self.assertEqual(page.locator("#phoneInput").input_value(), "+237 6 99 12 34 56")
 
+            # Capture de l'état textuel de référence des cartes de soumissions du jury (extension désactivée)
+            initial_jury_cards = [c.inner_text().strip() for c in page.locator("aside .submission-card").all()]
+            self.assertGreater(len(initial_jury_cards), 0, "Les cartes de soumissions doivent exister dans le panneau jury.")
+            self.assertTrue(any("Consultation des frais" in c for c in initial_jury_cards))
+
             # 2. Simulation de l'extension : mock de chrome.runtime.getURL et injection de content.js
             catalog_dict = json.loads(catalog_json)
             page.evaluate("""(catalogData) => {
@@ -90,7 +95,24 @@ class TestPlaywrightMockBank(unittest.TestCase):
             title_attr = page.locator("#lblBalance").get_attribute("title")
             self.assertIn("Original : Solde disponible", title_attr)
 
-            # 8. Capture d'écran du résultat dans docs/screens/
+            # 8. RÈGLE CRITIQUE : Sanctuarisation absolue du panneau jury (soumissions identiques avec/sans extension)
+            after_jury_cards = [c.inner_text().strip() for c in page.locator("aside .submission-card").all()]
+            self.assertEqual(
+                initial_jury_cards,
+                after_jury_cards,
+                "RÈGLE CRITIQUE : Le texte des cartes de l'onglet Soumissions du panneau jury doit être STRICTEMENT IDENTIQUE "
+                "avec et sans extension active. L'extension ne doit jamais modifier le panneau jury !"
+            )
+            # Vérifier qu'aucun élément du panneau jury n'a été annoté ou altéré
+            translated_in_jury = page.locator("aside [data-safinum-translated='true']").count()
+            self.assertEqual(translated_in_jury, 0, "Aucun élément dans le panneau jury ne doit porter data-safinum-translated.")
+            badges_in_jury = page.locator("aside .safinum-novel-badge").count()
+            self.assertEqual(badges_in_jury, 0, "Aucun badge 'contenu inédit' ne doit être injecté dans le panneau jury.")
+            for card_str in after_jury_cards:
+                self.assertNotIn("[Mutoa", card_str, "Le panneau jury ne doit pas contenir de traduction de 'Consultation des frais' !")
+                self.assertNotIn("contenu inédit", card_str, "Le panneau jury ne doit pas contenir de badge de contenu inédit !")
+
+            # 9. Capture d'écran du résultat dans docs/screens/
             os.makedirs(os.path.join(BASE_DIR, "docs", "screens"), exist_ok=True)
             screen_dest = os.path.join(BASE_DIR, "docs", "screens", "08_mock_bank_translated.png")
             page.screenshot(path=screen_dest)
@@ -98,7 +120,70 @@ class TestPlaywrightMockBank(unittest.TestCase):
 
             browser.close()
 
-        print("\n[OK] Test Playwright sur tests/mock_bank.html exécuté avec succès (Shadow DOM, Duálá, intégrité).")
+        print("\n[OK] Test Playwright sur tests/mock_bank.html exécuté avec succès (Shadow DOM, Duálá, intégrité, sanctuarisation jury).")
+
+    def test_configurable_exclusion_selectors(self):
+        """
+        Vérifie qu'un sélecteur d'exclusion configurable (via window.SAFINUM_EXCLUDED_SELECTORS)
+        permet d'exclure arbitrairement n'importe quel conteneur de la collecte et de la traduction.
+        """
+        mock_html_path = os.path.abspath(os.path.join(BASE_DIR, "tests", "mock_bank.html"))
+        content_js_path = os.path.abspath(os.path.join(BASE_DIR, "extension", "content.js"))
+        catalog_path = os.path.abspath(os.path.join(BASE_DIR, "extension", "offline_catalog.json"))
+
+        with open(content_js_path, "r", encoding="utf-8") as f:
+            content_js = f.read()
+
+        with open(catalog_path, "r", encoding="utf-8") as f:
+            catalog_dict = json.load(f)
+
+        file_url = f"file:///{mock_html_path.replace(os.sep, '/')}"
+
+        with sync_playwright() as p:
+            browser = p.chromium.launch(channel="msedge", headless=True)
+            page = browser.new_page()
+            page.goto(file_url)
+
+            # Insérer dynamiquement une zone protégée avec un sélecteur custom
+            page.evaluate("""() => {
+                const customZone = document.createElement('div');
+                customZone.id = 'my-custom-protected-container';
+                customZone.innerHTML = '<span id="protectedText">Frais de transfert</span>';
+                document.getElementById('app').appendChild(customZone);
+
+                // Configurer le sélecteur d'exclusion avant l'injection
+                window.SAFINUM_EXCLUDED_SELECTORS = ['#my-custom-protected-container', 'aside'];
+            }""")
+
+            # Injecter l'extension
+            page.evaluate("""(catalogData) => {
+                window.chrome = window.chrome || {};
+                window.chrome.runtime = {
+                    getURL: function(path) { return 'mock://' + path; }
+                };
+                window.fetch = async function(url, opts) {
+                    if (typeof url === 'string' && url.includes('offline_catalog.json')) {
+                        return { ok: true, json: async () => catalogData };
+                    }
+                    throw new TypeError('Offline fallback');
+                };
+            }""", catalog_dict)
+            page.evaluate(content_js)
+            page.wait_for_timeout(500)
+
+            # Vérifier que le texte principal normal est traduit
+            self.assertIn("Moni mi titi", page.locator("#lblBalance").inner_text())
+
+            # Vérifier que la zone protégée custom n'a PAS été traduite
+            protected_text = page.locator("#protectedText").inner_text().strip()
+            self.assertEqual(
+                protected_text,
+                "Frais de transfert",
+                "Le texte dans #my-custom-protected-container doit rester strictement 'Frais de transfert' sans traduction !"
+            )
+            self.assertEqual(page.locator("#protectedText").get_attribute("data-safinum-translated"), None)
+
+            browser.close()
 
 
 if __name__ == "__main__":

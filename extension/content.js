@@ -6,7 +6,7 @@
  * - Aucune modification du site hôte, aucun clic intercepté, aucun comportement modifié.
  * - Ne modifie JAMAIS les valeurs des inputs, montants saisis, formulaires ou boutons de confirmation.
  * - Mécanisme par lots vers l'API locale avec cache en mémoire.
- * - Repli automatique vers catalogue_offline.json en cas d'indisponibilité de l'API.
+ * - Repli automatique vers offline_catalog.json en cas d'indisponibilité de l'API.
  * - Widget flottant en Shadow DOM accessible (clavier, lecteur d'écran, mobile-friendly).
  * - Bascule instantanée Original / Traduit sans rechargement.
  * - Affichage bilingue au survol.
@@ -81,6 +81,49 @@
     isProcessing: false,
     isMutating: false
   };
+
+  // --- Sélecteurs d'exclusion configurables ---
+  // Ces sélecteurs désignent les zones que l'extension ne doit JAMAIS toucher.
+  // Le panneau jury est identifié par <aside> (sélecteur confirmé via Playwright sur safinum.cm/hackathon-test).
+  // La variable window.SAFINUM_EXCLUDED_SELECTORS permet de surcharger ou compléter en test.
+  function getExcludedSelectors() {
+    const defaultSelectors = [
+      '#safinum-accessibility-host',   // Widget propre de l'extension (Shadow DOM)
+      'aside',                          // Panneau jury SAFINUM (élément <aside> sur safinum.cm/hackathon-test)
+      '[data-safinum-jury]',            // Conteneur jury explicitement marqué
+      '[data-safinum-ignore]',          // Tout élément marqué manuellement à exclure
+      '.jury-panel',                    // Conteneur de classe jury-panel
+      '[class*="jury-panel"]'
+    ];
+    if (typeof window !== 'undefined' && Array.isArray(window.SAFINUM_EXCLUDED_SELECTORS)) {
+      return Array.from(new Set([...defaultSelectors, ...window.SAFINUM_EXCLUDED_SELECTORS]));
+    }
+    return defaultSelectors;
+  }
+
+  /**
+   * Vérifie si un nœud ou l'un de ses ancêtres est dans une zone exclue.
+   * @param {Element} el - L'élément à tester.
+   * @returns {boolean}
+   */
+  function isInExcludedZone(el) {
+    if (!el) return false;
+    const selectors = getExcludedSelectors();
+    for (const selector of selectors) {
+      try {
+        if (el.matches && el.matches(selector)) return true;
+        if (el.closest && el.closest(selector)) return true;
+      } catch (e) {
+        // Ignorer un sélecteur invalide éventuel
+      }
+    }
+    return false;
+  }
+
+  if (typeof window !== 'undefined') {
+    window.SAFINUM_IS_IN_EXCLUDED_ZONE = isInExcludedZone;
+    window.SAFINUM_GET_EXCLUDED_SELECTORS = getExcludedSelectors;
+  }
 
   // Mots-clés factorisés pour la détection des avertissements de sécurité et alertes
   const SECURITY_ALERT_KEYWORDS = [
@@ -419,16 +462,12 @@
           if (['script', 'style', 'code', 'pre', 'svg', 'noscript', 'iframe'].includes(tag)) {
             return NodeFilter.FILTER_REJECT;
           }
-          // Exclure le widget de l'extension
-          if (parent.closest('#safinum-accessibility-host')) {
+          // Exclure les zones configurées (widget Shadow DOM, panneau jury <aside>, data-safinum-jury, data-safinum-ignore, etc.)
+          if (isInExcludedZone(parent)) {
             return NodeFilter.FILTER_REJECT;
           }
           // RÈGLE ABSOLUE : Ne jamais modifier les inputs, textareas ou selects
           if (['input', 'textarea', 'select'].includes(tag)) {
-            return NodeFilter.FILTER_REJECT;
-          }
-          // Exclure les éléments marqués data-safinum-ignore
-          if (parent.hasAttribute('data-safinum-ignore')) {
             return NodeFilter.FILTER_REJECT;
           }
 
@@ -575,7 +614,7 @@
       // 5. Traduction non-intrusive des placeholders (sans toucher aux valeurs des inputs)
       const formElements = appRoot.querySelectorAll('input[placeholder], textarea[placeholder]');
       for (const el of formElements) {
-        if (!el.closest('#safinum-accessibility-host')) {
+        if (!isInExcludedZone(el)) {
           if (typeof el._safinum_orig_ph === 'undefined') {
             el._safinum_orig_ph = el.getAttribute('placeholder');
           }
@@ -642,13 +681,16 @@
       // Ignorer si l'extension est déjà en train de modifier le DOM
       if (state.isProcessing || state.isMutating) return;
 
-      // Ignorer les mutations survenant dans le Shadow DOM du widget
+      // Ignorer les mutations survenant uniquement dans des zones exclues (Shadow DOM du widget, panneau jury <aside>, etc.)
+      let hasRelevantMutation = false;
       for (const m of mutations) {
         const el = (m.target && m.target.nodeType === Node.ELEMENT_NODE) ? m.target : (m.target ? m.target.parentElement : null);
-        if (el && el.closest && el.closest('#safinum-accessibility-host')) {
-          return;
+        if (el && !isInExcludedZone(el)) {
+          hasRelevantMutation = true;
+          break;
         }
       }
+      if (!hasRelevantMutation) return;
 
       if (!state.isTranslated || state.currentLang === 'fr') return;
 

@@ -194,12 +194,21 @@ def read_jury_submissions(page: Page, step_id: str, step_label: str) -> tuple[Li
         if is_compromised:
             compromised_count += 1
 
+        # RÈGLE CRITIQUE : Le texte des cartes du panneau jury ne doit JAMAIS être modifié par l'extension
+        has_annotation_in_card = (
+            "[Mutoa" in c_text or
+            "[Moni" in c_text or
+            "[Om moni" in c_text or
+            "contenu inédit" in c_text.lower()
+        )
+
         submissions.append({
             "index": i + 1,
             "step_id": step_id,
             "step_label": step_label,
             "status": status,
             "is_compromised": is_compromised,
+            "has_annotation_in_card": has_annotation_in_card,
             "expected": expected,
             "displayed": displayed,
             "submitted": submitted,
@@ -652,12 +661,15 @@ class TestLiveJuryRegression(unittest.TestCase):
         compromised_entries = []
         bracket_violations = []
         badge_violations = []
+        card_modifications = []
 
         for r in runs:
             # Contrôle de toutes les soumissions jury
             for s in r["all_submissions"]:
                 if s["is_compromised"]:
                     compromised_entries.append((r["lang_label"], s))
+                if s.get("has_annotation_in_card"):
+                    card_modifications.append((r["lang_label"], s))
 
             # Contrôle spécifique des contenus inédits
             for n_key, n_data in r["novel_injections"].items():
@@ -667,6 +679,8 @@ class TestLiveJuryRegression(unittest.TestCase):
                     badge_violations.append((r["lang_label"], n_data["item_label"]))
 
         # Assertions strictes
+        if card_modifications:
+            self.fail(f"Régression : cartes de soumissions du panneau jury modifiées par l'extension : {card_modifications}")
         if bracket_violations:
             self.fail(f"Régression : crochet(s) détecté(s) autour d'un montant inédit : {bracket_violations}")
         if badge_violations:
@@ -721,12 +735,15 @@ class TestLiveJuryRegression(unittest.TestCase):
         compromised_entries = []
         bracket_violations = []
         badge_violations = []
+        card_modifications = []
 
         for r in runs:
             # Contrôle de toutes les soumissions jury
             for s in r["all_submissions"]:
                 if s["is_compromised"]:
                     compromised_entries.append((r["lang_label"], s))
+                if s.get("has_annotation_in_card"):
+                    card_modifications.append((r["lang_label"], s))
 
             # Contrôle spécifique des contenus inédits
             for n_key, n_data in r["novel_injections"].items():
@@ -736,6 +753,8 @@ class TestLiveJuryRegression(unittest.TestCase):
                     badge_violations.append((r["lang_label"], n_data["item_label"]))
 
         # Assertions strictes
+        if card_modifications:
+            self.fail(f"Régression : cartes de soumissions du panneau jury modifiées par l'extension : {card_modifications}")
         if bracket_violations:
             self.fail(f"Régression : crochet(s) détecté(s) autour d'un montant inédit : {bracket_violations}")
         if badge_violations:

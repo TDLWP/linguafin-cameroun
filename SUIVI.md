@@ -6,6 +6,13 @@
 
 ## Decisions
 
+- 2026-11-19 17:30 — Sanctuarisation absolue du panneau jury et unification du catalogue embarqué :
+  1. Panneau jury sanctuarisé dans `extension/content.js` : exclusion stricte du conteneur `<aside>` et de toute zone jury via la fonction dynamique `isInExcludedZone` et les sélecteurs configurables `getExcludedSelectors()` (`window.SAFINUM_EXCLUDED_SELECTORS`). Exclus de la collecte `TreeWalker`, de la surveillance `MutationObserver` et de la traduction des placeholders.
+  2. Tests de non-régression ajoutés dans `tests/test_playwright_mock_bank.py`, `tests/test_extension_e2e.py` et `tests/test_live_jury_regression.py` : vérification que le texte des cartes de l'onglet Soumissions est 100% identique avec et sans extension active, qu'aucun crochet ou badge n'y est injecté, et qu'un sélecteur configurable fonctionne comme attendu.
+  3. Résolution du double catalogue embarqué : suppression de `extension/catalogue_offline.json` (doublon divergent sans `en_index`), conservation exclusive de `extension/offline_catalog.json` (58 304 o, complet avec `en_index`), mise à jour de `extension/manifest.json` (`web_accessible_resources`), synchronisation des scripts de génération (`scripts/build_catalogues.py` et `scripts/build_pilot_catalog.py`) et mise à jour de `scripts/package_release.py`.
+  4. Test d'anti-divergence des catalogues embarqués dans `tests/test_extension_e2e.py` (`test_no_divergent_embedded_catalogs`), qui échoue si deux catalogues embarqués existent et divergent.
+  5. Validation intégrale des 5 suites via `scripts/run_all_checks.ps1` : 187 tests exécutés, 0 échec (100% SUCCÈS).
+
 - 2026-11-14 19:40 — Écartement du moteur Fulfulde du parcours de démonstration et confinement en mode expérimental :
   1. Constat d'incohérences et d'hallucinations sur 20 libellés (`catalogue/evaluation_fulfulde_20.csv`) : répétitions en boucle, anglais non traduit, dérives sémantiques religieuses hors contexte et absence de relecture native.
   2. Retrait de "ful" du sélecteur par défaut du widget (`extension/content.js`) et ajout d'un interrupteur « Mode expérimental » désactivé par défaut, avec bandeau d'alerte « ⚠️ Sortie expérimentale non fiable ».
@@ -385,6 +392,8 @@
 
 ## Prochaines etapes
 
-- Présentation au jury et enregistrement vidéo de la démo (3 minutes).
-- Déploiement ou chargement direct du dossier `extension/` dans Chrome/Edge.
+- Validation humaine des traductions Duálá / Ɓàsàa via `catalogue/kit_validation/GUIDE_VALIDATEUR.md`.
+- Présentation au jury et enregistrement vidéo de la démo (3 minutes via `docs/script_video_v2.md`).
+- Déploiement ou chargement direct du dossier `extension/` dans Chrome/Edge via `scripts/lancer_demo.ps1`.
+
 
