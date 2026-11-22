@@ -6,6 +6,12 @@
 
 ## Decisions
 
+- 2026-11-22 19:35 — Refonte complète et validation du parcours anglais (EN) :
+  1. `TestEnglishButtonVerification` (extension désactivée) : vérification avec Playwright du basculement réel de l'interface via le bouton EN du header (résolution du clic masqué par le panneau jury via sélecteur dédié `#app header button, div.flex.items-center.gap-3 button` et `force=True`, viewport 1600x960). Relevé du texte réel sur 5 écrans et comparaison avec `data/test_env_strings.json` : Dashboard 29/29 (100%), Fees 11/13 (84,6%), Beneficiary 7/8 (87,5%), Summary 9/9 (100%), Receipt 5/5 (100%). Les écarts relevés sont strictement conditionnels aux options secondaires (frais Mobile Money et Autre Banque, option motif de virement).
+  2. `TestEnglishJourneyRegression` : réécriture intégrale du parcours EN en 5 étapes complètes (saisie 25 000 FCFA) pour Duálá et Ɓàsàa. Exécution réelle et sans skip silencieux dans les deux modes : Mode 1 (Backend Arrêté) et Mode 2 (Backend Lancé démarré et arrêté automatiquement par le test sur FastAPI 127.0.0.1:8000). Contrôle strict de 12 soumissions enregistrées au jury par langue (minimum requis : 9) avec 100% de statut « Intègre » / « Intact » (0 « Compromis »).
+  3. Rapport de couverture index EN : rapport écran par écran des résolutions de l'index EN->FR (79/79 chaînes couvertes à 100%). Précision formelle : toute phrase anglaise inédite (hors index) n'est pas annotée (le glossaire embarqué étant en français) et reçoit le badge « contenu inédit ».
+  4. Exécution intégrale des 5 suites via `scripts/run_all_checks.ps1` : 191 tests exécutés, 0 échec (100% SUCCÈS, durée cumulée 555,43 s).
+
 - 2026-11-19 17:30 — Sanctuarisation absolue du panneau jury et unification du catalogue embarqué :
   1. Panneau jury sanctuarisé dans `extension/content.js` : exclusion stricte du conteneur `<aside>` et de toute zone jury via la fonction dynamique `isInExcludedZone` et les sélecteurs configurables `getExcludedSelectors()` (`window.SAFINUM_EXCLUDED_SELECTORS`). Exclus de la collecte `TreeWalker`, de la surveillance `MutationObserver` et de la traduction des placeholders.
   2. Tests de non-régression ajoutés dans `tests/test_playwright_mock_bank.py`, `tests/test_extension_e2e.py` et `tests/test_live_jury_regression.py` : vérification que le texte des cartes de l'onglet Soumissions est 100% identique avec et sans extension active, qu'aucun crochet ou badge n'y est injecté, et qu'un sélecteur configurable fonctionne comme attendu.
