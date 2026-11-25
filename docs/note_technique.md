@@ -80,7 +80,7 @@ Conformément à la règle permanente de sobriété technique (`AGENTS.md`) et a
 ### A. Extension Navigateur (Client)
 * **Zéro bibliothèque tierce** : Pur Vanilla JavaScript (ES6+ standard).
 * **Zéro framework** : Ni React, ni Vue, ni jQuery, ni polyfills lourds.
-* **Empreinte totale du dossier `extension/`** : **environ 134 Ko** (incluant le catalogue JSON hors-ligne).
+* **Empreinte totale du dossier `extension/`** : **108 399 octets (105,86 Ko)** (somme exacte des fichiers `content.js`, `manifest.json` et `offline_catalog.json`).
 
 ### B. Backend Local (Python 3.10+)
 Toutes les dépendances sont déclarées dans [`backend/requirements.txt`](../backend/requirements.txt) :
@@ -125,7 +125,8 @@ Le module [`backend/protect.py`](../backend/protect.py) applique un pipeline de 
 ## 5. Méthode d'Élaboration, Recoupement Lexical et Limites Réelles
 
 ### A. Statut de Validation : 0 / 84 Chaînes Validées par un Locuteur Natif
-* **Aucune validation humaine n'est acquise à cette étape**.
+* **Décompte des chaînes du catalogue** : Le catalogue compte **84 expressions / segments techniques** répertoriés dans les fiches de validation CSV et dans `catalogue/translations.csv` (84 entrées par langue). En raison de l'homonyme français « Sécurité » (utilisé pour deux clés distinctes `status_security` et `sec_sidebar_title`), le dictionnaire hors-ligne `extension/offline_catalog.json` indexé par texte source comporte exactement **83 entrées sources uniques** par langue (pour 84 segments au total).
+* **Aucune validation humaine n'est acquise à cette étape** (100 % statut `machine_suggested`).
 * **Méthode adoptée** : **Brouillon IA + Recoupement lexical + Garde-fou d'intégrité**.
 * **Résultats du recoupement lexical réel (`catalogue/crosscheck_rapport.csv`)** :
   - **Duálá (`dua`)** : 0 / 84 (0,0 %) attesté, 0 / 84 (0,0 %) partiellement attesté, 84 / 84 (100,0 %) non attesté dans la colonne `traduction` du lexique Mélac (qui ne compte que 7 mots anatomiques).

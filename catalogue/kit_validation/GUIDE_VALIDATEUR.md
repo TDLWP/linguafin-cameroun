@@ -1,4 +1,4 @@
-﻿# Guide du Validateur Linguistique — SAFINUM 2026
+# Guide du Validateur Linguistique — SAFINUM 2026
 
 > **Projet** : SAFINUM 2026 — Couche d'accessibilité linguistique pour services financiers numériques  
 > **Langues cibles** : Duálá (`dua`) & Ɓàsàa (`bas`)  
@@ -16,7 +16,7 @@ Les traductions actuellement présentes dans le système ont été générées a
 
 ## 2. Comment remplir votre fiche de validation ?
 
-Votre fiche contient **84 courtes expressions** utilisées sur une application de transfert d'argent (environ 15 à 20 minutes de lecture).
+Votre fiche contient **84 courtes expressions** (correspondant aux 84 segments du catalogue CSV et à 83 chaînes sources françaises uniques dans le dictionnaire JSON en raison de l'homonyme « Sécurité ») utilisées sur une application de transfert d'argent (durée non mesurée).
 
 Pour chaque ligne, vous disposez de 7 colonnes :
 

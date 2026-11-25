@@ -25,7 +25,7 @@ Conformément à la règle 4 et à la règle 7 de `AGENTS.md` :
 > *"Ne jamais présenter une traduction `machine_suggested` comme authentique. Aucune ligne ne passe en `human_validated` sans validation humaine effective."*
 
 ### A. Constat Réel et Transparent
-* **0 / 84 chaînes sont validées par un locuteur natif à date du 14 novembre 2026**.
+* **0 / 84 chaînes sont validées par un locuteur natif à date du 14 novembre 2026** (84 segments répertoriés dans les fiches CSV et `translations.csv` ; 83 chaînes sources françaises uniques dans le dictionnaire `extension/offline_catalog.json` en raison de l'homonyme « Sécurité »).
 * **100 % des propositions textuelles** du catalogue sont au statut `machine_suggested` (brouillons générés par IA).
 * Le widget Shadow DOM affiche en permanence un bandeau d'avertissement visible et contrasté :  
   `« ⚠️ Traductions générées par IA, non validées par un locuteur natif. »`.

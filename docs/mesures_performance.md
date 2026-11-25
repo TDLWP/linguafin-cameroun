@@ -1,5 +1,6 @@
 # Mesures de Performance du Système SAFINUM
 
+> **Avertissement méthodologique** : Les mesures de performance rapportées dans ce document proviennent d'un banc d'essai exécuté sur un **PC de développement** (Windows 11, Intel Core i7-12850HX, 32 Go RAM) sous navigateur automatisé (Microsoft Edge / Playwright) et **non d'un appareil cible** (smartphone d'entrée de gamme ou terminal mobile sous réseau réel 2G/3G). Les performances en conditions réelles dépendront des capacités matérielles du terminal et de la connectivité locale.  
 > **Document de référence** : Relevé empirique des performances d'exécution, de latence réseau locale, de réactivité DOM et de stabilité du pipeline d'accessibilité SAFINUM.  
 > **Outils de mesure** : Playwright (Microsoft Edge), `time.perf_counter()`, `performance.now()`, API Python `urllib` et serveur FastAPI sous `uvicorn`.  
 > **Date des mesures** : 16 novembre 2026.  

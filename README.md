@@ -18,7 +18,7 @@
 > **Date limite de soumission** : Samedi 14 novembre 2026, 23h59 (Cameroun)  
 > **Cible de test** : `https://safinum.cm/hackathon-test` (Safinum Pay)  
 > **Langue pilote** : Duálá (`dua`) — **Langue secondaire** : Ɓàsàa (`bas`)  
-> **Statut linguistique** : **0 / 84 chaînes validées par un locuteur natif** (100 % statut `machine_suggested`).  
+> **Statut linguistique** : **0 / 84 chaînes validées par un locuteur natif** (100 % statut `machine_suggested` ; 84 segments dans les fiches CSV / `translations.csv`, 83 chaînes sources françaises uniques dans le dictionnaire JSON `offline_catalog.json` suite à l'homonyme « Sécurité »).  
 > **Méthode** : Brouillon IA + Recoupement lexical (Mélac) + Garde-fou d'intégrité financière. Validation native planifiée avant la finale (26-28 nov.) via `catalogue/fiche_validation.csv`.
 
 ---
@@ -81,7 +81,7 @@ Pour simplifier l'évaluation, trois scripts prêts à l'emploi sont mis à disp
    - **Étape 4 (Récapitulatif)** : La référence `SAF-2026-*` et les montants sont strictement conservés ; affichage bilingue parallèle sans substitution (`Texte source [Proposition]`).
    - **Étape 5 (Confirmation)** : Le reçu de transfert confirme l'opération.
 5. **Validation par le Panneau Jury** : Avec `?jury=1`, le contrôle d'intégrité du jury enregistre **100 % Intègre (0 compromis sur les 9 soumissions du parcours)** en mode hors-ligne nominal (catalogue embarqué) comme sur la page native et en mode connecté, grâce à la neutralisation des faux différentiels d'espace insécable (`\u202F`) et à l'interdiction de crochets bilingues sur les montants purs.
-6. **Mode hors ligne (sans réseau)** : Coupez la connexion Internet ou arrêtez le backend : l'extension bascule automatiquement sur `catalogue_offline.json` sans interruption de service.
+6. **Mode hors ligne (sans réseau)** : Coupez la connexion Internet ou arrêtez le backend : l'extension bascule automatiquement sur `offline_catalog.json` sans interruption de service.
 
 ---
 
@@ -89,14 +89,14 @@ Pour simplifier l'évaluation, trois scripts prêts à l'emploi sont mis à disp
 
 | Métrique | Valeur Réelle Mesurée | Statut / Méthode |
 |---|---|---|
-| **Validation par locuteur natif** | **0 / 84 chaînes (0,0 %)** | Aucune validation humaine acquise à date |
+| **Validation par locuteur natif** | **0 / 84 chaînes (0,0 %)** | Aucune validation humaine acquise à date (84 entrées CSV / 83 chaînes sources uniques dans `offline_catalog.json`) |
 | **Recoupement lexical Duálá (`dua`)** | **0 / 84 attesté (0,0 %)** | `scripts/crosscheck_lexiques.py` (colonne traduction Mélac) |
 | **Recoupement lexical Ɓàsàa (`bas`)** | **4 / 84 attesté (4,8 %)**, 58 partiels (69,0 %) | `scripts/crosscheck_lexiques.py` sur 994 mots réels |
 | **Recoupement lexical combiné** | **4 / 168 attesté (2,4 %)**, 58 partiels (34,5 %) | `catalogue/crosscheck_rapport.csv` |
 | **Tests unitaires & adversariaux** | **83 / 83 tests réussis (0 échec)** | 77 tests backend + 6 tests racine (`unittest discover`) |
 | **Tests d'intégrité jury (`normalizeValue`)** | **8 / 8 vérifications conformes** | `tests/test_jury_integrity.py` |
 | **Temps d'exécution regex (anti-ReDoS)** | **< 0,01 ms** sur chaîne piège | Benchmark `time.time()` |
-| **Empreinte de l'extension client** | **environ 134 Ko** (zéro dépendance externe) | Mesuré sur dossier `extension/` |
+| **Empreinte de l'extension client** | **108 399 octets (105,86 Ko)** (zéro dépendance externe) | Somme exacte des 3 fichiers du dossier `extension/` (`content.js`, `manifest.json`, `offline_catalog.json`) |
 | **Temps de bascule hors ligne** | **Instantané** (mémoire cache) | Mesuré via mock bank Playwright |
 | **Premier rendu traduit (offline / online)** | **234 ms** (offline) / **224 ms** (online) | Médiane 12 runs — [`docs/mesures_performance.md`](docs/mesures_performance.md) |
 | **Latence `/translate/batch` (local)** | **16 ms** (médiane), **25 ms** (P95) | 200 appels batch — [`docs/mesures_performance.md`](docs/mesures_performance.md) |
