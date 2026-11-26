@@ -84,18 +84,61 @@ def is_port_in_use(port: int = 8000, host: str = "127.0.0.1") -> bool:
         return s.connect_ex((host, port)) == 0
 
 
+def setup_extension_bridge(page: Page):
+    """
+    Expose le pont de communication du Service Worker Manifest V3.
+    Permet à content.js d'envoyer des messages via chrome.runtime.sendMessage
+    qui sont relayés de manière sécurisée vers le backend local (127.0.0.1:8000),
+    sans que la page web n'effectue d'appel fetch direct non sécurisé (CORS / PNA).
+    """
+    def _sw_forward_batch(payload):
+        endpoints = [
+            "http://127.0.0.1:8000/translate/batch",
+            "http://localhost:8000/translate/batch"
+        ]
+        for ep in endpoints:
+            try:
+                data_bytes = json.dumps(payload).encode("utf-8")
+                req = urllib.request.Request(
+                    ep,
+                    data=data_bytes,
+                    headers={"Content-Type": "application/json"}
+                )
+                with urllib.request.urlopen(req, timeout=1.5) as res:
+                    if res.status == 200:
+                        return {"success": True, "data": json.loads(res.read().decode("utf-8"))}
+            except Exception:
+                pass
+        return {"success": False, "error": "Backend offline or unreachable"}
+
+    try:
+        page.expose_function("__safinum_sw_translate__", _sw_forward_batch)
+    except Exception:
+        pass
+
+
 def inject_extension(page: Page, catalog_dict: dict):
     """
     Simule l'environnement de l'extension Manifest V3 :
+    - Émule le Service Worker d'extension (background.js) via chrome.runtime.sendMessage.
     - Fournit chrome.runtime.getURL pour l'accès aux ressources embarquées.
     - Intercepte la requête vers le catalogue hors-ligne pour renvoyer le catalogue embarqué.
-    - Laisse les autres requêtes (notamment vers localhost:8000/translate/batch) passer normalement.
     - Injecte et initialise content.js.
     """
+    setup_extension_bridge(page)
     page.evaluate("""(catData) => {
         window.chrome = window.chrome || {};
         window.chrome.runtime = {
-            getURL: function(path) { return 'safinum-extension://' + path; }
+            getURL: function(path) { return 'safinum-extension://' + path; },
+            sendMessage: function(msg, callback) {
+                if (msg && msg.type === 'SAFINUM_TRANSLATE_BATCH' && typeof window.__safinum_sw_translate__ === 'function') {
+                    window.__safinum_sw_translate__(msg.payload)
+                        .then(res => { if (typeof callback === 'function') callback(res); })
+                        .catch(err => { if (typeof callback === 'function') callback({ success: false, error: err.message }); });
+                } else if (typeof callback === 'function') {
+                    callback({ success: false, error: 'Runtime bridge not configured' });
+                }
+            }
         };
         const _origFetch = window.fetch;
         window.fetch = async function(url, opts) {
@@ -610,7 +653,7 @@ class TestLiveJuryRegression(unittest.TestCase):
             browser = p.chromium.launch(
                 channel="msedge",
                 headless=True,
-                args=[RESOLVER_RULES, "--disable-web-security"]
+                args=[RESOLVER_RULES]
             )
             context: BrowserContext = browser.new_context(viewport={"width": 1400, "height": 960})
             page = context.new_page()
@@ -912,7 +955,7 @@ class TestEnglishButtonVerification(unittest.TestCase):
             browser = p.chromium.launch(
                 channel="msedge",
                 headless=True,
-                args=[RESOLVER_RULES, "--disable-web-security"]
+                args=[RESOLVER_RULES]
             )
             context = browser.new_context(viewport={"width": 1600, "height": 960})
             page = context.new_page()
@@ -1380,7 +1423,7 @@ class TestEnglishJourneyRegression(unittest.TestCase):
             browser = p.chromium.launch(
                 channel="msedge",
                 headless=True,
-                args=[RESOLVER_RULES, "--disable-web-security"],
+                args=[RESOLVER_RULES],
             )
             context = browser.new_context(viewport={"width": 1600, "height": 960})
 
@@ -1447,7 +1490,7 @@ class TestEnglishJourneyRegression(unittest.TestCase):
                 browser = p.chromium.launch(
                     channel="msedge",
                     headless=True,
-                    args=[RESOLVER_RULES, "--disable-web-security"],
+                    args=[RESOLVER_RULES],
                 )
                 context = browser.new_context(viewport={"width": 1600, "height": 960})
 

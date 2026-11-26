@@ -79,8 +79,8 @@ Conformément à la règle permanente de sobriété technique (`AGENTS.md`) et a
 
 ### A. Extension Navigateur (Client)
 * **Zéro bibliothèque tierce** : Pur Vanilla JavaScript (ES6+ standard).
-* **Zéro framework** : Ni React, ni Vue, ni jQuery, ni polyfills lourds.
-* **Empreinte totale du dossier `extension/`** : **108 399 octets (105,86 Ko)** (somme exacte des fichiers `content.js`, `manifest.json` et `offline_catalog.json`).
+* **Architecture Manifest V3 & Service Worker** : Relais réseau isolé via `background.js` avec `host_permissions` restreintes (`127.0.0.1:8000`, `localhost:8000`), assurant le respect des règles W3C Private Network Access et Mixed Content sans affaiblir la sécurité du navigateur.
+* **Empreinte totale du dossier `extension/`** : **113 152 octets (110,50 Ko)** (somme exacte des fichiers `background.js`, `content.js`, `manifest.json` et `offline_catalog.json`).
 
 ### B. Backend Local (Python 3.10+)
 Toutes les dépendances sont déclarées dans [`backend/requirements.txt`](../backend/requirements.txt) :

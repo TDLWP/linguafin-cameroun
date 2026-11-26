@@ -384,58 +384,89 @@
 
 
     let apiSuccess = false;
+    let apiData = null;
 
-    // Tentative auprès des endpoints API avec timeout strict de 1.5 seconde
-    for (const endpoint of API_ENDPOINTS) {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 1500);
-
+    // Tentative 1 : Via le Service Worker d'extension (conforme Manifest V3, contourne Private Network Access et Mixed Content)
+    if (typeof chrome !== 'undefined' && chrome.runtime && typeof chrome.runtime.sendMessage === 'function') {
       try {
-        const response = await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-          signal: controller.signal
-        });
-        clearTimeout(timeoutId);
-
-        if (response.ok) {
-          const data = await response.json();
-          // Construire une map id -> texte_original pour retrouver le texte DOM original
-          const idToOriginal = {};
-          items.forEach(it => { idToOriginal[it.id] = it._original_text || it.text; });
-
-          for (const item of data.items) {
-            const resObj = {
-              target: item.target_text,
-              status: item.status,
-              integrity_verified: item.integrity_verified,
-              bilingual_required: Boolean(item.bilingual_required),
-              novel_annotated: Boolean(item.novel_annotated),
-              badge: item.badge || null
-            };
-            // Clé de mapping = texte original du DOM (EN ou FR)
-            const origText = idToOriginal[item.id] || item.source_text;
-            results.set(origText, resObj);
-            state.cache.set(`${origText}__${targetLang}`, resObj);
-            // Indexer aussi sur source_text FR au cas où le DOM reçoit le texte FR directement
-            if (origText !== item.source_text) {
-              results.set(item.source_text, resObj);
-              state.cache.set(`${item.source_text}__${targetLang}`, resObj);
-            }
+        const swResponse = await new Promise((resolve) => {
+          const timer = setTimeout(() => resolve(null), 1800);
+          try {
+            chrome.runtime.sendMessage(
+              { type: 'SAFINUM_TRANSLATE_BATCH', payload },
+              (resp) => {
+                clearTimeout(timer);
+                if (chrome.runtime.lastError || !resp || !resp.success) {
+                  resolve(null);
+                } else {
+                  resolve(resp.data);
+                }
+              }
+            );
+          } catch (sendErr) {
+            clearTimeout(timer);
+            resolve(null);
           }
+        });
+        if (swResponse && Array.isArray(swResponse.items)) {
+          apiData = swResponse;
           apiSuccess = true;
-          break;
         }
-
-      } catch (e) {
-        clearTimeout(timeoutId);
-        // Endpoint indisponible, passage au suivant ou repli hors-ligne
+      } catch (swErr) {
+        // Service worker non joignable, tentative directe
       }
     }
 
-    // Repli automatique vers le catalogue hors ligne si l'API est injoignable
+    // Tentative 2 : Direct fetch (si Service Worker indisponible ou hors contexte extension)
     if (!apiSuccess) {
+      for (const endpoint of API_ENDPOINTS) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 1500);
+
+        try {
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+
+          if (response.ok) {
+            apiData = await response.json();
+            apiSuccess = true;
+            break;
+          }
+        } catch (e) {
+          clearTimeout(timeoutId);
+        }
+      }
+    }
+
+    // Traitement des données renvoyées par l'API
+    if (apiSuccess && apiData && Array.isArray(apiData.items)) {
+      const idToOriginal = {};
+      items.forEach(it => { idToOriginal[it.id] = it._original_text || it.text; });
+
+      for (const item of apiData.items) {
+        const resObj = {
+          target: item.target_text,
+          status: item.status,
+          integrity_verified: item.integrity_verified,
+          bilingual_required: Boolean(item.bilingual_required),
+          novel_annotated: Boolean(item.novel_annotated),
+          badge: item.badge || null
+        };
+        const origText = idToOriginal[item.id] || item.source_text;
+        results.set(origText, resObj);
+        state.cache.set(`${origText}__${targetLang}`, resObj);
+        if (origText !== item.source_text) {
+          results.set(item.source_text, resObj);
+          state.cache.set(`${item.source_text}__${targetLang}`, resObj);
+        }
+      }
+    } else {
+      // Repli automatique vers le catalogue hors ligne si l'API est injoignable
       for (const txt of uncachedTexts) {
         const fallbackRes = resolveOffline(txt, targetLang);
         results.set(txt, fallbackRes);

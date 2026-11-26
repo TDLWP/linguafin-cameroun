@@ -156,9 +156,7 @@ def run_single_pass(pass_name, backend_active=False):
             channel="msedge",
             headless=True,
             args=[
-                "--host-resolver-rules=MAP safinum.cm 91.234.194.101",
-                "--disable-web-security",
-                "--allow-running-insecure-content"
+                "--host-resolver-rules=MAP safinum.cm 91.234.194.101"
             ]
         )
         context = browser.new_context(viewport={"width": 1400, "height": 960})

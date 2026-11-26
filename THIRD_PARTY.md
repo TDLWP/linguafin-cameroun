@@ -10,10 +10,11 @@
 | Composant | Version | Licence | Rôle | Taille approximative |
 |---|---|---|---|---|
 | **Vanilla JavaScript (ES6+)** | Standard | N/A (Natif) | Logique du content script, TreeWalker, MutationObserver | 0 Ko (Natif) |
+| **Service Worker Manifest V3** | Standard W3C | N/A (Natif) | Relais réseau sécurisé vers backend local (`background.js`, respect PNA / CORS) | 0 Ko (Natif) |
 | **Shadow DOM API** | W3C Standard | N/A (Natif) | Encapsulation étanche du widget d'accessibilité | 0 Ko (Natif) |
 | **Web Storage / In-Memory** | Standard | N/A (Natif) | Cache local des traductions par langue | 0 Ko (Natif) |
 
-> **Constat** : L'extension navigateur ne comporte **strictement aucune bibliothèque tierce**, aucun framework (zéro React, zéro Vue, zéro jQuery, zéro Tailwind injecté). Empreinte totale du dossier `extension/` : **108 399 octets (105,86 Ko)** (somme exacte des fichiers `content.js`, `manifest.json` et `offline_catalog.json`).
+> **Constat** : L'extension navigateur ne comporte **strictement aucune bibliothèque tierce**, aucun framework (zéro React, zéro Vue, zéro jQuery, zéro Tailwind injecté). Empreinte totale du dossier `extension/` : **113 152 octets (110,50 Ko)** (somme exacte des fichiers `background.js`, `content.js`, `manifest.json` et `offline_catalog.json`).
 
 ---
 

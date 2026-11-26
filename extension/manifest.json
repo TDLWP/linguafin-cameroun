@@ -3,13 +3,13 @@
   "name": "SAFINUM Accessibility — Couche Linguistique Nationale",
   "version": "1.0.0",
   "description": "Accessibilité linguistique souveraine pour services financiers camerounais (Duala, Bassa'a, etc.) sans altération du site cible.",
+  "background": {
+    "service_worker": "background.js"
+  },
   "permissions": [],
   "host_permissions": [
-    "https://safinum.cm/hackathon-test*",
-    "http://localhost:8000/*",
     "http://127.0.0.1:8000/*",
-    "http://localhost:3000/*",
-    "http://127.0.0.1:5500/*"
+    "http://localhost:8000/*"
   ],
   "content_scripts": [
     {

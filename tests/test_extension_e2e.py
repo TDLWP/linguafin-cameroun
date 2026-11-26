@@ -153,6 +153,40 @@ class TestExtensionCoverageAndMockBank(unittest.TestCase):
         with self.assertRaises(AssertionError, msg="Une divergence entre deux catalogues doit déclencher un échec de test"):
             self.assertEqual(canonical_data, divergent_mock)
 
+    def test_service_worker_mv3_architecture(self):
+        """
+        Vérifie la conformité de l'architecture Manifest V3 :
+        1. background.js existe et contient le gestionnaire onMessage SAFINUM_TRANSLATE_BATCH.
+        2. manifest.json déclare 'background': {'service_worker': 'background.js'}.
+        3. host_permissions sont strictement limitées à 127.0.0.1:8000 et localhost:8000.
+        4. content.js utilise chrome.runtime.sendMessage pour relayer les requêtes réseau vers le service worker.
+        """
+        ext_dir = os.path.join(BASE_DIR, "extension")
+        manifest_path = os.path.join(ext_dir, "manifest.json")
+        bg_path = os.path.join(ext_dir, "background.js")
+
+        self.assertTrue(os.path.isfile(bg_path), "extension/background.js doit exister")
+        with open(bg_path, "r", encoding="utf-8") as f:
+            bg_code = f.read()
+
+        self.assertIn("chrome.runtime.onMessage.addListener", bg_code)
+        self.assertIn("SAFINUM_TRANSLATE_BATCH", bg_code)
+        self.assertIn("http://127.0.0.1:8000/translate/batch", bg_code)
+
+        with open(manifest_path, "r", encoding="utf-8") as f:
+            manifest_data = json.load(f)
+
+        self.assertIn("background", manifest_data)
+        self.assertEqual(manifest_data["background"].get("service_worker"), "background.js")
+
+        host_perms = manifest_data.get("host_permissions", [])
+        expected_perms = ["http://127.0.0.1:8000/*", "http://localhost:8000/*"]
+        self.assertEqual(sorted(host_perms), sorted(expected_perms), "host_permissions doivent être strictement limitées à 127.0.0.1:8000 et localhost:8000")
+
+        self.assertIn("chrome.runtime.sendMessage", self.content_js)
+        self.assertIn("SAFINUM_TRANSLATE_BATCH", self.content_js)
+
 
 if __name__ == "__main__":
     unittest.main()
+

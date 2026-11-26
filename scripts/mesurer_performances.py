@@ -449,7 +449,7 @@ def main():
     }
 
     with sync_playwright() as p:
-        args = ["--no-sandbox", "--disable-web-security"]
+        args = ["--no-sandbox"]
         browser = p.chromium.launch(channel="msedge", headless=False, args=args)
 
         # 1. Mesure Premier Rendu : Backend Arrêté (Offline nominal)

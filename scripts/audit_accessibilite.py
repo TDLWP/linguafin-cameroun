@@ -70,7 +70,7 @@ def run_full_accessibility_audit(target_url, is_remote=False):
     }
 
     with sync_playwright() as p:
-        args = ["--no-sandbox", "--disable-web-security"]
+        args = ["--no-sandbox"]
         if is_remote:
             args.append("--host-resolver-rules=MAP safinum.cm 91.234.194.101")
 

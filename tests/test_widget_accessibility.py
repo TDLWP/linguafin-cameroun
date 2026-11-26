@@ -67,7 +67,7 @@ class TestWidgetAccessibility(unittest.TestCase):
         cls.browser = cls.playwright.chromium.launch(
             channel="msedge",
             headless=False,
-            args=["--no-sandbox", "--disable-web-security"]
+            args=["--no-sandbox"]
         )
 
     @classmethod

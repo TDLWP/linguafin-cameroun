@@ -69,7 +69,7 @@ def run_single_audit(scenario_name, use_extension=True):
         browser = p.chromium.launch(
             channel="msedge",
             headless=True,
-            args=["--host-resolver-rules=MAP safinum.cm 91.234.194.101", "--disable-web-security"]
+            args=["--host-resolver-rules=MAP safinum.cm 91.234.194.101"]
         )
         context = browser.new_context(viewport={"width": 1400, "height": 960})
         page = context.new_page()

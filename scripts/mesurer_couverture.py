@@ -728,7 +728,7 @@ def main():
         browser = p.chromium.launch(
             channel="msedge",
             headless=False,
-            args=["--no-sandbox", "--disable-web-security", RESOLVER_RULE]
+            args=["--no-sandbox", RESOLVER_RULE]
         )
         ctx = browser.new_context(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
