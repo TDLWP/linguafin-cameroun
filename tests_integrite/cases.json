@@ -1,0 +1,1278 @@
+{
+ "version": "1.0",
+ "date": "2026-11-18",
+ "source": "releve audit 13/11/2026 + cas hostiles ecrits a la main",
+ "regles": [
+  "valeurs protegees : meme nombre d'occurrences en sortie",
+  "aucun chiffre (\\p{Nd}) ajoute ou perdu",
+  "secret : sortie identique a l'entree",
+  "pure_values : sortie identique",
+  "unknown (mode strict) : sortie identique"
+ ],
+ "cases": [
+  {
+   "id": "T001",
+   "group": "reel_marque",
+   "lang": "fr",
+   "text": "Safinum Pay",
+   "protected": [
+    "Safinum Pay"
+   ],
+   "secret": false,
+   "unknown": false,
+   "pure_values": true,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T002",
+   "group": "reel_nom",
+   "lang": "fr",
+   "text": "Bonjour, Amina",
+   "protected": [
+    "Amina"
+   ],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T003",
+   "group": "reel_date",
+   "lang": "fr",
+   "text": "05 nov. 2026",
+   "protected": [
+    "05 nov. 2026"
+   ],
+   "secret": false,
+   "unknown": false,
+   "pure_values": true,
+   "human_check": false,
+   "note": "date seule : rien a traduire"
+  },
+  {
+   "id": "T004",
+   "group": "reel_date",
+   "lang": "fr",
+   "text": "04 nov. 2026",
+   "protected": [
+    "04 nov. 2026"
+   ],
+   "secret": false,
+   "unknown": false,
+   "pure_values": true,
+   "human_check": false,
+   "note": "date seule : rien a traduire"
+  },
+  {
+   "id": "T005",
+   "group": "reel_date",
+   "lang": "fr",
+   "text": "02 nov. 2026",
+   "protected": [
+    "02 nov. 2026"
+   ],
+   "secret": false,
+   "unknown": false,
+   "pure_values": true,
+   "human_check": false,
+   "note": "date seule : rien a traduire"
+  },
+  {
+   "id": "T006",
+   "group": "reel_date",
+   "lang": "fr",
+   "text": "31 oct. 2026",
+   "protected": [
+    "31 oct. 2026"
+   ],
+   "secret": false,
+   "unknown": false,
+   "pure_values": true,
+   "human_check": false,
+   "note": "date seule : rien a traduire"
+  },
+  {
+   "id": "T007",
+   "group": "reel_frais",
+   "lang": "fr",
+   "text": "Frais de 1,5 % (min. 100 FCFA, max. 2 500 FCFA)",
+   "protected": [
+    "1,5 %",
+    "100 FCFA",
+    "2 500 FCFA"
+   ],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": true,
+   "note": ""
+  },
+  {
+   "id": "T008",
+   "group": "reel_frais",
+   "lang": "fr",
+   "text": "Frais de 2 % (min. 200 FCFA, max. 5 000 FCFA)",
+   "protected": [
+    "2 %",
+    "200 FCFA",
+    "5 000 FCFA"
+   ],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": true,
+   "note": ""
+  },
+  {
+   "id": "T009",
+   "group": "reel_critique",
+   "lang": "fr",
+   "text": "Ce bénéficiaire n'a jamais été utilisé sur ce compte. Vérifiez le numéro avant de continuer.",
+   "protected": [],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": true,
+   "note": ""
+  },
+  {
+   "id": "T010",
+   "group": "reel_critique_en",
+   "lang": "en",
+   "text": "This beneficiary has never been used on this account. Verify the number before continuing.",
+   "protected": [],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": true,
+   "note": ""
+  },
+  {
+   "id": "T011",
+   "group": "reel_critique",
+   "lang": "fr",
+   "text": "J'ai vérifié le nom et le numéro du bénéficiaire.",
+   "protected": [],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": true,
+   "note": ""
+  },
+  {
+   "id": "T012",
+   "group": "reel_critique_en",
+   "lang": "en",
+   "text": "I have verified the beneficiary name and phone number.",
+   "protected": [],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": true,
+   "note": ""
+  },
+  {
+   "id": "T013",
+   "group": "reel_critique",
+   "lang": "fr",
+   "text": "Je confirme que les informations ci-dessus sont correctes.",
+   "protected": [],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": true,
+   "note": ""
+  },
+  {
+   "id": "T014",
+   "group": "reel_critique_en",
+   "lang": "en",
+   "text": "I confirm the information above is correct.",
+   "protected": [],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": true,
+   "note": ""
+  },
+  {
+   "id": "T015",
+   "group": "reel_critique",
+   "lang": "fr",
+   "text": "Vérifiez toujours le nom et le numéro du bénéficiaire avant de confirmer un transfert.",
+   "protected": [],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": true,
+   "note": ""
+  },
+  {
+   "id": "T016",
+   "group": "reel_critique_en",
+   "lang": "en",
+   "text": "Always verify the beneficiary name and number before confirming a transfer.",
+   "protected": [],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": true,
+   "note": ""
+  },
+  {
+   "id": "T017",
+   "group": "reel_critique",
+   "lang": "fr",
+   "text": "Alerte de sécurité",
+   "protected": [],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": true,
+   "note": ""
+  },
+  {
+   "id": "T018",
+   "group": "reel_critique_en",
+   "lang": "en",
+   "text": "Security warning",
+   "protected": [],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": true,
+   "note": ""
+  },
+  {
+   "id": "T019",
+   "group": "reel_critique",
+   "lang": "fr",
+   "text": "Le montant doit être supérieur à zéro.",
+   "protected": [],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": true,
+   "note": ""
+  },
+  {
+   "id": "T020",
+   "group": "reel_critique_en",
+   "lang": "en",
+   "text": "The amount must be greater than zero.",
+   "protected": [],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": true,
+   "note": ""
+  },
+  {
+   "id": "T021",
+   "group": "reel_critique",
+   "lang": "fr",
+   "text": "Solde insuffisant pour effectuer ce transfert.",
+   "protected": [],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": true,
+   "note": ""
+  },
+  {
+   "id": "T022",
+   "group": "reel_critique_en",
+   "lang": "en",
+   "text": "Insufficient balance for this transfer.",
+   "protected": [],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": true,
+   "note": ""
+  },
+  {
+   "id": "T023",
+   "group": "reel_critique",
+   "lang": "fr",
+   "text": "Veuillez renseigner le nom et le numéro du bénéficiaire.",
+   "protected": [],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": true,
+   "note": ""
+  },
+  {
+   "id": "T024",
+   "group": "reel_critique_en",
+   "lang": "en",
+   "text": "Please provide the beneficiary name and phone number.",
+   "protected": [],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": true,
+   "note": ""
+  },
+  {
+   "id": "T025",
+   "group": "reel_critique",
+   "lang": "fr",
+   "text": "Alerte de sécurité : vérifiez le numéro du bénéficiaire avant de continuer.",
+   "protected": [],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": true,
+   "note": ""
+  },
+  {
+   "id": "T026",
+   "group": "reel_critique_en",
+   "lang": "en",
+   "text": "Security warning: verify the beneficiary phone number before continuing.",
+   "protected": [],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": true,
+   "note": ""
+  },
+  {
+   "id": "T027",
+   "group": "reel_critique",
+   "lang": "fr",
+   "text": "Alerte de sécurité : ce bénéficiaire n'a jamais été utilisé sur ce compte.",
+   "protected": [],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": true,
+   "note": ""
+  },
+  {
+   "id": "T028",
+   "group": "reel_critique_en",
+   "lang": "en",
+   "text": "Security warning: this beneficiary has never been used on this account.",
+   "protected": [],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": true,
+   "note": ""
+  },
+  {
+   "id": "T029",
+   "group": "reel_critique",
+   "lang": "fr",
+   "text": "Erreur réseau : le service est temporairement indisponible. Réessayez.",
+   "protected": [],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": true,
+   "note": ""
+  },
+  {
+   "id": "T030",
+   "group": "reel_critique_en",
+   "lang": "en",
+   "text": "Network error: the service is temporarily unavailable. Please try again.",
+   "protected": [],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": true,
+   "note": ""
+  },
+  {
+   "id": "T031",
+   "group": "reel_critique",
+   "lang": "fr",
+   "text": "Vous devez confirmer les informations avant de valider le transfert.",
+   "protected": [],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": true,
+   "note": ""
+  },
+  {
+   "id": "T032",
+   "group": "reel_critique_en",
+   "lang": "en",
+   "text": "You must confirm the details before validating the transfer.",
+   "protected": [],
+   "secret": false,
+   "unknown": false,
+   "pure_values": false,
+   "human_check": true,
+   "note": ""
+  },
+  {
+   "id": "T033",
+   "group": "hostile_montant",
+   "lang": "fr",
+   "text": "Total à débiter : 25000 FCFA",
+   "protected": [
+    "25000 FCFA"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T034",
+   "group": "hostile_montant",
+   "lang": "fr",
+   "text": "Total à débiter : 25 000 FCFA",
+   "protected": [
+    "25 000 FCFA"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": "espace insecable"
+  },
+  {
+   "id": "T035",
+   "group": "hostile_montant",
+   "lang": "fr",
+   "text": "Total à débiter : 25 000 FCFA",
+   "protected": [
+    "25 000 FCFA"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": "espace fine insecable"
+  },
+  {
+   "id": "T036",
+   "group": "hostile_montant",
+   "lang": "fr",
+   "text": "Montant : 25.000 FCFA",
+   "protected": [
+    "25.000 FCFA"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T037",
+   "group": "hostile_montant",
+   "lang": "en",
+   "text": "Amount: 25,000 XAF",
+   "protected": [
+    "25,000 XAF"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T038",
+   "group": "hostile_montant",
+   "lang": "fr",
+   "text": "Montant : 25 000 F CFA",
+   "protected": [
+    "25 000 F CFA"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T039",
+   "group": "hostile_montant",
+   "lang": "fr",
+   "text": "Montant : FCFA 25 000",
+   "protected": [
+    "FCFA 25 000"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": "devise avant le nombre"
+  },
+  {
+   "id": "T040",
+   "group": "hostile_montant",
+   "lang": "fr",
+   "text": "Montant : 1 500 000 francs CFA",
+   "protected": [
+    "1 500 000 francs CFA"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T041",
+   "group": "hostile_montant",
+   "lang": "fr",
+   "text": "Montant : vingt-cinq mille francs CFA",
+   "protected": [
+    "vingt-cinq mille francs CFA"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": "montant en toutes lettres"
+  },
+  {
+   "id": "T042",
+   "group": "hostile_montant",
+   "lang": "en",
+   "text": "Twenty-five thousand CFA francs will be debited.",
+   "protected": [
+    "Twenty-five thousand CFA francs"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T043",
+   "group": "hostile_montant",
+   "lang": "fr",
+   "text": "Montant : 250 000 000 FCFA",
+   "protected": [
+    "250 000 000 FCFA"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T044",
+   "group": "hostile_montant",
+   "lang": "fr",
+   "text": "Montant : 0 FCFA",
+   "protected": [
+    "0 FCFA"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T045",
+   "group": "hostile_montant",
+   "lang": "fr",
+   "text": "Solde : -12 500 FCFA",
+   "protected": [
+    "-12 500 FCFA"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T046",
+   "group": "hostile_montant",
+   "lang": "fr",
+   "text": "Solde : −12 500 FCFA",
+   "protected": [
+    "−12 500 FCFA"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": "signe moins typographique"
+  },
+  {
+   "id": "T047",
+   "group": "hostile_montant",
+   "lang": "fr",
+   "text": "Reçu : +180 000 FCFA",
+   "protected": [
+    "+180 000 FCFA"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T048",
+   "group": "hostile_montant",
+   "lang": "en",
+   "text": "Interest: 1.5% per month, fees 2%",
+   "protected": [
+    "1.5%",
+    "2%"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T049",
+   "group": "hostile_montant",
+   "lang": "en",
+   "text": "Pay €50 or $20 today",
+   "protected": [
+    "€50",
+    "$20"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T050",
+   "group": "hostile_montant",
+   "lang": "fr",
+   "text": "Montant : ２５ ０００ FCFA",
+   "protected": [
+    "２５ ０００ FCFA"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": "chiffres pleine chasse"
+  },
+  {
+   "id": "T051",
+   "group": "hostile_montant",
+   "lang": "fr",
+   "text": "Montant : ٢٥٠٠٠ FCFA",
+   "protected": [
+    "٢٥٠٠٠ FCFA"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": "chiffres arabo-indiens"
+  },
+  {
+   "id": "T052",
+   "group": "hostile_montant",
+   "lang": "fr",
+   "text": "Montant : 25​000 FCFA",
+   "protected": [
+    "25​000 FCFA"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": "caractere de largeur nulle dans le montant"
+  },
+  {
+   "id": "T053",
+   "group": "hostile_montant",
+   "lang": "fr",
+   "text": "Opérations : 1000 FCFA, 2000 FCFA, 3000 FCFA, 4000 FCFA, 5000 FCFA, 6000 FCFA, 7000 FCFA, 8000 FCFA, 9000 FCFA, 10000 FCFA, 11000 FCFA, 12000 FCFA, 13000 FCFA, 14000 FCFA, 15000 FCFA, 16000 FCFA, 17000 FCFA, 18000 FCFA, 19000 FCFA, 20000 FCFA",
+   "protected": [
+    "1000 FCFA",
+    "2000 FCFA",
+    "3000 FCFA",
+    "4000 FCFA",
+    "5000 FCFA",
+    "6000 FCFA",
+    "7000 FCFA",
+    "8000 FCFA",
+    "9000 FCFA",
+    "10000 FCFA",
+    "11000 FCFA",
+    "12000 FCFA",
+    "13000 FCFA",
+    "14000 FCFA",
+    "15000 FCFA",
+    "16000 FCFA",
+    "17000 FCFA",
+    "18000 FCFA",
+    "19000 FCFA",
+    "20000 FCFA"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": "20 montants"
+  },
+  {
+   "id": "T054",
+   "group": "hostile_identifiants",
+   "lang": "fr",
+   "text": "Téléphone : +237 6 99 12 34 56",
+   "protected": [
+    "+237 6 99 12 34 56"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T055",
+   "group": "hostile_identifiants",
+   "lang": "fr",
+   "text": "Téléphone : 699123456",
+   "protected": [
+    "699123456"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T056",
+   "group": "hostile_identifiants",
+   "lang": "fr",
+   "text": "Téléphone : (+237) 699 12 34 56",
+   "protected": [
+    "(+237) 699 12 34 56"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T057",
+   "group": "hostile_identifiants",
+   "lang": "fr",
+   "text": "Téléphone : 00237 699123456",
+   "protected": [
+    "00237 699123456"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T058",
+   "group": "hostile_identifiants",
+   "lang": "fr",
+   "text": "Compte : CM 001 2345 6789 01",
+   "protected": [
+    "CM 001 2345 6789 01"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T059",
+   "group": "hostile_identifiants",
+   "lang": "fr",
+   "text": "IBAN : CM21 10005 00001 12345678901 23",
+   "protected": [
+    "CM21 10005 00001 12345678901 23"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T060",
+   "group": "hostile_identifiants",
+   "lang": "fr",
+   "text": "Référence : SAF-2026-X7Y8Z9",
+   "protected": [
+    "SAF-2026-X7Y8Z9"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T061",
+   "group": "hostile_identifiants",
+   "lang": "fr",
+   "text": "Référence : REF-12345 / TX-ujineeje",
+   "protected": [
+    "REF-12345",
+    "TX-ujineeje"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T062",
+   "group": "hostile_identifiants",
+   "lang": "fr",
+   "text": "Opération du 05 nov. 2026 à 14h30",
+   "protected": [
+    "05 nov. 2026",
+    "14h30"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T063",
+   "group": "hostile_identifiants",
+   "lang": "en",
+   "text": "Date: 2026-11-05 14:30",
+   "protected": [
+    "2026-11-05",
+    "14:30"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T064",
+   "group": "hostile_identifiants",
+   "lang": "en",
+   "text": "Date: November 5, 2026",
+   "protected": [
+    "November 5, 2026"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T065",
+   "group": "hostile_identifiants",
+   "lang": "fr",
+   "text": "Aide : https://safinum.cm/aide?ref=SAF-2026-X7Y8Z9&montant=25000",
+   "protected": [
+    "https://safinum.cm/aide?ref=SAF-2026-X7Y8Z9&montant=25000"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T066",
+   "group": "hostile_identifiants",
+   "lang": "fr",
+   "text": "Contact : support@safinum.cm",
+   "protected": [
+    "support@safinum.cm"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T067",
+   "group": "hostile_noms",
+   "lang": "fr",
+   "text": "Bénéficiaire : Jean-Paul Mbarga",
+   "protected": [
+    "Jean-Paul Mbarga"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T068",
+   "group": "hostile_noms",
+   "lang": "fr",
+   "text": "Bénéficiaire : Solde Mbarga",
+   "protected": [
+    "Solde Mbarga"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": "nom contenant un terme du glossaire"
+  },
+  {
+   "id": "T069",
+   "group": "hostile_noms",
+   "lang": "fr",
+   "text": "Bénéficiaire : Frais Ngo Bell",
+   "protected": [
+    "Frais Ngo Bell"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": "nom contenant un terme du glossaire"
+  },
+  {
+   "id": "T070",
+   "group": "hostile_noms",
+   "lang": "en",
+   "text": "Beneficiary: N'Dongo Épée",
+   "protected": [
+    "N'Dongo Épée"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T071",
+   "group": "hostile_noms",
+   "lang": "fr",
+   "text": "Bénéficiaire : Amina Ngo Bell (+237 6 99 12 34 56)",
+   "protected": [
+    "Amina Ngo Bell",
+    "+237 6 99 12 34 56"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T072",
+   "group": "hostile_inedit",
+   "lang": "fr",
+   "text": "Vous avez envoyé 25 000 FCFA à Jean-Paul Mbarga (+237 6 99 12 34 56). Référence : SAF-2026-X7Y8Z9.",
+   "protected": [
+    "25 000 FCFA",
+    "Jean-Paul Mbarga",
+    "+237 6 99 12 34 56",
+    "SAF-2026-X7Y8Z9"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T073",
+   "group": "hostile_inedit",
+   "lang": "fr",
+   "text": "Solde insuffisant : il vous manque 5 000 FCFA pour ce transfert de 30 000 FCFA.",
+   "protected": [
+    "5 000 FCFA",
+    "30 000 FCFA"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T074",
+   "group": "hostile_inedit",
+   "lang": "fr",
+   "text": "Alerte de sécurité : tentative de débit suspect de 75 000 FCFA sur votre compte.",
+   "protected": [
+    "75 000 FCFA"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": "exemple de contenu inedit du panneau jury"
+  },
+  {
+   "id": "T075",
+   "group": "hostile_inedit",
+   "lang": "fr",
+   "text": "Votre carte sera bloquée dans 24 heures si vous ne confirmez pas.",
+   "protected": [
+    "24"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T076",
+   "group": "hostile_inedit",
+   "lang": "fr",
+   "text": "Promotion : 0 % de frais jusqu'au 30 novembre 2026 pour tout transfert de plus de 10 000 FCFA.",
+   "protected": [
+    "0 %",
+    "30 novembre 2026",
+    "10 000 FCFA"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T077",
+   "group": "hostile_inedit",
+   "lang": "fr",
+   "text": "Attention : un tiers demande 100 000 FCFA au +237 677 00 11 22.",
+   "protected": [
+    "100 000 FCFA",
+    "+237 677 00 11 22"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T078",
+   "group": "hostile_inedit",
+   "lang": "fr",
+   "text": "Frais :  1,5 %\n(min. 100 FCFA)",
+   "protected": [
+    "1,5 %",
+    "100 FCFA"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": "espaces et saut de ligne"
+  },
+  {
+   "id": "T079",
+   "group": "hostile_inedit",
+   "lang": "fr",
+   "text": "Montant to pay: 25 000 FCFA, frais 1,5 %",
+   "protected": [
+    "25 000 FCFA",
+    "1,5 %"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": "langues melangees"
+  },
+  {
+   "id": "T080",
+   "group": "hostile_inedit",
+   "lang": "fr",
+   "text": "Safinum Pay — environnement de démonstration.",
+   "protected": [
+    "Safinum Pay"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T081",
+   "group": "hostile_inedit",
+   "lang": "fr",
+   "text": "Ne partagez jamais votre code PIN.",
+   "protected": [],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": true,
+   "note": "negation : sens a verifier par un locuteur"
+  },
+  {
+   "id": "T082",
+   "group": "hostile_inedit",
+   "lang": "fr",
+   "text": "Ce transfert n'est pas réversible : les frais ne sont pas remboursables.",
+   "protected": [],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": true,
+   "note": "negation/condition : sens a verifier"
+  },
+  {
+   "id": "T083",
+   "group": "hostile_jetons",
+   "lang": "fr",
+   "text": "Total : __SAFE_AMOUNT_0__ FCFA",
+   "protected": [
+    "__SAFE_AMOUNT_0__"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": "faux jeton du serveur LinguaFin"
+  },
+  {
+   "id": "T084",
+   "group": "hostile_jetons",
+   "lang": "fr",
+   "text": "Total : ⟦0⟧ et 25 000 FCFA",
+   "protected": [
+    "⟦0⟧",
+    "25 000 FCFA"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": "faux jeton au format de la couche Safinum"
+  },
+  {
+   "id": "T085",
+   "group": "hostile_jetons",
+   "lang": "en",
+   "text": "Hello {name}, your balance is {amount}",
+   "protected": [
+    "{name}",
+    "{amount}"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T086",
+   "group": "hostile_jetons",
+   "lang": "fr",
+   "text": "Total : %s FCFA (%d opérations)",
+   "protected": [
+    "%s",
+    "%d"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T087",
+   "group": "hostile_jetons",
+   "lang": "en",
+   "text": "Total: {{amount}} — ${total}",
+   "protected": [
+    "{{amount}}",
+    "${total}"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T088",
+   "group": "secret",
+   "lang": "fr",
+   "text": "Votre code OTP est 482913. Ne le communiquez à personne.",
+   "protected": [
+    "482913"
+   ],
+   "secret": true,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T089",
+   "group": "secret",
+   "lang": "fr",
+   "text": "Code PIN : 1234",
+   "protected": [
+    "1234"
+   ],
+   "secret": true,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T090",
+   "group": "secret",
+   "lang": "en",
+   "text": "Your one-time password is 482913",
+   "protected": [
+    "482913"
+   ],
+   "secret": true,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": ""
+  },
+  {
+   "id": "T091",
+   "group": "performance",
+   "lang": "fr",
+   "text": "99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 FCFA",
+   "protected": [
+    "99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 FCFA"
+   ],
+   "secret": false,
+   "unknown": true,
+   "pure_values": false,
+   "human_check": false,
+   "note": "2000 chiffres : delai < 100 ms"
+  }
+ ]
+}

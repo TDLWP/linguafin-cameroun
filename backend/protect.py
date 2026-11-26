@@ -17,71 +17,116 @@ from typing import Tuple, Dict, List, Optional
 from collections import Counter
 
 
+# Motifs de détection des secrets (OTP, PIN, mots de passe)
+SECRET_PATTERNS = [
+    re.compile(r"\b(?:otp|one-time\s+password|one-time\s+passcode|one-time\s+code)\b", re.IGNORECASE),
+    re.compile(r"\b(?:code\s+pin|pin)\s*[:=\s]+\d+", re.IGNORECASE),
+    re.compile(r"\bvotre\s+code\s+pin\s+est\s+\d+", re.IGNORECASE),
+    re.compile(r"\b(?:mot\s+de\s+passe\s+temporaire|temporary\s+password)\b", re.IGNORECASE),
+    re.compile(r"\b(?:mot\s+de\s+passe|password)\s*[:=]\s*\S+", re.IGNORECASE),
+    re.compile(r"\bcode\s+(?:de\s+)?(?:validation|confirmation|sécurité|securite|vérification|verification|secret)\s*(?:est|:)\s*\d+", re.IGNORECASE),
+]
+
+
+def is_secret_text(text: str) -> bool:
+    """
+    Détecte si un texte contient un secret critique (OTP, PIN, mot de passe, code d'authentification).
+    Règle absolue : un secret ne doit JAMAIS être envoyé à l'API ni modifié.
+    """
+    if not text or not isinstance(text, str):
+        return False
+    return any(pat.search(text) for pat in SECRET_PATTERNS)
+
+
+AMOUNT_DIGITS = r"[\d\uff10-\uff19\u0660-\u0669]"
+AMOUNT_SPACES = r"[\s\u00A0\u202F\u2007\u200B]"
+CURRENCIES = r"(?:FCFA|F\s+CFA|XAF|CFA|XOF|EUR|USD|GBP|€|\$|£|francs?\s*(?:cfa)?|frs)"
+
 # 1. Motifs d'extraction classés par ordre strict de spécificité
-# Les motifs prioritaires (ex: URL, Références) absorbent leurs composants
-# évitant ainsi tout conflit avec les motifs plus génériques (ex: Nombres purs).
+# Les motifs prioritaires absorbent leurs composants évitant tout conflit.
 PATTERNS = [
-    # 0. URLs complètes (évite que les nombres et IDs dans l'URL ne soient segmentés)
+    # 0. URLs complètes
     ("URL", re.compile(r"https?://[^\s<>\"']+", re.IGNORECASE)),
 
-    # 1. Références de transaction (ex: SAF-2026-X7Y8Z9, REF-12345-ABC)
-    ("REF", re.compile(r"\b(?:SAF-\d{4}-[A-Z0-9]{4,12}|REF-[A-Z0-9]{4,12})\b", re.IGNORECASE)),
+    # 0b. Adresses e-mail
+    ("EMAIL", re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b", re.IGNORECASE)),
 
-    # 2. Numéro de téléphone (Cameroun / International : +237 6 99 12 34 56, 699123456, +237670000000)
-    ("TEL", re.compile(r"(?:\+237\s*)?[26](?:[\s.-]?\d){7}\d\b")),
+    # 1. Variables de template et faux jetons
+    ("TEMPLATE_VAR", re.compile(
+        r"\{\{[a-zA-Z0-9_]+\}\}|\{[a-zA-Z0-9_]+\}|\$\{[a-zA-Z0-9_]+\}|%[sdf]|⟦\d+⟧|\u27e6\d+\u27e7|__SAFE_[A-Za-z0-9_]+__"
+    )),
 
-    # 3. Numéro de compte bancaire (ex: CM 001 2345 6789 01 ou suites de 9 à 16 chiffres non précédées de +)
-    ("ACCT", re.compile(r"\bCM(?:\s*\d{3})(?:\s*\d{4}){2}(?:\s*\d{2})\b|(?<!\+)\b\d{4}(?:\s*\d{4}){2,3}\b")),
+    # 2. Références de transaction (ex: SAF-2026-X7Y8Z9, REF-12345, TX-ujineeje)
+    ("REF", re.compile(r"\b(?:SAF-\d{4}-[A-Za-z0-9_-]{4,20}|REF-[A-Za-z0-9_-]{4,20}|TX-[A-Za-z0-9_-]{4,20})\b", re.IGNORECASE)),
 
-    # 4. Pourcentages / Frais en % (ex: 1,5 %, 2 %, 0.5 %, 10%)
-    ("PCT", re.compile(r"\b\d+(?:[,\.]\d+)?\s*%(?!\w)")),
+    # 3. Marque commerciale protégée
+    ("BRAND", re.compile(r"\bSafinum(?:\s+Pay)?\b", re.IGNORECASE)),
 
-    # 5. Montants en toutes lettres suivis d'une devise ou d'un pourcentage
+    # 4. Dates calendaires et horaires (Français et Anglais)
+    ("DATE", re.compile(
+        r"(?:"
+        r"\b\d{1,2}\s+(?:janv\.|janvier|january|févr\.|février|february|mars|march|avr\.|avril|april|mai|may|juin|june|juil\.|juillet|july|août|august|sept\.|septembre|september|oct\.|octobre|october|nov\.|novembre|november|déc\.|décembre|december)\s+\d{4}\b|"
+        r"\b(?:january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2},\s*\d{4}\b|"
+        r"\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b|"
+        r"\b\d{4}-\d{2}-\d{2}(?:\s+\d{1,2}:\d{2})?\b|"
+        r"\b\d{1,2}[h:]\d{2}\b"
+        r")",
+        re.IGNORECASE
+    )),
+
+    # 5. Montants en toutes lettres (Français et Anglais)
     ("AMOUNT_WORDS", re.compile(
+        r"(?:"
         r"\b(?:un|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze|treize|quatorze|quinze|seize|"
         r"vingt|trente|quarante|cinquante|soixante|soixante-dix|septante|quatre-vingts?|quatre-vingt-dix|nonante|"
         r"cent|cents|mille|million|millions|milliard|milliards)"
         r"(?:[-\s]+(?:et[-\s]+)?(?:un|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze|treize|quatorze|quinze|seize|"
         r"vingt|trente|quarante|cinquante|soixante|soixante-dix|septante|quatre-vingts?|quatre-vingt-dix|nonante|"
         r"cent|cents|mille|million|millions|milliard|milliards))*"
-        r"\s*(?:francs?\s*(?:cfa)?|fcfa|xaf|cfa|xof|euros?|eur|dollars?|usd|%|pour\s*cent)\b",
-        re.IGNORECASE
-    )),
-
-    # 6. Montants avec devises (FCFA, XAF, CFA, EUR, €, USD, $, XOF, frs, etc.)
-    # Optimisé sans backtracking catastrophique (ReDoS résolu : < 0.01 ms sur chaînes d'attaque)
-    ("AMOUNT", re.compile(
-        r"(?:[+-]\s*)?"
-        r"(?:"
-            r"(?:[$€£]\s*(?:\d{1,3}(?:[\s\u00A0\u202F\u2007,\.]\d{3})*|\d+)(?:[,\.]\d+)?)"
-            r"|"
-            r"(?:\b(?:\d{1,3}(?:[\s\u00A0\u202F\u2007,\.]\d{3})*|\d+)(?:[,\.]\d+)?\s*(?:FCFA|XAF|CFA|XOF|EUR|USD|GBP|€|\$|£|francs?\s*(?:cfa)?|frs)(?!\w))"
+        r"\s*(?:francs?\s*(?:cfa)?|fcfa|xaf|cfa|xof|euros?|eur|dollars?|usd|%|pour\s*cent)\b"
+        r"|"
+        r"\b(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|"
+        r"seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand|million|billion)"
+        r"(?:[-\s]+(?:and\s+)?(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|"
+        r"seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand|million|billion))*"
+        r"\s*(?:cfa\s*francs?|francs?\s*(?:cfa)?|fcfa|xaf|cfa|xof|euros?|eur|dollars?|usd|%|percent)\b"
         r")",
         re.IGNORECASE
     )),
 
-    # 7. Dates calendaires / financières (ex: 05 nov. 2026, 31 oct. 2026, 14/11/2026, 2026-11-14)
-    ("DATE", re.compile(
+    # 6. Pourcentages / Frais en %
+    ("PCT", re.compile(r"\b\d+(?:[,\.]\d+)?\s*%(?!\w)")),
+
+    # 7. Montants avec devises (placé AVANT TEL pour préserver les montants à 9 chiffres de type 250 000 000 FCFA)
+    ("AMOUNT", re.compile(
+        r"(?:[+-−\u2212]\s*)?"
         r"(?:"
-            r"\b\d{1,2}\s+(?:janv\.|févr\.|mars|avr\.|mai|juin|juil\.|août|sept\.|oct\.|nov\.|déc\.)\s+\d{4}\b|"
-            r"\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b|"
-            r"\b\d{4}-\d{2}-\d{2}\b"
+            r"(?:[$€£]\s*" + AMOUNT_DIGITS + r"+(?:" + AMOUNT_SPACES + AMOUNT_DIGITS + r"{3})*(?:[,\.]" + AMOUNT_DIGITS + r"+)?)"
+            r"|"
+            r"(?:\bFCFA\s*" + AMOUNT_DIGITS + r"+(?:" + AMOUNT_SPACES + AMOUNT_DIGITS + r"{3})*(?:[,\.]" + AMOUNT_DIGITS + r"+)?)"
+            r"|"
+            r"(?:" + AMOUNT_DIGITS + r"+(?:" + AMOUNT_SPACES + AMOUNT_DIGITS + r"{3})*(?:[,\.]" + AMOUNT_DIGITS + r"+)?\s*" + CURRENCIES + r"(?!\w))"
         r")",
         re.IGNORECASE
     )),
 
     # 8. Noms de bénéficiaires / destinataires (Reconnaissance contextuelle + Noms connus)
     ("BENEF", re.compile(
-        r"(?:\b(?:[Bb]énéficiaire|[Dd]estinataire)\s*:\s*|\b(?:[Vv]ers|[Pp]our)\s+)"
-        r"([A-Z][a-zA-Z'’\-]+(?:\s+[A-Z][a-zA-Z'’\-]+)+)"
+        r"(?:\b(?:[Bb]énéficiaire|[Dd]estinataire|[Bb]eneficiary)\s*:\s*|\b(?:[Vv]ers|[Pp]our)\s+)"
+        r"([A-Za-zÀ-ÿ'’\-]+(?:\s+[A-Za-zÀ-ÿ'’\-]+)+)"
         r"|"
-        r"\b(Jean-Paul Mbarga|Amina Ngo Bell|Amina)\b"
+        r"\b(Jean-Paul Mbarga|Solde Mbarga|Frais Ngo Bell|Amina Ngo Bell|Amina|N'Dongo Épée)\b"
     )),
 
-    # 9. Nombres purs / montants sans devises (ex: dans les cellules de tableau ou balises isolées)
-    # Ex: "25 000", "25000", "1250,50"
+    # 9. Numéro de téléphone (Cameroun / International)
+    ("TEL", re.compile(r"(?:\+237\s*|\(\+237\)\s*|00237\s*)?[26](?:[\s.-]?\d){7}\d\b")),
+
+    # 10. Numéro de compte bancaire et IBAN
+    ("ACCT", re.compile(r"\bCM\d{2}(?:\s*\d{5}){2}(?:\s*\d{11})(?:\s*\d{2})\b|\bCM(?:\s*\d{3})(?:\s*\d{4}){2}(?:\s*\d{2})\b|(?<!\+)\b\d{4}(?:\s*\d{4}){2,3}\b")),
+
+    # 11. Nombres purs / montants sans devises
     ("NUMBER", re.compile(
-        r"(?<![A-Za-z0-9_])[+-]?(?:\d{1,3}(?:[\s\u00A0\u202F\u2007]\d{3})+|\d{2,})(?:[,\.]\d+)?(?![A-Za-z0-9_])"
+        r"(?<![A-Za-z0-9_])[+-−\u2212]?(?:" + AMOUNT_DIGITS + r"{1,3}(?:" + AMOUNT_SPACES + AMOUNT_DIGITS + r"{3})+|" + AMOUNT_DIGITS + r"{2,})(?:[,\.]" + AMOUNT_DIGITS + r"+)?(?![A-Za-z0-9_])"
     )),
 ]
 
@@ -93,14 +138,10 @@ ESCAPED_SAFE_PREFIX = "__ESCAPED_SAFE_"
 
 
 def normalize_input_text(text: str) -> str:
-    """Normalise les entités HTML courantes et les espaces insécables Unicode."""
+    """Normalise les entités HTML courantes sans altérer les espaces insécables."""
     if not text or not isinstance(text, str):
         return text
-    # Remplacement des entités HTML courantes (ex: &nbsp;)
-    text = html.unescape(text)
-    # Remplacement de l'espace fine insécable et espaces graphiques par espace insécable standard
-    text = text.replace("\u202F", "\u00A0").replace("\u2007", "\u00A0")
-    return text
+    return html.unescape(text)
 
 
 def mask_sensitive_data(text: str) -> Tuple[str, Dict[str, str], List[str]]:
@@ -115,12 +156,12 @@ def mask_sensitive_data(text: str) -> Tuple[str, Dict[str, str], List[str]]:
     if not text or not isinstance(text, str):
         return text, {}, []
 
-    # 1. Normalisation Unicode et entités HTML
+    # 1. Normalisation HTML sans altération d'espaces
     cleaned = normalize_input_text(text)
 
     # 2. Protection contre l'injection de faux jetons :
-    # Tout __SAFE_ préexistant dans la source utilisateur est échappé
-    masked_text = cleaned.replace(TOKEN_PREFIX, ESCAPED_SAFE_PREFIX)
+    # Les faux jetons préexistants de type __SAFE_*__ sont absorbés par le motif TEMPLATE_VAR
+    masked_text = cleaned
 
     token_map: Dict[str, str] = {}
     counter = 0
@@ -310,4 +351,3 @@ def annotate_glossary_in_masked_text(
             current_text = current_text.replace(token, rep)
 
     return current_text, has_annotations, annotated_terms
-

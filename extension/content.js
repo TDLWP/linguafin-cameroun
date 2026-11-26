@@ -138,6 +138,29 @@
     return SECURITY_ALERT_KEYWORDS.some(kw => lower.includes(kw));
   }
 
+  // Motifs de détection des secrets (OTP, PIN, codes d'authentification)
+  const SECRET_PATTERNS = [
+    /\b(?:otp|one-time\s+password|one-time\s+passcode|one-time\s+code)\b/i,
+    /\b(?:code\s+pin|pin)\s*[:=\s]+\d+/i,
+    /\bvotre\s+code\s+pin\s+est\s+\d+/i,
+    /\b(?:mot\s+de\s+passe\s+temporaire|temporary\s+password)\b/i,
+    /\b(?:mot\s+de\s+passe|password)\s*[:=]\s*\S+/i,
+    /\bcode\s+(?:de\s+)?(?:validation|confirmation|sécurité|securite|vérification|verification|secret)\s*(?:est|:)\s*\d+/i
+  ];
+
+  /**
+   * Détecte si un texte contient un secret critique (OTP, PIN, mot de passe).
+   * RÈGLE ABSOLUE : un secret ne doit JAMAIS être envoyé à l'API ni modifié.
+   */
+  function isSecretText(text) {
+    if (!text || typeof text !== 'string') return false;
+    return SECRET_PATTERNS.some(pat => pat.test(text));
+  }
+
+  if (typeof window !== 'undefined') {
+    window.SAFINUM_IS_SECRET_TEXT = isSecretText;
+  }
+
   function shouldAnnotateSecurityAlerts() {
     if (typeof window !== 'undefined' && typeof window.ANNOTATE_SECURITY_ALERTS !== 'undefined') {
       return Boolean(window.ANNOTATE_SECURITY_ALERTS);
@@ -207,6 +230,11 @@
 
   // --- 2. Résolution Hors-Ligne (Repli & Inédit) ---
   function resolveOffline(text, lang) {
+    // Règle absolue de sécurité : les secrets ne doivent JAMAIS être modifiés
+    if (isSecretText(text)) {
+      return { target: text, status: 'fallback_source', integrity_verified: true, bilingual_required: false, novel_annotated: false, badge: null };
+    }
+
     if (!state.offlineCatalog || !state.offlineCatalog.translations) {
       return { target: text, status: 'fallback_source', integrity_verified: true, bilingual_required: isCriticalText(text), novel_annotated: false, badge: null };
     }
@@ -346,7 +374,20 @@
 
     // Vérification préalable dans le cache mémoire
     for (const text of texts) {
-      const cacheKey = `${text.trim()}__${targetLang}`;
+      const trimmed = text.trim();
+      // RÈGLE ABSOLUE DE SÉCURITÉ : les secrets (OTP, PIN) ne doivent JAMAIS être envoyés à l'API ni modifiés
+      if (isSecretText(trimmed)) {
+        results.set(text, {
+          target: text,
+          status: 'fallback_source',
+          integrity_verified: true,
+          bilingual_required: false,
+          novel_annotated: false,
+          badge: null
+        });
+        continue;
+      }
+      const cacheKey = `${trimmed}__${targetLang}`;
       if (state.cache.has(cacheKey)) {
         results.set(text, state.cache.get(cacheKey));
       } else {

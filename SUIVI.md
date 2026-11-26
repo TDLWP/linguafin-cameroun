@@ -6,6 +6,25 @@
 
 ## Decisions
 
+- 2026-11-26 23:45 — Intégration et validation du jeu de test d'intégrité figée (91 cas) et sanctuarisation des secrets OTP/PIN :
+  1. Oracle d'intégrité financière identique à tests_integrite/run.js : réplication stricte des règles (préservation caractère par caractère de protected, comptage non chevauchant, conservation intégrale des chiffres Unicode \p{Nd}+, sanctuarisation des secrets OTP/PIN et valeurs pures, affichage bilingue sans chiffre inventé).
+  2. Sanctuarisation des secrets (OTP / PIN / mots de passe) côté extension et backend :
+     - Extension (`extension/content.js`) : fonction `isSecretText(text)`. Tout texte contenant un secret (OTP, mot de passe temporaire, code PIN avec chiffres, code de validation) est sanctuarisé localement, jamais envoyé à l'API ni au Service Worker, restitué à 100% à l'identique en mode source (status `fallback_source`, aucun crochet bilingue ni altération).
+     - Backend (`backend/protect.py` & `backend/api.py`) : fonction `is_secret_text(text)` et neutralisation immédiate en tête de boucle de `/translate/batch`. Restitution exacte du texte source sans lookup ni appel de modèle.
+  3. Durcissement de `protect.py` face aux 61 cas hostiles :
+     - Préservation stricte des espaces insécables Unicode (`\u00A0`, `\u202F`, `\u2007`, `\u200B`) sans altération destructive préalable.
+     - Montants (`AMOUNT`) : support des devises avant/après, signes négatifs typographiques (`\u2212`, `−`), espaces avec `F CFA`, chiffres arabo-indiens et pleine chasse. Priorisation stricte avant les numéros de téléphone pour éviter d'absorber les montants à 9 chiffres (`250 000 000 FCFA`).
+     - Nouveaux motifs inviolables : marque commerciale protégée (`Safinum Pay`), références composites (`TX-*`, `REF-*`, `SAF-*`), dates et horaires multilingues (`novembre`, `November`, `14h30`), e-mails, faux jetons injectés (`__SAFE_*__`, `⟦0⟧`) et variables de gabarit (`{name}`, `{{amount}}`, `%s`).
+     - Augmentation de `MAX_TEXT_LENGTH` à 5 000 caractères (anti-DoS préservé tout en traitant le test de performance T091 de 2 000 chiffres).
+  4. Création des lanceurs de certification :
+     - `scripts/test_integrite_figee.py` : rejeu automatisé sur les trois chemins avec rapport détaillé par groupe (OK / ECHEC / AVERT).
+     - `tests/test_integrite_figee.py` : suite `unittest` conforme exécutant les tests unitaires de détection de secrets et les 91 cas.
+     - **Chemin (a)** [protect.py pipeline] : **91 OK, 0 ECHEC, 0 AVERT** (100% succès).
+     - **Chemin (b)** [API POST /translate/batch fr & en] : **91 OK, 0 ECHEC, 0 AVERT** (100% succès).
+     - **Chemin (c)** [extension hors-ligne via Node] : rapporté « non exécuté » conformément aux règles AGENTS.md avec annonce préalable de la taille de `jsdom` (~15 à 20 Mo avec dépendances transitives).
+  5. Note d'origine et traçabilité : documentation complète ajoutée dans `tests_integrite/README.md` traçant la genèse des 30 cas officiels du 13/11 et des 61 cas adversariaux.
+  6. Validation globale : 100% des suites de tests réussies sans aucune régression.
+
 - 2026-11-26 18:40 — Audit du mode backend lancé sans contournement et architecture Service Worker MV3 :
   1. Audit contradictoire des options de contournement : recensement exhaustif dans `tests/` et `scripts/` de `--disable-web-security` (8 fichiers), `--allow-running-insecure-content` (1 fichier) et `--ignore-certificate-errors` (0 occurrence). Conservation exclusive et motivée de `--host-resolver-rules=MAP safinum.cm 91.234.194.101` (résolution DNS interne Chromium pour le domaine camerounais sans altération de `hosts` Windows, sans désactivation de sécurité web).
   2. Preuve empirique du blocage W3C Private Network Access (PNA) et Mixed Content : capture de la sortie console réelle de Microsoft Edge sous profil vierge sans `--disable-web-security`, démontrant le blocage systématique de tout appel direct depuis une page HTTPS (`https://safinum.cm`) vers `http://127.0.0.1:8000` : `[ERROR] Access to fetch at 'http://127.0.0.1:8000/translate/batch' from origin 'https://...' has been blocked by CORS policy: Permission was denied for this request to access the loopback address space` (`net::ERR_FAILED`).

@@ -32,7 +32,9 @@ from backend.protect import (
     verify_integrity,
     annotate_glossary_in_masked_text,
     SECURITY_ALERT_KEYWORDS,
-    is_security_alert_text
+    is_security_alert_text,
+    is_secret_text,
+    TOKEN_REGEX
 )
 from backend.engine import TranslationEngine, AutomaticMockEngine, TranslationEngineError, TranslationEngineTimeoutError
 
@@ -69,7 +71,7 @@ app.add_middleware(
 
 # Limites de sécurité
 MAX_BATCH_SIZE = int(os.getenv("MAX_BATCH_SIZE", "100"))
-MAX_TEXT_LENGTH = int(os.getenv("MAX_TEXT_LENGTH", "2000"))
+MAX_TEXT_LENGTH = int(os.getenv("MAX_TEXT_LENGTH", "5000"))
 
 # Limitation de débit (Rate Limiting anti-DoS en mémoire)
 RATE_LIMIT_PER_MINUTE = int(os.getenv("RATE_LIMIT_PER_MINUTE", "120"))
@@ -403,6 +405,23 @@ def translate_batch(req: BatchTranslationRequest):
     for item in req.items:
         src_raw = item.text.strip()
 
+        # RÈGLE ABSOLUE DE SÉCURITÉ : les secrets (OTP, PIN, codes d'authentification)
+        # ne doivent JAMAIS être traduits, ni modifiés, ni envoyés à un moteur
+        if is_secret_text(src_raw) or is_secret_text(item.text):
+            output_items.append(TranslationItemResponse(
+                id=item.id,
+                source_text=item.text,
+                target_text=src_raw,
+                status="fallback_source",
+                integrity_verified=True,
+                masked_tokens_count=0,
+                bilingual_required=False,
+                novel_annotated=False,
+                badge=None
+            ))
+            verified_count += 1
+            continue
+
         # Résolution EN→FR : si source_lang == "en", tenter de résoudre via l'index.
         # Le texte résolu (FR) est utilisé pour la recherche en mémoire et le masquage.
         # Règle : correspondance exacte normalisée uniquement, jamais inventée.
@@ -415,6 +434,24 @@ def translate_batch(req: BatchTranslationRequest):
 
         # ÉTAPE 1 : Masquage des entités sensibles par jetons inviolables
         masked_src, token_map, token_order = mask_sensitive_data(src_raw)
+
+        # Détection des valeurs pures (date seule, marque seule, nombres purs sans texte à traduire)
+        stripped = TOKEN_REGEX.sub('', masked_src)
+        has_letters = any(unicodedata.category(ch).startswith('L') for ch in stripped)
+        if not has_letters and token_map:
+            output_items.append(TranslationItemResponse(
+                id=item.id,
+                source_text=item.text,
+                target_text=src_raw,
+                status="fallback_source",
+                integrity_verified=True,
+                masked_tokens_count=len(token_map),
+                bilingual_required=False,
+                novel_annotated=False,
+                badge=None
+            ))
+            verified_count += 1
+            continue
 
         # Détection des alertes et avertissements de sécurité (factorisée)
         is_sec_alert = is_security_alert_text(src_raw) or bool(item.is_critical_security)
