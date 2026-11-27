@@ -31,41 +31,129 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CATALOGUE_DIR = os.path.join(REPO_ROOT, "catalogue")
 KIT_DIR = os.path.join(CATALOGUE_DIR, "kit_validation")
 TRANSLATIONS_CSV = os.path.join(CATALOGUE_DIR, "translations.csv")
+RECOUP_PATH = os.path.join(CATALOGUE_DIR, "recoupement_ui_resultats.csv")
 
 os.makedirs(KIT_DIR, exist_ok=True)
 
+PRIORITY_RANKS = {
+    "haute": 0,
+    "référence concordante": 1,
+    "normale": 2,
+}
+
+
+def is_critical_chain(cle: str, source: str) -> bool:
+    """
+    Détecte si une chaîne est critique : montants, frais, avertissements, erreurs.
+    Règle d'or SAFINUM : toute altération de ces éléments est un défaut majeur.
+    """
+    cle_lower = cle.lower()
+    src_lower = source.lower()
+
+    # Erreurs
+    if cle_lower.startswith("err_") or "error" in cle_lower or "erreur" in src_lower or "insuffisant" in src_lower:
+        return True
+
+    # Avertissements et Sécurité
+    if any(k in cle_lower for k in ("warning", "alert", "sec_", "security", "disclaimer", "notice")):
+        return True
+    if any(w in src_lower for w in ("alerte", "sécurité", "securite", "attention", "avertissement", "données fictives", "donnée personnelle", "fictives")):
+        return True
+
+    # Montants et Soldes
+    if any(k in cle_lower for k in ("amount", "solde", "balance", "total_to_debit", "total_debited")):
+        return True
+    if any(w in src_lower for w in ("montant", "solde", "fcfa", "cfa", "xaf", "total à débiter", "total débité")):
+        return True
+
+    # Frais
+    if "fee" in cle_lower or "badge_free" in cle_lower or "frais" in src_lower or "%" in src_lower or "gratuit" in src_lower:
+        return True
+
+    return False
+
+
+def load_recoupement_map() -> dict[tuple[str, str], str]:
+    """Charge les accords du fichier catalogue/recoupement_ui_resultats.csv."""
+    accords = {}
+    if os.path.exists(RECOUP_PATH):
+        with open(RECOUP_PATH, "r", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                accords[(row["cle"], row["langue"])] = row.get("accord", "").strip()
+    return accords
+
+
+def determine_priority(cle: str, source: str, accord: str) -> str:
+    """
+    Détermine la priorité de relecture d'une chaîne :
+    - 'référence concordante' si accord = identique
+    - 'haute' si accord = différent ou si la chaîne est critique (montants, frais, avertissements, erreurs)
+    - 'normale' sinon
+    """
+    if accord == "identique":
+        return "référence concordante"
+    if accord == "different":
+        return "haute"
+    if is_critical_chain(cle, source):
+        return "haute"
+    return "normale"
+
 
 def load_translations(lang_code: str) -> list[dict]:
-    """Charge les 84 entrées de traduction pour la langue cible depuis translations.csv."""
+    """
+    Charge les 84 entrées de traduction pour la langue cible depuis translations.csv,
+    calcule la priorité de relecture et trie les lignes par priorité (haute d'abord).
+    """
+    accords = load_recoupement_map()
     items = []
     with open(TRANSLATIONS_CSV, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
-        for row in reader:
+        for original_idx, row in enumerate(reader):
             if row["langue"] == lang_code:
+                accord = accords.get((row["cle"], lang_code), "")
+                prio = determine_priority(row["cle"], row["source"], accord)
                 items.append({
+                    "original_idx": original_idx,
                     "cle": row["cle"],
                     "source": row["source"],
                     "cible": row["cible"],
                     "statut": row["statut"],
-                    "commentaire": row["commentaire"]
+                    "commentaire": row["commentaire"],
+                    "priorite": prio,
+                    "accord": accord,
                 })
+
+    # Tri par priorité ('haute' d'abord, puis 'référence concordante', puis 'normale'),
+    # avec conservation de l'ordre d'origine pour les éléments de même priorité.
+    items.sort(key=lambda x: (PRIORITY_RANKS.get(x["priorite"], 9), x["original_idx"]))
     return items
 
 
 def export_csv(items: list[dict], lang_code: str, lang_name: str) -> str:
-    """Exporte les items au format CSV pour le kit de validation."""
+    """Exporte les items au format CSV pour le kit de validation avec la colonne Priorité de relecture."""
     csv_filename = f"fiche_validation_{'duala' if lang_code == 'dua' else 'bassaa'}.csv"
     csv_path = os.path.join(KIT_DIR, csv_filename)
 
     with open(csv_path, "w", encoding="utf-8", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(["N°", "Clé / Contexte", "Texte Source (Français)", f"Proposition Traduction ({lang_name})", "Correction du validateur", "Validation (OK / KO)", "Commentaire linguistique"])
+        writer.writerow([
+            "N°",
+            "Clé / Contexte",
+            "Texte Source (Français)",
+            f"Proposition Traduction ({lang_name})",
+            "Priorité de relecture",
+            "Correction du validateur",
+            "Validation (OK / KO)",
+            "Commentaire linguistique"
+        ])
         for idx, item in enumerate(items, 1):
             writer.writerow([
                 idx,
                 item["cle"],
                 item["source"],
                 item["cible"],
+                item["priorite"],
                 "",  # à remplir par le validateur
                 "",  # OK / KO
                 item["commentaire"]
@@ -76,17 +164,29 @@ def export_csv(items: list[dict], lang_code: str, lang_name: str) -> str:
 
 
 def build_html(items: list[dict], lang_code: str, lang_name: str) -> str:
-    """Construit le document HTML paginé A4 avec en-têtes répétés et styles stricts >= 9pt."""
+    """Construit le document HTML paginé A4 avec colonne Priorité, en-têtes répétés et styles stricts >= 9pt."""
+    nb_haute = sum(1 for item in items if item["priorite"] == "haute")
+    nb_normale = sum(1 for item in items if item["priorite"] == "normale")
+    nb_concordante = sum(1 for item in items if item["priorite"] == "référence concordante")
+
     rows_html = []
     for idx, item in enumerate(items, 1):
         src_escaped = html.escape(item["source"])
         target_escaped = html.escape(item["cible"])
         key_escaped = html.escape(item["cle"])
-        comment_escaped = html.escape(item["commentaire"])
+        prio = item["priorite"]
+
+        if prio == "haute":
+            badge_html = '<span class="badge badge-haute">Haute</span>'
+        elif prio == "référence concordante":
+            badge_html = '<span class="badge badge-concordante">Réf. concord.</span>'
+        else:
+            badge_html = '<span class="badge badge-normale">Normale</span>'
 
         rows_html.append(f"""
         <tr>
           <td class="col-num">{idx}</td>
+          <td class="col-prio">{badge_html}</td>
           <td class="col-key">{key_escaped}</td>
           <td class="col-src">{src_escaped}</td>
           <td class="col-target"><strong>{target_escaped}</strong></td>
@@ -160,12 +260,12 @@ def build_html(items: list[dict], lang_code: str, lang_name: str) -> str:
       color: #FFFFFF;
       font-size: 9.5pt;
       font-weight: 700;
-      padding: 6px 5px;
+      padding: 6px 4px;
       text-align: left;
       border: 1px solid #0A192F;
     }}
     table.validation-table td {{
-      padding: 5px 5px;
+      padding: 5px 4px;
       font-size: 9.5pt;
       border: 1px solid #CBD5E1;
       vertical-align: top;
@@ -176,12 +276,37 @@ def build_html(items: list[dict], lang_code: str, lang_name: str) -> str:
       background-color: #F8FAFC;
     }}
 
-    .col-num {{ width: 5%; text-align: center; font-weight: bold; color: #475569; }}
-    .col-key {{ width: 15%; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 9pt; color: #64748b; }}
-    .col-src {{ width: 33%; color: #0F172A; }}
-    .col-target {{ width: 31%; color: #0369A1; }}
+    .col-num {{ width: 4%; text-align: center; font-weight: bold; color: #475569; }}
+    .col-prio {{ width: 10%; text-align: center; }}
+    .col-key {{ width: 14%; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 9pt; color: #64748b; }}
+    .col-src {{ width: 28%; color: #0F172A; }}
+    .col-target {{ width: 28%; color: #0369A1; }}
     .col-corr {{ width: 11%; background-color: #FFF; }}
     .col-status {{ width: 5%; text-align: center; }}
+
+    .badge {{
+      display: inline-block;
+      padding: 2px 4px;
+      font-size: 9.5pt;
+      font-weight: 700;
+      border-radius: 3px;
+      white-space: nowrap;
+    }}
+    .badge-haute {{
+      background-color: #FEE2E2;
+      color: #991B1B;
+      border: 1px solid #F87171;
+    }}
+    .badge-normale {{
+      background-color: #F1F5F9;
+      color: #475569;
+      border: 1px solid #CBD5E1;
+    }}
+    .badge-concordante {{
+      background-color: #DCFCE7;
+      color: #166534;
+      border: 1px solid #86EFAC;
+    }}
 
     .table-subhead {{
       background: #F1F5F9;
@@ -205,6 +330,7 @@ def build_html(items: list[dict], lang_code: str, lang_name: str) -> str:
     </div>
     <div class="doc-meta">
       <div>Total chaînes : <strong>84</strong></div>
+      <div>Priorité haute : <strong>{nb_haute}</strong> | Normale : <strong>{nb_normale}</strong></div>
       <div>Statut cible : <strong>human_validated</strong></div>
     </div>
   </div>
@@ -213,10 +339,11 @@ def build_html(items: list[dict], lang_code: str, lang_name: str) -> str:
     <thead>
       <tr>
         <th class="col-num">N°</th>
+        <th class="col-prio">Priorité</th>
         <th class="col-key">Clé Contexte</th>
         <th class="col-src">Texte Source (Français)</th>
         <th class="col-target">Proposition Traduction ({lang_name})</th>
-        <th class="col-corr">Correction Validateur</th>
+        <th class="col-corr">Correction</th>
         <th class="col-status">OK/KO</th>
       </tr>
     </thead>

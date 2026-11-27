@@ -1,85 +1,85 @@
-N°,Clé / Contexte,Texte Source (Français),Proposition Traduction (Duálá),Correction du validateur,Validation (OK / KO),Commentaire linguistique
-1,brand_name,Safinum Pay,Safinum Pay,,,Marque commerciale protégée — non modifiée
-2,online_banking,Banque en ligne,Banka o mwendi,,,Périphrase : Banka o mwendi ma telefon (banque sur réseau)
-3,top_banner_notice,"Environnement de test — données fictives, aucune transaction réelle.","Epolo ya kekise — betiledi ba wombe, to ebolo ya moni ya mbale titi.",,,Avertissement environnement de démonstration
-4,test_protocol,Protocole de test,Mbwedi ya kekise,,,Périphrase : Mbwedi ya kekise (règles d'évaluation/essai)
-5,back_to_hackathon,Retour au hackathon,Timba o hackathon,,,Terme hackathon conservé comme emprunt technique
-6,secure_connection,Connexion sécurisée,Jowe la mbembe,,,Périphrase : Jowe la mbembe (liaison sous protection)
-7,footer_disclaimer,Safinum Pay — environnement de démonstration. Ne saisissez aucune donnée personnelle réelle.,Safinum Pay — epolo ya kekise. O si boke betiledi bongó ba mbale.,,,Avertissement sécurité données privées
-8,wizard_step1,Solde,Moni mi titi,,,Terme financier standard : moni mi titi (argent disponible)
-9,wizard_step2,Frais,Mutoa,,,"Terme financier : mutoa (frais, coût de transaction)"
-10,wizard_step3,Bénéficiaire,Nongi a moni,,,Périphrase : Nongi a moni (celui qui reçoit l'argent)
-11,wizard_step4,Récapitulatif,Mbondo a tomba,,,Périphrase : Mbondo a tomba (bilan/résumé du transfert)
-12,wizard_step5,Confirmation,Kakisane,,,Validation formelle de l'opération
-13,action_cancel,Annuler,Kwele ebolo,,,Périphrase : Kwele ebolo (abandonner/arrêter l'opération en cours)
-14,action_confirm,Confirmer,Kakisane,,,Validation impérative de l'action
-15,action_transfer,Transfert,Tomba,,,Opération financière de déplacement d'argent (loma moni)
-16,status_error,Erreur,Bwemba,,,Défaut d'exécution ou problème survenu
-17,status_security,Sécurité,Mbembe,,,Protection et vigilance
-18,dash_your_account,Votre compte,Kompiti yango,,,Emprunt bantouisé standard pour compte bancaire
-19,dash_hello_amina,"Bonjour, Amina","Mbolo, Amina",,,Salutation + nom propre protégé invariable
-20,dash_intro_text,Consultez votre solde et lancez un transfert en toute sécurité.,Ombwele moni mongó na lom moni na mbembe.,,,Phrase d'accueil tableau de bord
-21,dash_available_balance,Solde disponible,Moni mi titi o bolane,,,Périphrase : Moni mi titi o bolane (argent présent utilisable)
-22,dash_account_number,Numéro de compte,Nombá ya kompiti,,,Identifiant de compte client
-23,dash_current_account,Compte courant,Kompiti ya buńa té,,,Périphrase : Kompiti ya buńa té (compte des opérations quotidiennes)
-24,dash_btn_make_transfer,Effectuer un transfert,Loma moni,,,Action d'envoi de fonds
-25,dash_btn_view_fees,Consulter les frais,Ombwele mutoa,,,Vérification préalable de la tarification
-26,dash_recent_transactions,Transactions récentes,Bebolo ba moni ba bo buńa,,,Périphrase : Bebolo ba moni ba bo buńa (opérations des derniers jours)
-27,tx_date_05_nov,05 nov. 2026,05 nov. 2026,,,Date financière protégée — stricte conservation
-28,tx_merchant_payment,Paiement marchand,Sawa la mutoa,,,Périphrase : Sawa la mutoa (règlement d'achat commercial) — INCERTAIN
-29,tx_date_04_nov,04 nov. 2026,04 nov. 2026,,,Date financière protégée — stricte conservation
-30,tx_salary_received,Salaire reçu,Moni ma musadi ma sangi,,,Périphrase : Moni ma musadi ma sangi (argent du travail arrivé)
-31,tx_date_02_nov,02 nov. 2026,02 nov. 2026,,,Date financière protégée — stricte conservation
-32,tx_transfer_received,Transfert reçu,Moni ma lomi ma sangi,,,Périphrase : Moni ma lomi ma sangi (argent envoyé qui a été reçu)
-33,tx_date_31_oct,31 oct. 2026,31 oct. 2026,,,Date financière protégée — stricte conservation
-34,tx_electricity_bill,Facture électricité,Mutoa ma mwese,,,Périphrase : Mutoa ma mwese (coût du courant/lumière)
-35,fee_screen_title,Frais de transfert,Mutoa ma tomba,,,Tarification de l'envoi
-36,fee_screen_subtitle,Choisissez le type de transfert et le montant. Les frais sont calculés automatiquement.,Posa pateli ya tomba na moni. Mutoa mu mendeno kusedo na momele.,,,Consigne simulation des frais
-37,fee_operation_type,Type d'opération,Pateli ya ebólo,,,Catégorisation de la transaction
-38,op_safinum_account,Compte Safinum,Kompiti Safinum,,,Virement interne Safinum
-39,op_safinum_note,Transfert instantané et gratuit,"Loma na diboa, titi mutoa",,,"Périphrase : Loma na diboa, titi mutoa (envoi immédiat sans frais)"
-40,op_mobile_money,Mobile Money,Mobile Money,,,Terme protégé écosystème télécom
-41,op_mobile_money_note,"Frais de 1,5 % (min. 100 FCFA, max. 2 500 FCFA)","Mutoa ma 1,5 % (min. 100 FCFA, max. 2 500 FCFA)",,,Valeurs numériques et pourcentages protégés
-42,op_other_bank,Autre banque,Banka nipépe,,,Virement interbancaire externe
-43,op_other_bank_note,"Frais de 2 % (min. 200 FCFA, max. 5 000 FCFA)","Mutoa ma 2 % (min. 200 FCFA, max. 5 000 FCFA)",,,Valeurs numériques et pourcentages protégés
-44,fee_amount_to_send,Montant à envoyer,Moni ma lomabe,,,Périphrase : Moni ma lomabe (somme d'argent à expédier)
-45,fee_total_to_debit,Total à débiter,Moni mése ma busisabe,,,Périphrase : Moni mése ma busisabe (tout l'argent qui sortira)
-46,fee_balance_after,Solde après opération,Moni mi matiké,,,Périphrase : Moni mi matiké (argent qui restera sur le compte)
-47,badge_free,Gratuit,Titi mutoa,,,Sans frais
-48,btn_back,Retour,Timba,,,Bouton d'étape précédente
-49,btn_continue,Continuer,Alá oboso,,,Progression vers l'étape suivante
-50,ben_screen_subtitle,Renseignez les informations du destinataire. Vérifiez toujours le numéro avant de valider.,Londeyi bitilá ba nongi. Ombwele nombá oboso na kakisane.,,,Instructions saisie destinataire
-51,ben_warning_new,Ce bénéficiaire n'a jamais été utilisé sur ce compte. Vérifiez le numéro avant de continuer.,Nu nongi a si sengedi no o yé kompiti. Ombwele nombá oboso na ala oboso.,,,Avertissement critique nouveau contact
-52,ben_name_label,Nom du bénéficiaire,Dina la nongi,,,Périphrase : Dina la nongi (nom de celui qui reçoit)
-53,ben_phone_label,Numéro de téléphone,Nombá ya telefon,,,Champ téléphone
-54,ben_reason_label,Motif du transfert,Njonji ya tomba,,,Périphrase : Njonji ya tomba (raison/motif de l'envoi)
-55,ben_reason_default,Paiement de services,Sawa la ebolo,,,Périphrase : Sawa la ebolo (règlement pour travail)
-56,ben_note_label,Note (optionnel),Betiledi (o mapula),,,Périphrase : Betiledi (o mapula) (mots optionnels)
-57,ben_checkbox_verified,J'ai vérifié le nom et le numéro du bénéficiaire.,Na mombweli dina na nombá ya nu nongi.,,,Déclaration explicite de vérification
-58,sum_screen_subtitle,Vérifiez les informations avant de confirmer le transfert.,Ombwele bwam betiledi oboso na loma moni.,,,Relecture préalable obligatoire
-59,sum_label_amount,Montant,Moni,,,Valeur principale transaction
-60,sum_label_total_debited,Total débité,Moni mése ma busisabe,,,Périphrase : Total débité du compte
-61,sum_label_phone,Téléphone,Telefon,,,Emprunt usuel d'usage universel
-62,sum_label_reference,Référence,Lembá,,,Périphrase : Lembá (identifiant d'opération)
-63,sum_label_operation,Opération,Ebólo,,,Acte financier exécuté
-64,sum_checkbox_confirm,Je confirme que les informations ci-dessus sont correctes.,Na kakisane na bi betiledi bése be bwan.,,,Validation formelle des données récapitulatives
-65,btn_edit,Modifier,Tukwe,,,Correction des champs saisis
-66,btn_confirm_transfer,Confirmer le transfert,Kakisane tomba,,,Bouton d'engagement irréversible
-67,receipt_title,Transfert effectué,Moni mi lomi na bwam,,,Notification de succès de l'envoi
-68,receipt_subtitle,Votre transfert a été envoyé avec succès.,Moni mongó mi lomi bwambwam.,,,Confirmation de transmission réussie
-69,receipt_label_status,Statut,Mbembe ya ebólo,,,Périphrase : Mbembe ya ebólo (état de l'opération) — INCERTAIN
-70,receipt_status_success,Succès,Bwam,,,Validation positive
-71,btn_new_transfer,Nouveau transfert,Loma moni pe,,,Nouvelle opération financière
-72,sec_sidebar_title,Sécurité,Mbembe,,,Rubrique d'assistance et de vigilance
-73,sec_sidebar_text,Vérifiez toujours le nom et le numéro du bénéficiaire avant de confirmer un transfert.,Ombwele ponda yése dina na nombá ya nongi oboso na kakisane.,,,Consigne anti-fraude essentielle
-74,alert_error_title,Une erreur est survenue,Bwemba bo pumi,,,Avertissement anomalie bloquante
-75,alert_security_title,Alerte de sécurité,Kwalisan ya mbembe,,,Périphrase : Kwalisan ya mbembe (avertissement de protection)
-76,btn_dismiss,Fermer,Kwele,,,Fermeture d'alerte
-77,injected_title,Message important,Mwengue mwendi,,,Périphrase : Avis urgent / message d'attention — INCERTAIN
-78,err_amount_001,Le montant doit être supérieur à zéro.,Moni ma lomebe ma sengi bobe nika zéro.,,,Erreur saisie montant invalide
-79,err_amount_002,Solde insuffisant pour effectuer ce transfert.,Moni mongó ma titi suwedi o loma yé moni.,,,Périphrase : Solde disponible insuffisant pour l'envoi
-80,err_beneficiary_001,Veuillez renseigner le nom et le numéro du bénéficiaire.,Londeyi dina na nombá ya nu nongi.,,,Erreur champ obligatoire absent
-81,err_security_001,Alerte de sécurité : vérifiez le numéro du bénéficiaire avant de continuer.,Kwalisan ya mbembe : ombwele nombá ya nu nongi oboso na ala oboso.,,,Alerte contrôle obligatoire numéro
-82,err_security_002,Alerte de sécurité : ce bénéficiaire n'a jamais été utilisé sur ce compte.,Kwalisan ya mbembe : nu nongi a si sengedi no o yé kompiti.,,,Alerte nouveau destinataire inconnu
-83,err_network_001,Erreur réseau : le service est temporairement indisponible. Réessayez.,Bwemba bo titi ya résô : ebolo e titi tano. Timba o keka pe.,,,Périphrase réseau : emprunt résô — INCERTAIN
-84,err_confirm_001,Vous devez confirmer les informations avant de valider le transfert.,E mapula o kakisane bitilá oboso na loma.,,,Obligation de cocher la confirmation
+N°,Clé / Contexte,Texte Source (Français),Proposition Traduction (Duálá),Priorité de relecture,Correction du validateur,Validation (OK / KO),Commentaire linguistique
+1,top_banner_notice,"Environnement de test — données fictives, aucune transaction réelle.","Epolo ya kekise — betiledi ba wombe, to ebolo ya moni ya mbale titi.",haute,,,Avertissement environnement de démonstration
+2,footer_disclaimer,Safinum Pay — environnement de démonstration. Ne saisissez aucune donnée personnelle réelle.,Safinum Pay — epolo ya kekise. O si boke betiledi bongó ba mbale.,haute,,,Avertissement sécurité données privées
+3,wizard_step1,Solde,Moni mi titi,haute,,,Terme financier standard : moni mi titi (argent disponible)
+4,wizard_step2,Frais,Mutoa,haute,,,"Terme financier : mutoa (frais, coût de transaction)"
+5,wizard_step4,Récapitulatif,Mbondo a tomba,haute,,,Périphrase : Mbondo a tomba (bilan/résumé du transfert)
+6,status_error,Erreur,Bwemba,haute,,,Défaut d'exécution ou problème survenu
+7,status_security,Sécurité,Mbembe,haute,,,Protection et vigilance
+8,dash_intro_text,Consultez votre solde et lancez un transfert en toute sécurité.,Ombwele moni mongó na lom moni na mbembe.,haute,,,Phrase d'accueil tableau de bord
+9,dash_available_balance,Solde disponible,Moni mi titi o bolane,haute,,,Périphrase : Moni mi titi o bolane (argent présent utilisable)
+10,dash_btn_view_fees,Consulter les frais,Ombwele mutoa,haute,,,Vérification préalable de la tarification
+11,fee_screen_title,Frais de transfert,Mutoa ma tomba,haute,,,Tarification de l'envoi
+12,fee_screen_subtitle,Choisissez le type de transfert et le montant. Les frais sont calculés automatiquement.,Posa pateli ya tomba na moni. Mutoa mu mendeno kusedo na momele.,haute,,,Consigne simulation des frais
+13,fee_operation_type,Type d'opération,Pateli ya ebólo,haute,,,Catégorisation de la transaction
+14,op_safinum_note,Transfert instantané et gratuit,"Loma na diboa, titi mutoa",haute,,,"Périphrase : Loma na diboa, titi mutoa (envoi immédiat sans frais)"
+15,op_mobile_money_note,"Frais de 1,5 % (min. 100 FCFA, max. 2 500 FCFA)","Mutoa ma 1,5 % (min. 100 FCFA, max. 2 500 FCFA)",haute,,,Valeurs numériques et pourcentages protégés
+16,op_other_bank_note,"Frais de 2 % (min. 200 FCFA, max. 5 000 FCFA)","Mutoa ma 2 % (min. 200 FCFA, max. 5 000 FCFA)",haute,,,Valeurs numériques et pourcentages protégés
+17,fee_amount_to_send,Montant à envoyer,Moni ma lomabe,haute,,,Périphrase : Moni ma lomabe (somme d'argent à expédier)
+18,fee_total_to_debit,Total à débiter,Moni mése ma busisabe,haute,,,Périphrase : Moni mése ma busisabe (tout l'argent qui sortira)
+19,fee_balance_after,Solde après opération,Moni mi matiké,haute,,,Périphrase : Moni mi matiké (argent qui restera sur le compte)
+20,badge_free,Gratuit,Titi mutoa,haute,,,Sans frais
+21,btn_continue,Continuer,Alá oboso,haute,,,Progression vers l'étape suivante
+22,ben_warning_new,Ce bénéficiaire n'a jamais été utilisé sur ce compte. Vérifiez le numéro avant de continuer.,Nu nongi a si sengedi no o yé kompiti. Ombwele nombá oboso na ala oboso.,haute,,,Avertissement critique nouveau contact
+23,sum_label_amount,Montant,Moni,haute,,,Valeur principale transaction
+24,sum_label_total_debited,Total débité,Moni mése ma busisabe,haute,,,Périphrase : Total débité du compte
+25,btn_edit,Modifier,Tukwe,haute,,,Correction des champs saisis
+26,receipt_status_success,Succès,Bwam,haute,,,Validation positive
+27,sec_sidebar_title,Sécurité,Mbembe,haute,,,Rubrique d'assistance et de vigilance
+28,sec_sidebar_text,Vérifiez toujours le nom et le numéro du bénéficiaire avant de confirmer un transfert.,Ombwele ponda yése dina na nombá ya nongi oboso na kakisane.,haute,,,Consigne anti-fraude essentielle
+29,alert_error_title,Une erreur est survenue,Bwemba bo pumi,haute,,,Avertissement anomalie bloquante
+30,alert_security_title,Alerte de sécurité,Kwalisan ya mbembe,haute,,,Périphrase : Kwalisan ya mbembe (avertissement de protection)
+31,err_amount_001,Le montant doit être supérieur à zéro.,Moni ma lomebe ma sengi bobe nika zéro.,haute,,,Erreur saisie montant invalide
+32,err_amount_002,Solde insuffisant pour effectuer ce transfert.,Moni mongó ma titi suwedi o loma yé moni.,haute,,,Périphrase : Solde disponible insuffisant pour l'envoi
+33,err_beneficiary_001,Veuillez renseigner le nom et le numéro du bénéficiaire.,Londeyi dina na nombá ya nu nongi.,haute,,,Erreur champ obligatoire absent
+34,err_security_001,Alerte de sécurité : vérifiez le numéro du bénéficiaire avant de continuer.,Kwalisan ya mbembe : ombwele nombá ya nu nongi oboso na ala oboso.,haute,,,Alerte contrôle obligatoire numéro
+35,err_security_002,Alerte de sécurité : ce bénéficiaire n'a jamais été utilisé sur ce compte.,Kwalisan ya mbembe : nu nongi a si sengedi no o yé kompiti.,haute,,,Alerte nouveau destinataire inconnu
+36,err_network_001,Erreur réseau : le service est temporairement indisponible. Réessayez.,Bwemba bo titi ya résô : ebolo e titi tano. Timba o keka pe.,haute,,,Périphrase réseau : emprunt résô — INCERTAIN
+37,err_confirm_001,Vous devez confirmer les informations avant de valider le transfert.,E mapula o kakisane bitilá oboso na loma.,haute,,,Obligation de cocher la confirmation
+38,brand_name,Safinum Pay,Safinum Pay,normale,,,Marque commerciale protégée — non modifiée
+39,online_banking,Banque en ligne,Banka o mwendi,normale,,,Périphrase : Banka o mwendi ma telefon (banque sur réseau)
+40,test_protocol,Protocole de test,Mbwedi ya kekise,normale,,,Périphrase : Mbwedi ya kekise (règles d'évaluation/essai)
+41,back_to_hackathon,Retour au hackathon,Timba o hackathon,normale,,,Terme hackathon conservé comme emprunt technique
+42,secure_connection,Connexion sécurisée,Jowe la mbembe,normale,,,Périphrase : Jowe la mbembe (liaison sous protection)
+43,wizard_step3,Bénéficiaire,Nongi a moni,normale,,,Périphrase : Nongi a moni (celui qui reçoit l'argent)
+44,wizard_step5,Confirmation,Kakisane,normale,,,Validation formelle de l'opération
+45,action_cancel,Annuler,Kwele ebolo,normale,,,Périphrase : Kwele ebolo (abandonner/arrêter l'opération en cours)
+46,action_confirm,Confirmer,Kakisane,normale,,,Validation impérative de l'action
+47,action_transfer,Transfert,Tomba,normale,,,Opération financière de déplacement d'argent (loma moni)
+48,dash_your_account,Votre compte,Kompiti yango,normale,,,Emprunt bantouisé standard pour compte bancaire
+49,dash_hello_amina,"Bonjour, Amina","Mbolo, Amina",normale,,,Salutation + nom propre protégé invariable
+50,dash_account_number,Numéro de compte,Nombá ya kompiti,normale,,,Identifiant de compte client
+51,dash_current_account,Compte courant,Kompiti ya buńa té,normale,,,Périphrase : Kompiti ya buńa té (compte des opérations quotidiennes)
+52,dash_btn_make_transfer,Effectuer un transfert,Loma moni,normale,,,Action d'envoi de fonds
+53,dash_recent_transactions,Transactions récentes,Bebolo ba moni ba bo buńa,normale,,,Périphrase : Bebolo ba moni ba bo buńa (opérations des derniers jours)
+54,tx_date_05_nov,05 nov. 2026,05 nov. 2026,normale,,,Date financière protégée — stricte conservation
+55,tx_merchant_payment,Paiement marchand,Sawa la mutoa,normale,,,Périphrase : Sawa la mutoa (règlement d'achat commercial) — INCERTAIN
+56,tx_date_04_nov,04 nov. 2026,04 nov. 2026,normale,,,Date financière protégée — stricte conservation
+57,tx_salary_received,Salaire reçu,Moni ma musadi ma sangi,normale,,,Périphrase : Moni ma musadi ma sangi (argent du travail arrivé)
+58,tx_date_02_nov,02 nov. 2026,02 nov. 2026,normale,,,Date financière protégée — stricte conservation
+59,tx_transfer_received,Transfert reçu,Moni ma lomi ma sangi,normale,,,Périphrase : Moni ma lomi ma sangi (argent envoyé qui a été reçu)
+60,tx_date_31_oct,31 oct. 2026,31 oct. 2026,normale,,,Date financière protégée — stricte conservation
+61,tx_electricity_bill,Facture électricité,Mutoa ma mwese,normale,,,Périphrase : Mutoa ma mwese (coût du courant/lumière)
+62,op_safinum_account,Compte Safinum,Kompiti Safinum,normale,,,Virement interne Safinum
+63,op_mobile_money,Mobile Money,Mobile Money,normale,,,Terme protégé écosystème télécom
+64,op_other_bank,Autre banque,Banka nipépe,normale,,,Virement interbancaire externe
+65,btn_back,Retour,Timba,normale,,,Bouton d'étape précédente
+66,ben_screen_subtitle,Renseignez les informations du destinataire. Vérifiez toujours le numéro avant de valider.,Londeyi bitilá ba nongi. Ombwele nombá oboso na kakisane.,normale,,,Instructions saisie destinataire
+67,ben_name_label,Nom du bénéficiaire,Dina la nongi,normale,,,Périphrase : Dina la nongi (nom de celui qui reçoit)
+68,ben_phone_label,Numéro de téléphone,Nombá ya telefon,normale,,,Champ téléphone
+69,ben_reason_label,Motif du transfert,Njonji ya tomba,normale,,,Périphrase : Njonji ya tomba (raison/motif de l'envoi)
+70,ben_reason_default,Paiement de services,Sawa la ebolo,normale,,,Périphrase : Sawa la ebolo (règlement pour travail)
+71,ben_note_label,Note (optionnel),Betiledi (o mapula),normale,,,Périphrase : Betiledi (o mapula) (mots optionnels)
+72,ben_checkbox_verified,J'ai vérifié le nom et le numéro du bénéficiaire.,Na mombweli dina na nombá ya nu nongi.,normale,,,Déclaration explicite de vérification
+73,sum_screen_subtitle,Vérifiez les informations avant de confirmer le transfert.,Ombwele bwam betiledi oboso na loma moni.,normale,,,Relecture préalable obligatoire
+74,sum_label_phone,Téléphone,Telefon,normale,,,Emprunt usuel d'usage universel
+75,sum_label_reference,Référence,Lembá,normale,,,Périphrase : Lembá (identifiant d'opération)
+76,sum_label_operation,Opération,Ebólo,normale,,,Acte financier exécuté
+77,sum_checkbox_confirm,Je confirme que les informations ci-dessus sont correctes.,Na kakisane na bi betiledi bése be bwan.,normale,,,Validation formelle des données récapitulatives
+78,btn_confirm_transfer,Confirmer le transfert,Kakisane tomba,normale,,,Bouton d'engagement irréversible
+79,receipt_title,Transfert effectué,Moni mi lomi na bwam,normale,,,Notification de succès de l'envoi
+80,receipt_subtitle,Votre transfert a été envoyé avec succès.,Moni mongó mi lomi bwambwam.,normale,,,Confirmation de transmission réussie
+81,receipt_label_status,Statut,Mbembe ya ebólo,normale,,,Périphrase : Mbembe ya ebólo (état de l'opération) — INCERTAIN
+82,btn_new_transfer,Nouveau transfert,Loma moni pe,normale,,,Nouvelle opération financière
+83,btn_dismiss,Fermer,Kwele,normale,,,Fermeture d'alerte
+84,injected_title,Message important,Mwengue mwendi,normale,,,Périphrase : Avis urgent / message d'attention — INCERTAIN

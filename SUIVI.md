@@ -6,6 +6,31 @@
 
 ## Decisions
 
+- 2026-11-27 22:45 — Priorisation de relecture et régénération des fiches de validation humaine (CSV et PDF 9 pt) :
+  1. Attribution rigoureuse de la colonne « Priorité de relecture » :
+     - Règle appliquée à partir de `catalogue/recoupement_ui_resultats.csv` et de la criticité financière :
+       - `accord = différent` OU chaîne critique (montants, soldes, frais, avertissements de sécurité, erreurs) → **« haute »**.
+       - `accord = identique` → **« référence concordante »** (0 occurrence dans les 8 correspondances actuelles).
+       - Toutes les autres chaînes → **« normale »**.
+     - Métriques réelles par langue (84 chaînes au total) :
+       - Duálá (`dua`) : **37 chaînes haute** (44,0 %), **47 chaînes normale** (56,0 %), 0 référence concordante.
+       - Ɓàsàa (`bas`) : **37 chaînes haute** (44,0 %), **47 chaînes normale** (56,0 %), 0 référence concordante.
+  2. Tri systématique des fiches par priorité :
+     - Les chaînes prioritaires (« haute ») sont regroupées en tête de fiche (rangs 1 à 37), suivies des chaînes de priorité « normale » (rangs 38 à 84). Renumérotation séquentielle stricte de la colonne `N°` de 1 à 84.
+  3. Mise à jour de `scripts/generate_validation_sheets.py` et export CSV/PDF :
+     - Fiches CSV générées dans `catalogue/kit_validation/` : `fiche_validation_duala.csv` et `fiche_validation_bassaa.csv` avec la nouvelle colonne « Priorité de relecture ».
+     - Fiches PDF générées avec Playwright (Microsoft Edge headless) : `fiche_validation_duala.pdf` et `fiche_validation_bassaa.pdf`.
+     - Intégration de badges de priorité élégants (`badge-haute` rouge bordeaux, `badge-normale` ardoise sobre, `badge-concordante` vert forêt).
+  4. Vérification formelle PyMuPDF / fitz :
+     - Duálá : **4 pages A4** (intervalle strict 2 à 4 pages respecté), 592 éléments textuels analysés, **police minimale absolue extraite = 9.00 pt** (seuil requis >= 9.00 pt respecté à 100 %).
+     - Ɓàsàa : **4 pages A4** (intervalle strict 2 à 4 pages respecté), 584 éléments textuels analysés, **police minimale absolue extraite = 9.00 pt** (seuil requis >= 9.00 pt respecté à 100 %).
+  5. Compatibilité et robustesse de `scripts/importer_validation.py` :
+     - Normalisation confirmée : `normalize_col_name("Priorité de relecture")` renvoie `"priorite de relecture"`.
+     - Invariance absolue : aucun statut n'est promu par défaut ; l'absence de code validateur ou de date maintient 100 % des entrées en `machine_suggested`.
+     - Nouveaux tests unitaires dans `backend/tests/test_validation_import.py` (25/25 tests passés avec succès).
+  6. Sanctuarisation du catalogue de référence :
+     - Invariance stricte de `catalogue/translations.csv` (zéro modification, `git diff` vide).
+
 - 2026-11-27 22:00 — Recoupement des chaînes d'interface avec les références communautaires externes (DS-06 Common Voice & DS-30 MediaWiki) :
   1. Données externes sanctuarisées hors du dépôt :
      - Emplacement : `C:\Users\FLEX ZONE\Desktop\donnees_externes_safinum\DOSSIER_RECHERCHE_DONNEES_SAFINUM\03_DATASETS_TELECHARGES\` (DS-06 Common Voice Fluent dua/bas/en sous licence MPL-2.0 ; DS-30 MediaWiki JSON en/dua/datetime sous licence GPL-2.0+).

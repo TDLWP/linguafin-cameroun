@@ -69,6 +69,9 @@ class TestNormalizeColName(unittest.TestCase):
     def test_commentaire_linguistique(self):
         self.assertEqual(normalize_col_name("Commentaire linguistique"), "commentaire")
 
+    def test_priorite_de_relecture(self):
+        self.assertEqual(normalize_col_name("Priorité de relecture"), "priorite de relecture")
+
 
 class TestValidationImportBase(unittest.TestCase):
     """Classe de base avec catalogue temporaire."""
@@ -332,6 +335,7 @@ class TestRealCSVHeaders(unittest.TestCase):
         self.assertIn("cle", first, "Colonne 'cle' absente apres normalisation")
         self.assertIn("source", first, "Colonne 'source' absente apres normalisation")
         self.assertIn("proposition", first, "Colonne 'proposition' absente apres normalisation")
+        self.assertIn("priorite de relecture", first, "Colonne 'priorite de relecture' absente apres normalisation")
         self.assertIn("avis", first, "Colonne 'avis' absente apres normalisation")
 
     @unittest.skipUnless(os.path.exists(REAL_BASSAA_CSV), "Fiche bassa'a absente")
@@ -342,6 +346,7 @@ class TestRealCSVHeaders(unittest.TestCase):
         first = rows[0]
         self.assertIn("cle", first)
         self.assertIn("proposition", first)
+        self.assertIn("priorite de relecture", first)
 
     @unittest.skipUnless(os.path.exists(REAL_DUALA_CSV), "Fiche duala absente")
     def test_duala_csv_sans_validateur_zero_promotion(self):
@@ -372,6 +377,37 @@ class TestRealCSVHeaders(unittest.TestCase):
             target_lang="bas", val_code="VAL_BAS_TEST", val_date="",
         )
         self.assertEqual(len(stats["promoted_human_validated"]), 0)
+
+    @unittest.skipUnless(os.path.exists(REAL_DUALA_CSV), "Fiche duala absente")
+    def test_import_with_priority_column_preserves_catalogue(self):
+        """
+        Vérifie que la présence de la colonne 'Priorité de relecture' dans les fiches
+        n'altère en aucun cas le catalogue et est parfaitement lue par scripts/importer_validation.py.
+        """
+        from scripts.importer_validation import DEFAULT_CATALOG_CSV
+        if not os.path.exists(DEFAULT_CATALOG_CSV):
+            self.skipTest("translations.csv absent")
+
+        # 1. Vérifier la lecture et le nombre exact de 84 entrées
+        rows_dua = load_input_csv(REAL_DUALA_CSV)
+        self.assertEqual(len(rows_dua), 84, "La fiche duala doit contenir exactement 84 lignes")
+        rows_bas = load_input_csv(REAL_BASSAA_CSV)
+        self.assertEqual(len(rows_bas), 84, "La fiche bassa'a doit contenir exactement 84 lignes")
+
+        # 2. Vérifier que les priorités sont attribuées correctement
+        priorites_dua = {r["priorite de relecture"] for r in rows_dua}
+        self.assertTrue(priorites_dua.issubset({"haute", "normale", "référence concordante"}))
+        self.assertIn("haute", priorites_dua)
+        self.assertIn("normale", priorites_dua)
+
+        # 3. Dry-run sur le catalogue réel : aucune modification ni promotion
+        stats, changes = process_validation_import(
+            rows_dua, catalog_path=DEFAULT_CATALOG_CSV, dry_run=True,
+            target_lang="dua", val_code="", val_date="",
+        )
+        self.assertEqual(len(stats["promoted_human_validated"]), 0)
+        self.assertEqual(len(stats["errors"]), 0, f"Erreurs inattendues lors de l'import : {stats['errors']}")
+
 
 
 if __name__ == "__main__":
