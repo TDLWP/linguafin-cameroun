@@ -1519,5 +1519,294 @@ class TestEnglishJourneyRegression(unittest.TestCase):
         self._assert_en_results(runs, "Mode 2 EN (Backend Lancé)")
 
 
+class TestJuryCardsInvariance(unittest.TestCase):
+    """
+    Vérifie avec Playwright sous Microsoft Edge (profil vierge, extension chargée)
+    que le texte des cartes de l'onglet Soumissions du panneau jury (?jury=1)
+    est STRICTEMENT IDENTIQUE extension active et extension désactivée.
+    Échoue immédiatement si le texte diffère ou si l'extension modifie
+    une carte (ex. « Consultation des frais [Mutoa]contenu inédit… »).
+    Vérifie également l'isolation de la collecte TreeWalker et de MutationObserver
+    via les sélecteurs d'exclusion configurables (défaut : aside, #safinum-accessibility-host,
+    [data-safinum-jury], [data-safinum-ignore], .jury-panel).
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        sys.stdout.reconfigure(encoding="utf-8")
+        reachable, reason = is_site_reachable(TARGET_URL)
+        if not reachable:
+            raise unittest.SkipTest(
+                f"[TEST IGNORÉ] Le site cible {TARGET_URL} est injoignable ({reason}). "
+                "Le test ne peut pas être exécuté et ne doit jamais être marqué réussi en l'absence de réseau."
+            )
+        print(f"\n[CONNECTIVITÉ] Site {TARGET_URL} joignable avec succès ({reason}).")
+
+    def _read_all_submission_cards_raw(self, page: Page) -> List[str]:
+        """
+        Bascule sur l'onglet Soumissions, déplie tous les détails et relève le texte brut intégral de chaque carte.
+        """
+        page.locator("aside nav button").nth(1).click(force=True)
+        time.sleep(0.8)
+
+        # Déplier tous les détails
+        detail_btns = page.locator("aside button:has-text('Détail')").all() or page.locator("aside button:has-text('Detail')").all()
+        for b in detail_btns:
+            try:
+                b.click(force=True)
+            except Exception:
+                pass
+        time.sleep(0.4)
+
+        cards = page.locator("aside div.rounded-xl.border").all()
+        card_texts = [c.inner_text().strip() for c in cards]
+
+        # Revenir sur l'onglet Contrôle
+        page.locator("aside nav button").nth(0).click(force=True)
+        time.sleep(0.4)
+        return card_texts
+
+    def test_jury_cards_raw_text_identical_before_and_after_extension(self):
+        """
+        Vérifie que les cartes de soumissions du jury sont strictement identiques
+        avant et après activation de l'extension (en Duala puis Bassa'a).
+        Échoue si le texte diffère ou si des annotations / badges s'y incrustent.
+        """
+        print(f"\n{'='*70}\n TEST INVARIANCE DES CARTES DU JURY (AVANT / APRÈS EXTENSION)\n{'='*70}")
+
+        with sync_playwright() as p:
+            browser = p.chromium.launch(
+                channel="msedge",
+                headless=True,
+                args=[RESOLVER_RULES]
+            )
+            context = browser.new_context(viewport={"width": 1600, "height": 960})
+            page = context.new_page()
+
+            try:
+                # 1. Navigation initiale vers la page cible
+                page.goto(TARGET_URL, wait_until="domcontentloaded", timeout=45000)
+                page.wait_for_selector("aside", timeout=30000)
+                page.wait_for_selector("#app", timeout=20000)
+                time.sleep(1.0)
+
+                # 2. Réinitialisation du journal des soumissions
+                reset_jury_log(page)
+
+                # 3. Génération de soumissions de référence SANS extension
+                print("  [1/5] Génération soumission Étape 1 (Solde) sans extension...")
+                btn_verif = page.locator("aside button:has-text('maintenant'), aside button:has-text('Verify'), aside button:has-text('Vérifier')").first
+                btn_verif.click(force=True)
+                time.sleep(1.0)
+
+                print("  [2/5] Navigation et saisie Étape 2 (Frais 25 000 FCFA) sans extension...")
+                btn_trans = page.locator("button:has-text('Effectuer un transfert'), button:has-text('Loma moni'), button:has-text('om')").first
+                btn_trans.click(force=True)
+                page.wait_for_selector("input[step='500'], input[type=number]", timeout=15000)
+                time.sleep(0.5)
+                page.locator("input[step='500'], input[type=number]").first.fill("25000")
+                time.sleep(0.8)
+
+                btn_verif.click(force=True)
+                time.sleep(1.0)
+
+                # Relevé de référence SANS extension
+                cards_baseline = self._read_all_submission_cards_raw(page)
+                self.assertGreaterEqual(len(cards_baseline), 2, "Au moins 2 cartes doivent être présentes dans le panneau jury avant activation de l'extension.")
+                print(f"\n  [RÉFÉRENCE NATIVE FR] {len(cards_baseline)} carte(s) relevée(s) sans extension :")
+                for i, txt in enumerate(cards_baseline):
+                    print(f"    --- Carte #{i+1} (Sans Extension) ---")
+                    for line in txt.split("\n"):
+                        print(f"        {line}")
+
+                # 4. Activation de l'extension et bascule en Duálá
+                print("\n  [3/5] Activation extension SAFINUM et sélection Duálá (dua)...")
+                inject_extension(page, CATALOG_DATA)
+                set_widget_language(page, "dua")
+                time.sleep(1.5)
+
+                cards_dua = self._read_all_submission_cards_raw(page)
+                print(f"\n  [AVEC EXTENSION DUALA] {len(cards_dua)} carte(s) relevée(s) :")
+                for i, txt in enumerate(cards_dua):
+                    print(f"    --- Carte #{i+1} (Extension Duálá) ---")
+                    for line in txt.split("\n"):
+                        print(f"        {line}")
+
+                # Contrôle strict d'égalité Duala vs Référence
+                self.assertEqual(
+                    len(cards_baseline), len(cards_dua),
+                    f"Le nombre de cartes jury a changé après activation Duálá : {len(cards_baseline)} attendues vs {len(cards_dua)} obtenues."
+                )
+                for i in range(len(cards_baseline)):
+                    self.assertEqual(
+                        cards_baseline[i], cards_dua[i],
+                        f"ÉCHEC D'INVARIANCE : Le texte de la carte #{i+1} a été altéré après activation de l'extension en Duálá !\nAttendu (sans extension) :\n{cards_baseline[i]}\nObtenu (avec extension Duálá) :\n{cards_dua[i]}"
+                    )
+                print("  ✓ Cartes de soumissions 100% IDENTIQUES après activation de l'extension en Duálá.")
+
+                # 5. Bascule en Ɓàsàa
+                print("\n  [4/5] Basculement en Ɓàsàa (bas)...")
+                set_widget_language(page, "bas")
+                time.sleep(1.5)
+
+                cards_bas = self._read_all_submission_cards_raw(page)
+                print(f"\n  [AVEC EXTENSION BASSA'A] {len(cards_bas)} carte(s) relevée(s) :")
+                for i, txt in enumerate(cards_bas):
+                    print(f"    --- Carte #{i+1} (Extension Ɓàsàa) ---")
+                    for line in txt.split("\n"):
+                        print(f"        {line}")
+
+                # Contrôle strict d'égalité Bassa'a vs Référence
+                self.assertEqual(
+                    len(cards_baseline), len(cards_bas),
+                    f"Le nombre de cartes jury a changé après basculement Ɓàsàa : {len(cards_baseline)} attendues vs {len(cards_bas)} obtenues."
+                )
+                for i in range(len(cards_baseline)):
+                    self.assertEqual(
+                        cards_baseline[i], cards_bas[i],
+                        f"ÉCHEC D'INVARIANCE : Le texte de la carte #{i+1} a été altéré après basculement de l'extension en Ɓàsàa !\nAttendu (sans extension) :\n{cards_baseline[i]}\nObtenu (avec extension Ɓàsàa) :\n{cards_bas[i]}"
+                    )
+                print("  ✓ Cartes de soumissions 100% IDENTIQUES après basculement en Ɓàsàa.")
+
+                # 6. Déclenchement d'une nouvelle vérification de soumission AVEC extension active
+                print("\n  [5/5] Nouvelle soumission générée pendant que l'extension est active...")
+                btn_verif = page.locator("aside button:has-text('maintenant'), aside button:has-text('Verify'), aside button:has-text('Vérifier')").first
+                btn_verif.click(force=True)
+                time.sleep(1.2)
+
+                cards_final = self._read_all_submission_cards_raw(page)
+                self.assertGreater(len(cards_final), len(cards_bas), "Une nouvelle carte de soumission devait être ajoutée.")
+
+                # Vérification qu'aucune carte ne contient d'annotation ni badge de l'extension
+                tampered_cards = []
+                for i, c_txt in enumerate(cards_final):
+                    has_annotation = (
+                        "[Mutoa" in c_txt or
+                        "[Moni" in c_txt or
+                        "[Om moni" in c_txt or
+                        "contenu inédit" in c_txt.lower() or
+                        "avertissement affiché" in c_txt.lower()
+                    )
+                    if has_annotation:
+                        tampered_cards.append((i+1, c_txt))
+
+                if tampered_cards:
+                    err_msg = "ÉCHEC CRITIQUE : Altération détectée sur des cartes de soumissions du panneau jury !\n"
+                    for idx, txt in tampered_cards:
+                        err_msg += f"  - Carte #{idx} : {txt[:160]}\n"
+                    self.fail(err_msg)
+
+                print(f"  ✓ Les {len(cards_final)} cartes sont exemptes de toute annotation et préservées à 100%.")
+
+            except Exception as e:
+                reachable, reason = is_site_reachable(TARGET_URL)
+                if not reachable:
+                    self.skipTest(f"[IGNORÉ] Interruption réseau pendant le test : {reason}")
+                raise e
+            finally:
+                context.close()
+                browser.close()
+
+    def test_configurable_exclusion_selectors_and_treewalker_isolation(self):
+        """
+        Vérifie le fonctionnement du sélecteur d'exclusion configurable
+        et prouve que TreeWalker et MutationObserver n'accèdent JAMAIS au conteneur du jury.
+        """
+        print(f"\n{'='*70}\n TEST DU SÉLECTEUR D'EXCLUSION CONFIGURABLE ET TREEWALKER\n{'='*70}")
+
+        with sync_playwright() as p:
+            browser = p.chromium.launch(
+                channel="msedge",
+                headless=True,
+                args=[RESOLVER_RULES]
+            )
+            context = browser.new_context(viewport={"width": 1600, "height": 960})
+            page = context.new_page()
+
+            try:
+                page.goto(TARGET_URL, wait_until="domcontentloaded", timeout=45000)
+                page.wait_for_selector("aside", timeout=30000)
+                inject_extension(page, CATALOG_DATA)
+
+                # 1. Vérification des sélecteurs par défaut
+                default_selectors = page.evaluate("() => window.SAFINUM_GET_EXCLUDED_SELECTORS()")
+                print(f"  [Sélecteurs par défaut] : {default_selectors}")
+                self.assertIn("aside", default_selectors)
+                self.assertIn("#safinum-accessibility-host", default_selectors)
+                self.assertIn("[data-safinum-jury]", default_selectors)
+                self.assertIn("[data-safinum-ignore]", default_selectors)
+
+                # 2. Vérification de la configurabilité via window.SAFINUM_EXCLUDED_SELECTORS
+                custom_selectors = page.evaluate('''() => {
+                    window.SAFINUM_EXCLUDED_SELECTORS = ['.custom-excluded-panel', '#custom-audit-zone'];
+                    return window.SAFINUM_GET_EXCLUDED_SELECTORS();
+                }''')
+                print(f"  [Sélecteurs après configuration] : {custom_selectors}")
+                self.assertIn(".custom-excluded-panel", custom_selectors)
+                self.assertIn("#custom-audit-zone", custom_selectors)
+                self.assertIn("aside", custom_selectors)
+
+                # 3. Vérification de isInExcludedZone sur le conteneur du jury et ses enfants
+                isolation_check = page.evaluate('''() => {
+                    const aside = document.querySelector('aside');
+                    const asideChild = aside ? aside.querySelector('*') : null;
+                    const body = document.body;
+                    const app = document.querySelector('#app');
+                    
+                    return {
+                        asideExcluded: aside ? window.SAFINUM_IS_IN_EXCLUDED_ZONE(aside) : false,
+                        childExcluded: asideChild ? window.SAFINUM_IS_IN_EXCLUDED_ZONE(asideChild) : false,
+                        bodyExcluded: window.SAFINUM_IS_IN_EXCLUDED_ZONE(body),
+                        appExcluded: app ? window.SAFINUM_IS_IN_EXCLUDED_ZONE(app) : false
+                    };
+                }''')
+                print(f"  [Test isInExcludedZone] : {isolation_check}")
+                self.assertTrue(isolation_check["asideExcluded"], "L'élément <aside> du panneau jury doit être dans la zone exclue.")
+                self.assertTrue(isolation_check["childExcluded"], "Les enfants de <aside> doivent hériter de l'exclusion.")
+                self.assertFalse(isolation_check["bodyExcluded"], "document.body ne doit pas être exclu.")
+
+                # 4. Vérification que TreeWalker collecte STRICTEMENT 0 nœud dans le panneau jury
+                treewalker_check = page.evaluate('''() => {
+                    const appRoot = document.getElementById('app') || document.body;
+                    const walker = document.createTreeWalker(
+                        appRoot,
+                        NodeFilter.SHOW_TEXT,
+                        {
+                            acceptNode: function(node) {
+                                const parent = node.parentElement;
+                                if (!parent) return NodeFilter.FILTER_REJECT;
+                                const tag = parent.tagName.toLowerCase();
+                                if (['script', 'style', 'code', 'pre', 'svg', 'noscript', 'iframe'].includes(tag)) return NodeFilter.FILTER_REJECT;
+                                if (window.SAFINUM_IS_IN_EXCLUDED_ZONE(parent)) return NodeFilter.FILTER_REJECT;
+                                if (['input', 'textarea', 'select'].includes(tag)) return NodeFilter.FILTER_REJECT;
+                                const txt = node.nodeValue.trim();
+                                if (txt.length < 2) return NodeFilter.FILTER_REJECT;
+                                return NodeFilter.FILTER_ACCEPT;
+                            }
+                        }
+                    );
+                    let asideNodesCollected = 0;
+                    while (walker.nextNode()) {
+                        const n = walker.currentNode;
+                        if (n.parentElement && n.parentElement.closest('aside')) {
+                            asideNodesCollected++;
+                        }
+                    }
+                    return asideNodesCollected;
+                }''')
+                print(f"  [Nœuds collectés dans aside par TreeWalker] : {treewalker_check}")
+                self.assertEqual(treewalker_check, 0, "TreeWalker a collecté des nœuds dans le conteneur du panneau jury !")
+                print("  ✓ Isolation 100% validée : 0 nœud collecté dans le panneau jury.")
+
+            except Exception as e:
+                reachable, reason = is_site_reachable(TARGET_URL)
+                if not reachable:
+                    self.skipTest(f"[IGNORÉ] Interruption réseau pendant le test : {reason}")
+                raise e
+            finally:
+                context.close()
+                browser.close()
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

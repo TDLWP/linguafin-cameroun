@@ -95,8 +95,14 @@
       '.jury-panel',                    // Conteneur de classe jury-panel
       '[class*="jury-panel"]'
     ];
-    if (typeof window !== 'undefined' && Array.isArray(window.SAFINUM_EXCLUDED_SELECTORS)) {
-      return Array.from(new Set([...defaultSelectors, ...window.SAFINUM_EXCLUDED_SELECTORS]));
+    if (typeof window !== 'undefined' && window.SAFINUM_EXCLUDED_SELECTORS) {
+      if (Array.isArray(window.SAFINUM_EXCLUDED_SELECTORS)) {
+        return Array.from(new Set([...defaultSelectors, ...window.SAFINUM_EXCLUDED_SELECTORS]));
+      }
+      if (typeof window.SAFINUM_EXCLUDED_SELECTORS === 'string') {
+        const custom = window.SAFINUM_EXCLUDED_SELECTORS.split(',').map(s => s.trim()).filter(Boolean);
+        return Array.from(new Set([...defaultSelectors, ...custom]));
+      }
     }
     return defaultSelectors;
   }
@@ -757,7 +763,23 @@
       let hasRelevantMutation = false;
       for (const m of mutations) {
         const el = (m.target && m.target.nodeType === Node.ELEMENT_NODE) ? m.target : (m.target ? m.target.parentElement : null);
-        if (el && !isInExcludedZone(el)) {
+        if (el && isInExcludedZone(el)) {
+          continue;
+        }
+        let allAddedExcluded = true;
+        if (m.addedNodes && m.addedNodes.length > 0) {
+          for (let i = 0; i < m.addedNodes.length; i++) {
+            const n = m.addedNodes[i];
+            const elem = (n.nodeType === Node.ELEMENT_NODE) ? n : n.parentElement;
+            if (elem && !isInExcludedZone(elem)) {
+              allAddedExcluded = false;
+              break;
+            }
+          }
+        } else {
+          allAddedExcluded = false;
+        }
+        if (!allAddedExcluded) {
           hasRelevantMutation = true;
           break;
         }

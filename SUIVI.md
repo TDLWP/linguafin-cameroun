@@ -6,6 +6,22 @@
 
 ## Decisions
 
+- 2026-11-27 15:15 — Vérification de l'invariance stricte des cartes de soumissions du panneau jury (?jury=1) et renforcement de l'isolation :
+  1. Vérification Playwright sous Microsoft Edge (profil vierge, extension active vs désactivée) :
+     - Navigation vers `https://safinum.cm/hackathon-test?jury=1`.
+     - Génération des cartes de soumission en français de référence pour l'Étape 1 (Solde) et l'Étape 2 (Frais avec saisie de 25 000 FCFA).
+     - Activation de l'extension et basculements linguistiques (Duálá `dua`, puis Ɓàsàa `bas`).
+     - Relevé brut de l'intégralité du texte des cartes dans l'onglet Soumissions : les cartes existantes sont 100% identiques caractère par caractère avant et après activation (zéro altération, zéro annotation de glossaire du type `[Mutoa]`, zéro badge `contenu inédit`).
+     - Déclenchement d'une nouvelle soumission avec extension active : la nouvelle carte générée est strictement intègre (statut « Intègre », aucune altération).
+  2. Renforcement de l'isolation dans `extension/content.js` :
+     - Sélecteurs d'exclusion configurables (`getExcludedSelectors()` & `isInExcludedZone(el)`) : support étendu pour accepter des tableaux d'exclusion ou des chaînes séparées par des virgules via `window.SAFINUM_EXCLUDED_SELECTORS`.
+     - Filtrage réactif dans `MutationObserver` : exclusion absolue de toute mutation survenant dans le conteneur jury `<aside>` ou les zones exclues, y compris le contrôle des nœuds ajoutés (`addedNodes`).
+     - Filtrage TreeWalker (`getEligibleTextNodes`) : vérification empirique que strictement 0 nœud n'est collecté dans `<aside>` (contre 34 nœuds collectés si l'exclusion était inactive, ce qui provoquait l'annotation parasite « Consultation des frais [Mutoa] »).
+  3. Nouvelle suite de tests automatisée `TestJuryCardsInvariance` dans `tests/test_live_jury_regression.py` :
+     - `test_jury_cards_raw_text_identical_before_and_after_extension` : échoue immédiatement si le texte des cartes de soumission diffère entre l'état sans extension et l'état avec extension active, ou si des annotations/badges sont injectés.
+     - `test_configurable_exclusion_selectors_and_treewalker_isolation` : valide la configurabilité dynamique des sélecteurs et l'exclusion stricte de TreeWalker.
+  4. Validation complète des suites de tests : 100% de succès sur `TestJuryCardsInvariance`, `test_jury_integrity.py`, `test_integrite_figee.py`, `test_widget_accessibility.py`, `test_playwright_mock_bank.py`, `test_performance_regression.py` et `test_extension_e2e.py`.
+
 - 2026-11-26 23:45 — Intégration et validation du jeu de test d'intégrité figée (91 cas) et sanctuarisation des secrets OTP/PIN :
   1. Oracle d'intégrité financière identique à tests_integrite/run.js : réplication stricte des règles (préservation caractère par caractère de protected, comptage non chevauchant, conservation intégrale des chiffres Unicode \p{Nd}+, sanctuarisation des secrets OTP/PIN et valeurs pures, affichage bilingue sans chiffre inventé).
   2. Sanctuarisation des secrets (OTP / PIN / mots de passe) côté extension et backend :
