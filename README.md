@@ -97,7 +97,7 @@ Pour simplifier l'évaluation, trois scripts prêts à l'emploi sont mis à disp
 | **Tests unitaires & adversariaux** | **83 / 83 tests réussis (0 échec)** | 77 tests backend + 6 tests racine (`unittest discover`) |
 | **Tests d'intégrité jury (`normalizeValue`)** | **8 / 8 vérifications conformes** | `tests/test_jury_integrity.py` |
 | **Temps d'exécution regex (anti-ReDoS)** | **< 0,01 ms** sur chaîne piège | Benchmark `time.time()` |
-| **Empreinte de l'extension client** | **121 590 octets (118,74 Ko)** (zéro dépendance externe) | Somme exacte des 4 fichiers du dossier `extension/` (`background.js`, `content.js`, `manifest.json`, `offline_catalog.json`) |
+| **Empreinte de l'extension client** | **125 034 octets (122,10 Ko)** (zéro dépendance externe) | Somme exacte des 4 fichiers du dossier `extension/` (`background.js`, `content.js`, `manifest.json`, `offline_catalog.json`) |
 | **Temps de bascule hors ligne** | **Instantané** (mémoire cache) | Mesuré via mock bank Playwright |
 | **Premier rendu traduit (offline / online)** | **79 ms** (offline) / **77 ms** (online) | Médiane 12 runs — [`docs/mesures_performance.md`](docs/mesures_performance.md) |
 | **Latence `/translate/batch` (local)** | **16 ms** (médiane), **25 ms** (P95) | 200 appels batch — [`docs/mesures_performance.md`](docs/mesures_performance.md) |

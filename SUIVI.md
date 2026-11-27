@@ -6,6 +6,29 @@
 
 ## Decisions
 
+- 2026-11-27 23:25 — Répétition finale sur le panneau jury (?jury=1) avec 30 cas inédits hostiles et correction de sécurité :
+  1. Script Playwright `scripts/repetition_finale.py` :
+     - Injection automatisée sous Microsoft Edge (profil vierge) de 30 messages inédits (24 en français, 6 en anglais) issus des groupes `hostile_inedit`, `hostile_montant`, `hostile_identifiants` et secrets critiques OTP/PIN de `tests_integrite/cases.json` :
+       - Montants en toutes lettres (`T041`, `T042`), espaces insécables standards (`T034`) et fines (`T035`), séparateurs (`T036`), devises préfixées/suffixées (`T037`, `T038`, `T039`), millions (`T040`), grand montant (`T043`), soldes négatifs (`T045`), pourcentages (`T048`), devises étrangères (`T049`).
+       - Téléphones (+237 `T054`), comptes (`T058`), IBAN CM21 (`T059`), références SAFINUM (`T060`) et doubles (`T061`), dates calendaires et ISO (`T062`, `T063`), URLs avec paramètres (`T065`), emails (`T066`).
+       - Phrases composites (`T072`), doubles montants (`T073`), alertes de sécurité montant (`T074`), blocage (`T075`), tiers (`T077`).
+       - Secrets critiques OTP (`T088`, `T090`).
+     - Testés exhaustivement en Duálá (`dua`) et Ɓàsàa (`bas`), soit **60 exécutions relevées**.
+  2. Correction critique de sécurité dans `extension/content.js` :
+     - *Défaut corrigé* : En mode hors-ligne, le filtre préalable ne masquait que les montants avec devises, ce qui exposait les URLs contenant des termes de glossaire (ex: `...&montant=25000` annoté en `...&montant [Moni]=25000` sur `T065`).
+     - *Correction appliquée* : Alignement du masquage préalable hors-ligne sur les motifs de protection complets (`OFFLINE_SENSITIVE_PATTERNS`) couvrant URLs (`https?://`), courriels, références (`SAF-`, `REF-`, `TX-`), dates, montants en toutes lettres, pourcentages, téléphones, IBAN et comptes.
+     - *Intégrité absolue* : Contrôle d'absence de jetons résiduels post-restauration avec repli strict vers la source si le moindre jeton subsiste.
+  3. Relevés empiriques et résultats de répétition :
+     - **0 montant altéré** (60/60 conformes).
+     - **0 crochet entourant un montant** (60/60 conformes, crochets limités strictement aux équivalents de glossaire `[Moni]`, `[Lembá]`, etc.).
+     - **0 secret transmis ou altéré** : `T088` et `T090` interceptés par `isSecretText()`, restitués 100% identiques sans appel API.
+     - **0 carte « Compromis »** dans le panneau jury : Statut « Intègre » pour l'ensemble des 60 soumissions.
+  4. Rédaction technique dans `docs/repetition_finale.md` et données brutes dans `docs/repetition_finale_resultats.json` :
+     - Tableaux bruts complets pour Duálá et Ɓàsàa.
+     - Liste transparente des limites linguistiques (phrases inédites anglaises non traduites avec repli source intégral, alertes de sécurité inédites maintenues en français par précaution avec badge explicite).
+  5. Mise à jour de l'empreinte client :
+     - Empreinte exacte du dossier `extension/` mise à jour à **125 034 octets (122,10 Ko)** dans `README.md`, `THIRD_PARTY.md` et `docs/note_technique.md`.
+
 - 2026-11-27 22:45 — Priorisation de relecture et régénération des fiches de validation humaine (CSV et PDF 9 pt) :
   1. Attribution rigoureuse de la colonne « Priorité de relecture » :
      - Règle appliquée à partir de `catalogue/recoupement_ui_resultats.csv` et de la criticité financière :

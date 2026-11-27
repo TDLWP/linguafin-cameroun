@@ -14,7 +14,7 @@
 | **Shadow DOM API** | W3C Standard | N/A (Natif) | Encapsulation étanche du widget d'accessibilité | 0 Ko (Natif) |
 | **Web Storage / In-Memory** | Standard | N/A (Natif) | Cache local des traductions par langue | 0 Ko (Natif) |
 
-> **Constat** : L'extension navigateur ne comporte **strictement aucune bibliothèque tierce**, aucun framework (zéro React, zéro Vue, zéro jQuery, zéro Tailwind injecté). Empreinte totale du dossier `extension/` : **121 590 octets (118,74 Ko)** (somme exacte des fichiers `background.js`, `content.js`, `manifest.json` et `offline_catalog.json`).
+> **Constat** : L'extension navigateur ne comporte **strictement aucune bibliothèque tierce**, aucun framework (zéro React, zéro Vue, zéro jQuery, zéro Tailwind injecté). Empreinte totale du dossier `extension/` : **125 034 octets (122,10 Ko)** (somme exacte des fichiers `background.js`, `content.js`, `manifest.json` et `offline_catalog.json`).
 
 ---
 

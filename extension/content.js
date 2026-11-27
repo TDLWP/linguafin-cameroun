@@ -393,14 +393,30 @@
 
 
     // 3. Texte absent de la mémoire : conservation du texte source + annotation des termes financiers du glossaire
-    // Masquage préalable des montants/numéros pour ne jamais insérer de crochets autour d'eux
-    const amountRegex = /(?:[+-]\s*)?(?:(?:[$€£]\s*(?:\d{1,3}(?:[\s\u00A0\u202F\u2007,\.]\d{3})*|\d+)(?:[,\.]\d+)?)|(?:\b(?:\d{1,3}(?:[\s\u00A0\u202F\u2007,\.]\d{3})*|\d+)(?:[,\.]\d+)?\s*(?:FCFA|XAF|CFA|XOF|EUR|USD|GBP|€|\$|£|francs?\s*(?:cfa)?|frs)(?!\w)))/gi;
+    // Masquage préalable exhaustif de TOUTES les entités sensibles (URLs, emails, références, dates,
+    // montants avec devises, montants en toutes lettres, % de frais, téléphones, IBAN, comptes)
+    // pour garantir qu'aucun crochet ne sera jamais inséré à l'intérieur d'une entité sensible ni autour d'un montant.
+    const OFFLINE_SENSITIVE_PATTERNS = [
+      /https?:\/\/[^\s<>"']+/gi,                                                       // URLs
+      /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/gi,                           // Emails
+      /\b(?:SAF-\d{4}-[A-Za-z0-9_-]{4,20}|REF-[A-Za-z0-9_-]{4,20}|TX-[A-Za-z0-9_-]{4,20})\b/gi, // Références
+      /(?:\b\d{1,2}\s+(?:janv\.|janvier|january|févr\.|février|february|mars|march|avr\.|avril|april|mai|may|juin|june|juil\.|juillet|july|août|august|sept\.|septembre|september|oct\.|octobre|october|nov\.|novembre|november|déc\.|décembre|december)\s+\d{4}\b|\b(?:january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2},\s*\d{4}\b|\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b|\b\d{4}-\d{2}-\d{2}(?:\s+\d{1,2}:\d{2})?\b|\b\d{1,2}[h:]\d{2}\b)/gi, // Dates/heures
+      /(?:\b(?:un|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze|treize|quatorze|quinze|seize|vingt|trente|quarante|cinquante|soixante|soixante-dix|septante|quatre-vingts?|quatre-vingt-dix|nonante|cent|cents|mille|million|millions|milliard|milliards)(?:[-\s]+(?:et[-\s]+)?(?:un|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze|treize|quatorze|quinze|seize|vingt|trente|quarante|cinquante|soixante|soixante-dix|septante|quatre-vingts?|quatre-vingt-dix|nonante|cent|cents|mille|million|millions|milliard|milliards))*\s*(?:francs?\s*(?:cfa)?|fcfa|xaf|cfa|xof|euros?|eur|dollars?|usd|%|pour\s*cent)\b|\b(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand|million|billion)(?:[-\s]+(?:and\s+)?(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand|million|billion))*\s*(?:cfa\s*francs?|francs?\s*(?:cfa)?|fcfa|xaf|cfa|xof|euros?|eur|dollars?|usd|%|percent)\b)/gi, // Montants en lettres
+      /\b\d+(?:[,\.]\d+)?\s*%/g,                                                        // Pourcentages
+      /(?:[-+−]\s*)?(?:(?:[$€£]\s*[\d\uff10-\uff19\u0660-\u0669]+(?:[\s\u00A0\u202F\u2007\u200B][\d\uff10-\uff19\u0660-\u0669]{3})*(?:[,\.][\d\uff10-\uff19\u0660-\u0669]+)?)|(?:\bFCFA\s*[\d\uff10-\uff19\u0660-\u0669]+(?:[\s\u00A0\u202F\u2007\u200B][\d\uff10-\uff19\u0660-\u0669]{3})*(?:[,\.][\d\uff10-\uff19\u0660-\u0669]+)?)|(?:[\d\uff10-\uff19\u0660-\u0669]+(?:[\s\u00A0\u202F\u2007\u200B][\d\uff10-\uff19\u0660-\u0669]{3})*(?:[,\.][\d\uff10-\uff19\u0660-\u0669]+)?\s*(?:FCFA|F\s+CFA|XAF|CFA|XOF|EUR|USD|GBP|€|\$|£|francs?\s*(?:cfa)?|frs)(?!\w)))/gi, // Montants devises
+      /(?:\+237\s*|\(\+237\)\s*|00237\s*)?[26](?:[\s.-]?\d){7}\d\b/g,                 // Téléphones
+      /\bCM\d{2}(?:\s*\d{5}){2}(?:\s*\d{11})(?:\s*\d{2})\b|\bCM(?:\s*\d{3})(?:\s*\d{4}){2}(?:\s*\d{2})\b|(?<!\+)\b\d{4}(?:\s*\d{4}){2,3}\b/g // Comptes / IBAN
+    ];
+
     const safeTokens = [];
-    let masked = trimmed.replace(amountRegex, (m) => {
-      const tok = `__SAFE_OFFLINE_${safeTokens.length}__`;
-      safeTokens.push({ token: tok, value: m });
-      return tok;
-    });
+    let masked = trimmed;
+    for (const pat of OFFLINE_SENSITIVE_PATTERNS) {
+      masked = masked.replace(pat, (m) => {
+        const tok = `__SAFE_OFFLINE_${safeTokens.length}__`;
+        safeTokens.push({ token: tok, value: m });
+        return tok;
+      });
+    }
 
     // Sélectionner les termes du glossaire disponibles pour la langue
     const availableTerms = [];
@@ -437,9 +453,21 @@
       masked = masked.split(gt.token).join(gt.value);
     }
 
-    // Restauration des montants protégés
+    // Restauration des entités protégées
     for (const st of safeTokens) {
       masked = masked.split(st.token).join(st.value);
+    }
+
+    // Vérification stricte d'intégrité : aucun jeton résiduel ne doit subsister
+    if (/__SAFE_OFFLINE_\d+__/.test(masked) || /__GLOSS_OFFLINE_\d+__/.test(masked)) {
+      return {
+        target: text,
+        status: 'fallback_source',
+        integrity_verified: true,
+        bilingual_required: critical,
+        novel_annotated: false,
+        badge: null
+      };
     }
 
     if (hasAnnotation) {
