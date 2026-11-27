@@ -89,6 +89,8 @@ Conformément aux exigences de conformité et de traçabilité, chaque jeu de do
 | **SimbaBench** | UBC-NLP / SimbaBench_dataset (Hugging Face) | Vocabulaire attesté pour le recoupement lexical Ɓàsàa (`catalogue/crosscheck_rapport.csv` via `shared/data/bassa/lexique_bassa.json`) | **CC-BY-4.0** | **Licence vérifiée** (Déclarée explicitement sur le dépôt Hugging Face) |
 | **AfroLingu-MT** | UBC-NLP / AfroLingu-MT (Hugging Face) | Échantillon de phrases parallèles Bassa pour analyse lexicale exploratoire | **licence non vérifiée** | Non spécifiée (métadonnée `license: None` sur Hugging Face) |
 | **cameroon-int8 (francais-fufulde)** | flagship-ai (Hugging Face) | Modèle de traduction CTranslate2 INT8 et vocabulaire SentencePiece testé sur 20 libellés (`catalogue/evaluation_fulfulde_20.csv`) | **CC BY-NC 4.0** | **Licence vérifiée** (Déclarée explicitement sur le dépôt Hugging Face) |
+| **Common Voice (DS-06)** | Mozilla Foundation | Chaînes d'interface (`.ftl`) pour `dua` et `bas` consultées pour recoupement comparatif UI ([`docs/recoupement_references_ui.md`](docs/recoupement_references_ui.md)) | **MPL-2.0** | **Références consultées, non redistribuées** (données externes hors dépôt) |
+| **MediaWiki Core (DS-30)** | Wikimedia Foundation | Messages d'interface du noyau (`.json`) pour `dua` et `bas` consultés pour recoupement comparatif UI ([`docs/recoupement_references_ui.md`](docs/recoupement_references_ui.md)) | **GPL-2.0+** | **Références consultées, non redistribuées** (données externes hors dépôt) |
 
 ---
 

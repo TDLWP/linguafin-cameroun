@@ -6,6 +6,29 @@
 
 ## Decisions
 
+- 2026-11-27 22:00 — Recoupement des chaînes d'interface avec les références communautaires externes (DS-06 Common Voice & DS-30 MediaWiki) :
+  1. Données externes sanctuarisées hors du dépôt :
+     - Emplacement : `C:\Users\FLEX ZONE\Desktop\donnees_externes_safinum\DOSSIER_RECHERCHE_DONNEES_SAFINUM\03_DATASETS_TELECHARGES\` (DS-06 Common Voice Fluent dua/bas/en sous licence MPL-2.0 ; DS-30 MediaWiki JSON en/dua/datetime sous licence GPL-2.0+).
+     - Aucune copie dans le dépôt Git ; exclusion préventive de `donnees_externes_safinum/` et `DOSSIER_RECHERCHE_DONNEES_SAFINUM/` consignée dans `.gitignore`.
+  2. Script déterministe `scripts/recoupement_references_ui.py` :
+     - Chemin externe résolu par variable d'environnement (`SAFINUM_EXTERNAL_DATA_DIR`), argument CLI (`--data-dir`) ou repli par défaut.
+     - Appariement exact (insensible à la casse, à la ponctuation et aux balises) des messages anglais sources pour les 160 segments du catalogue ayant un équivalent dans `data/test_env_strings.json`.
+     - Récupération stricte de la traduction communautaire à clé égale en Duálá (`dua`) et Ɓàsàa (`bas`) ; aucune traduction inventée.
+  3. Génération certifiée de `catalogue/recoupement_ui_resultats.csv` (160 lignes) :
+     - 8 segments avec référence communautaire trouvée (5,0 %) : 4 en Duálá (MediaWiki : *Summary*, *Edit* ; Common Voice : *Continue*, *Success*) et 4 en Ɓàsàa (Common Voice : *Back*, *Continue*, *Edit*, *Success*).
+     - Accords réels : 0 identique (0,0 %), 8 différents (100,0 % des références trouvées), 152 absents (95,0 %).
+     - Éclairage terminologique : analyse des variations morpho-phonologiques (*Tukwe* vs *Túkwa*), des choix syntaxiques (*Alá oboso* vs *Binyɔ́ alá ó ɓosó*, *Kenel bisu* vs *Kee ni bisu*) et de la concision d'interface (*Bwam* vs *Eɓoló é toŋgɛ́lɛ*, *Loñge* vs *Gwégwéé*).
+  4. Rédaction technique et transparence dans `docs/recoupement_references_ui.md` :
+     - Méthodologie, chiffres réels, analyse comparative des 8 correspondances.
+     - Limites formelles : les corpus généralistes (collecte vocale, encyclopédie) ne couvrent pas le vocabulaire bancaire transactionnel (95 % d'absence).
+     - Règle d'or : ces références ne valident rien et ne confèrent aucun statut `human_validated` à notre catalogue.
+  5. Déclaration dans `THIRD_PARTY.md` :
+     - Déclaration formelle en section 5 de Common Voice DS-06 (MPL-2.0) et MediaWiki Core DS-30 (GPL-2.0+) comme références d'interface consultées, non redistribuées.
+  6. Suite de tests unitaires et d'intégrité :
+     - `tests/test_recoupement_references_ui.py` (3 tests réussis) certifiant la normalisation, la structure du CSV et l'invariance absolue de `catalogue/translations.csv`.
+     - Intégration dans la Suite 2 de `scripts/run_all_checks.ps1` (18/18 tests réussis).
+  7. Invariabilité stricte : zéro modification apportée à `catalogue/translations.csv` ni à `extension/offline_catalog.json`.
+
 - 2026-11-27 20:15 — Réduction de la latence de repli hors ligne, mémorisation d'état session et optimisation du premier rendu :
   1. Optimisation du repli hors ligne dans `extension/content.js` et `extension/background.js` :
      - Mémorisation de l'état du backend (`isAvailable: true/false`, timestamp) en `sessionStorage` (`safinum_backend_status`, `safinum_backend_last_checked`) avec cache en mémoire (`state.backendState`). Dès qu'une tentative échoue, l'extension mémorise l'indisponibilité pour la session de navigation et bascule instantanément vers le catalogue local `offline_catalog.json` sans bloquer le rendu.

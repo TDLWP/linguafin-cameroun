@@ -108,9 +108,9 @@ Run-Suite -SuiteId "1/5" `
 
 # 2. Racine Unitaire
 Run-Suite -SuiteId "2/5" `
-          -SuiteName "Racine (Intégrité Jury, Intégrité Figée 91 cas, E2E Extension, Mock Bank Playwright)" `
+          -SuiteName "Racine (Intégrité Jury, Intégrité Figée 91 cas, Recoupement UI, E2E Extension, Mock Bank)" `
           -Executable "python" `
-          -Arguments "-m unittest tests/test_jury_integrity.py tests/test_integrite_figee.py tests/test_extension_e2e.py tests/test_playwright_mock_bank.py -v"
+          -Arguments "-m unittest tests/test_jury_integrity.py tests/test_integrite_figee.py tests/test_recoupement_references_ui.py tests/test_extension_e2e.py tests/test_playwright_mock_bank.py -v"
 
 # 3. Accessibilité Shadow DOM
 Run-Suite -SuiteId "3/5" `

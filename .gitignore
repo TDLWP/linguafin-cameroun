@@ -6,3 +6,5 @@ __pycache__/
 *.pyc
 dist/
 feedback_submissions.json
+donnees_externes_safinum/
+DOSSIER_RECHERCHE_DONNEES_SAFINUM/
