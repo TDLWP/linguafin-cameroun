@@ -6,6 +6,30 @@
 
 ## Decisions
 
+- 2026-11-28 00:40 — Rédaction de l'état des données linguistiques et justification de l'architecture (`docs/etat_des_donnees.md`) :
+  1. Analyse exhaustive du dossier de recherche externe (`DOSSIER_RECHERCHE_DONNEES_SAFINUM`) :
+     - Sources primaires analysées : `NOTE_TRANSFERT_CLAUDE_PRINCIPAL.md`, `REGISTRE_LICENCES.csv`, `INVENTAIRE_DATASETS.csv`, `INVENTAIRE_MODELES.csv` et `RAPPORT_RECHERCHE_DONNEES.md`.
+     - Sanctuarisation stricte : aucune donnée externe n'est copiée dans le dépôt Git (conformité `.gitignore`).
+     - Règle de véracité absolue : seuls les chiffres et statuts explicitement documentés sont mentionnés ; toute autre donnée est marquée « non vérifié ».
+  2. Constat fondamental de carence financière :
+     - **0 donnée alignée dans le domaine financier, bancaire ou d'interface de paiement** n'existe pour les langues nationales camerounaises (français ou anglais vers langue locale).
+     - Les textes financiers camerounais existants (règlements CEMAC 03/16, 04/18, 01/20, COBAC R-2020/04, OHADA, DGI Cameroun, conditions MTN Mobile Money Cameroun © MTN) sont en français ou bilingues FR/EN mais sans aucune traduction en langue locale.
+  3. Inventaire exhaustif des sources consultées pour le Duálá (`dua`) et le Ɓàsàa (`bas`) :
+     - Duálá : Common Voice UI DS-06 (283 paires, MPL-2.0, téléchargé) ; MediaWiki DS-30 (565 messages + 53 clés datetime, GPL-2.0+, téléchargé) ; OPUS Tatoeba DS-32 (15 236 paires annoncées, CC BY-NC-SA 4.0, non téléchargé) ; BOUQuET DS-38 (1 364 phrases multi-langues, CC-BY-4.0, non téléchargé) ; Common Voice v27 audio (26,9 h, CC0, non téléchargé) ; Bloom Library (0 document, absent).
+     - Ɓàsàa : Common Voice sentence collector DS-05 (5 015 lignes monolingues, CC0, téléchargé) ; Common Voice UI DS-06 (516 paires, MPL-2.0, téléchargé) ; OPUS Tatoeba DS-32 (27 778 paires annoncées, CC BY-NC-SA 4.0, non téléchargé) ; Webonary SIL DS-25 (Dictionnaire Njock © 2019, non téléchargé) ; ALCAM Basaa Mbene DS-10 (NOODL-1.0, non téléchargé) ; BOUQuET DS-38 (CC-BY-4.0, non téléchargé) ; Common Voice v27 audio (59,8 h, CC0, non téléchargé) ; Bloom Library (0 document, absent).
+  4. Analyse critique et motifs d'éviction des moteurs neuronaux :
+     - **Flagship AI (`flagship-ai/cameroon-int8`)** : Écarté en raison d'une contradiction juridique bloquante (fiche en CC BY-NC 4.0 vs README d'organisation en CC-BY-4.0), de l'absence totale de métriques de qualité publiées (0 score BLEU/chrF), de données d'entraînement non documentées (corpus biblique `cameroon_bibles` de ≈496 k lignes hors domaine financier), d'instabilité empirique en inférence locale (répétitions en boucle, anglicismes, dérive religieuse) et de l'absence de `dua` et `bas` dans la liste affichée.
+     - **Meta NLLB-200 / FLORES-200** : Absence totale de couverture des langues camerounaises propres (les codes `dua` et `bas` sont absents de NLLB-200 et FLORES-200 ; seuls le fulfulde nigérian `fuv`, le haoussa et le kanouri y figurent) ; licence restrictive CC BY-NC 4.0 interdisant la production et le domaine financier.
+  5. Justification de l'architecture souveraine en 4 piliers de SAFINUM :
+     - Mémoire de traduction souveraine locale (catalogue embarqué de 84 chaînes, 122,1 Ko).
+     - Glossaire terminologique spécialisé fondé sur des périphrases certifiables (*Nongi a moni* / *Mut a nkôs* pour bénéficiaire).
+     - Garde-fous algorithmiques d'intégrité financière (masquage inviolable par jetons, 100% de restauration vérifiée, sanctuarisation absolue des OTP/PIN).
+     - Protocole de validation humaine native à venir (statut `machine_suggested` préservé à 0/84, kits CSV/PDF hiérarchisés par priorité).
+  6. Mise à jour documentaire :
+     - Création de `docs/etat_des_donnees.md`.
+     - Ajout des renvois contextuels dans `docs/langue_et_validation.md` (en-tête et section 5).
+
+
 - 2026-11-27 23:25 — Répétition finale sur le panneau jury (?jury=1) avec 30 cas inédits hostiles et correction de sécurité :
   1. Script Playwright `scripts/repetition_finale.py` :
      - Injection automatisée sous Microsoft Edge (profil vierge) de 30 messages inédits (24 en français, 6 en anglais) issus des groupes `hostile_inedit`, `hostile_montant`, `hostile_identifiants` et secrets critiques OTP/PIN de `tests_integrite/cases.json` :

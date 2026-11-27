@@ -2,7 +2,8 @@
 
 > **Projet** : SAFINUM Innovate Challenge 2026  
 > **Livrable 5** : Langue(s) supportée(s), méthode de validation, métriques réelles de couverture et traitement des contenus automatiques  
-> **Principe d'intégrité** : Données issues exclusivement des tests et des catalogues réels ; **aucune validation humaine n'est prétendue acquise**.
+> **Principe d'intégrité** : Données issues exclusivement des tests et des catalogues réels ; **aucune validation humaine n'est prétendue acquise**.  
+> **Étude approfondie des corpus et données disponibles** : Voir le document de référence [`docs/etat_des_donnees.md`](etat_des_donnees.md) pour l'inventaire exhaustif des sources consultées (Common Voice, MediaWiki, OPUS, BOUQuET), l'état des données financières alignées (constat de carence), les motifs d'éviction du moteur Flagship AI (`cameroon-int8`) et la non-couverture de nos langues par Meta NLLB-200.
 
 ---
 
@@ -83,7 +84,8 @@ La validation humaine certifiée est planifiée entre la soumission du prototype
 
 > **Décision et Constat Formel** :  
 > **Moteur Fulfulde (flagship-ai/cameroon-int8, CC BY-NC 4.0) intégré, testé sur 20 libellés, écarté du parcours de démonstration car les sorties observées présentent des signes d'incohérence (répétitions, anglais non traduit, contenu hors domaine). Qualité non mesurée, variété du Fulfulde non vérifiée, aucune relecture native.**  
-> Le garde-fou d'intégrité a basculé en repli source sur 6 phrases contenant des valeurs financières.
+> Le garde-fou d'intégrité a basculé en repli source sur 6 phrases contenant des valeurs financières.  
+> *(Voir l'analyse juridique et technique détaillée de l'éviction de Flagship AI dans [`docs/etat_des_donnees.md`](etat_des_donnees.md#3-analyse-critique-des-moteurs-neuronaux-existants)).*
 
 * **Modèle** : `flagship-ai/cameroon-int8` (dossier `francais-fufulde` seul), inférence INT8 via **CTranslate2** (`4.9.0`) et **SentencePiece** (`0.2.3`).
 * **Licence** : **CC BY-NC 4.0** (déclarée dans [`THIRD_PARTY.md`](../THIRD_PARTY.md)).
