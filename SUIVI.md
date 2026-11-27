@@ -6,6 +6,21 @@
 
 ## Decisions
 
+- 2026-11-27 20:15 — Réduction de la latence de repli hors ligne, mémorisation d'état session et optimisation du premier rendu :
+  1. Optimisation du repli hors ligne dans `extension/content.js` et `extension/background.js` :
+     - Mémorisation de l'état du backend (`isAvailable: true/false`, timestamp) en `sessionStorage` (`safinum_backend_status`, `safinum_backend_last_checked`) avec cache en mémoire (`state.backendState`). Dès qu'une tentative échoue, l'extension mémorise l'indisponibilité pour la session de navigation et bascule instantanément vers le catalogue local `offline_catalog.json` sans bloquer le rendu.
+     - Réduction du délai maximal par tentative à 400 ms (au lieu de 1 500 ms) et suppression des essais successifs sur plusieurs hôtes : un seul essai ciblé sur `127.0.0.1:8000/translate/batch`.
+     - Sonde de disponibilité en arrière-plan toutes les 30 secondes (`RETRY_INTERVAL_MS = 30000`, fonction non bloquante `probeBackendInBackground()` interrogeant `/health`), permettant une reprise automatique transparente du backend lorsqu'il redémarre sans figer l'interface.
+  2. Mesures Avant / Après rigoureuses (12 runs par mode avec rechargement de contexte de navigation vierge) :
+     - Mode 1 (Backend Arrêté) : Médiane Avant = **342,22 ms** (P95 = 381,71 ms) → Médiane Après = **79,22 ms** (P95 = **99,28 ms**), gain de réactivité de **-76,9 % (-263 ms)**.
+     - Mode 2 (Backend Lancé) : Médiane Avant = **314,99 ms** (P95 = 356,64 ms) → Médiane Après = **77,33 ms** (P95 = **82,49 ms**), gain de réactivité de **-75,4 % (-237 ms)**.
+     - Mise à jour complète de `docs/mesures_performance.md` et enregistrement des données brutes dans `docs/raw_performance_metrics.json`.
+  3. Tests de régression de performance dans `tests/test_performance_regression.py` :
+     - `test_first_render_timing_below_threshold_backend_arrete` : certifie que le premier rendu traduit apparaît en moins de 1 000 ms backend arrêté et que l'état indisponible est enregistré en `sessionStorage`.
+     - `test_session_caching_and_subsequent_render_speed` : valide que les navigations ultérieures réutilisent l'état session sans aucune tentative réseau bloquante (< 500 ms, mesuré à 192 ms).
+  4. Mise à jour de l'empreinte client :
+     - Empreinte exacte du dossier `extension/` mise à jour à **121 590 octets (118,74 Ko)** (somme exacte des 4 fichiers `background.js` 2 970 o, `content.js` 59 180 o, `manifest.json` 1 136 o, `offline_catalog.json` 58 304 o) dans `README.md`, `THIRD_PARTY.md` et `docs/note_technique.md`.
+
 - 2026-11-27 15:15 — Vérification de l'invariance stricte des cartes de soumissions du panneau jury (?jury=1) et renforcement de l'isolation :
   1. Vérification Playwright sous Microsoft Edge (profil vierge, extension active vs désactivée) :
      - Navigation vers `https://safinum.cm/hackathon-test?jury=1`.

@@ -520,8 +520,8 @@ class TestEngineTimeoutAndAPIErrorHandling(unittest.TestCase):
         self.assertEqual(res.status_code, 413)
 
     def test_56_api_depassement_longueur_texte(self):
-        # Requête avec un texte de plus de 2000 caractères
-        long_text = "A" * 2500
+        # Requête avec un texte dépassant MAX_TEXT_LENGTH (5000 caractères)
+        long_text = "A" * 5500
         payload = {
             "source_lang": "fr",
             "target_lang": "dua",

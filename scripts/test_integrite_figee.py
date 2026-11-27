@@ -13,6 +13,7 @@ import sys
 import json
 import shutil
 import subprocess
+import re
 import unicodedata
 from typing import Dict, List, Any, Optional
 
@@ -130,18 +131,21 @@ def judge(c: Dict[str, Any], out: Any) -> Dict[str, Any]:
 # PSEUDO-TRADUCTION POUR LE CHEMIN (a)
 # ============================================================================
 
+SAFE_AND_ESCAPED_TOKEN_REGEX = re.compile(r"__(?:SAFE|ESCAPED_SAFE)_[A-Za-z0-9_]+__")
+
+
 def pseudo_translate(masked_text: str) -> str:
     """
     Pseudo-traduction simulant le comportement hostile d'un moteur automatique :
     - Remplace les voyelles par des voyelles accentuées en dehors des jetons.
-    - Préserve rigoureusement les jetons __SAFE_*__ et ne génère aucun chiffre.
+    - Préserve rigoureusement les jetons __SAFE_*__ et faux jetons échappés sans générer aucun chiffre.
     """
     vowel_map = {
         'a': '\u00e0', 'e': '\u00e9', 'i': '\u00ec', 'o': '\u00f4', 'u': '\u00f9', 'y': '\u0177',
         'A': '\u00c0', 'E': '\u00c9', 'I': '\u00cc', 'O': '\u00d4', 'U': '\u00d9'
     }
-    parts = TOKEN_REGEX.split(masked_text)
-    tokens = TOKEN_REGEX.findall(masked_text)
+    parts = SAFE_AND_ESCAPED_TOKEN_REGEX.split(masked_text)
+    tokens = SAFE_AND_ESCAPED_TOKEN_REGEX.findall(masked_text)
     out = []
     for i, p in enumerate(parts):
         # Modification des voyelles uniquement dans le texte hors jetons

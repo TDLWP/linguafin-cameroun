@@ -62,9 +62,12 @@ def wait_for_backend(timeout=10):
 
 def start_backend():
     print("[INIT] Démarrage du backend FastAPI local sur http://127.0.0.1:8000...")
+    bench_env = os.environ.copy()
+    bench_env["RATE_LIMIT_ENABLED"] = "false"
     proc = subprocess.Popen(
         [sys.executable, "-m", "uvicorn", "backend.api:app", "--host", "127.0.0.1", "--port", "8000"],
         cwd=REPO_DIR,
+        env=bench_env,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL
     )
@@ -137,6 +140,8 @@ def compute_stats(values_ms):
 
 
 def inject_extension_code(page, catalog_dict):
+    with open(CONTENT_JS_PATH, "r", encoding="utf-8") as f:
+        content_js = f.read()
     page.evaluate("""(catData) => {
         window.chrome = window.chrome || {};
         window.chrome.runtime = {
@@ -153,7 +158,7 @@ def inject_extension_code(page, catalog_dict):
             return _origFetch(url, opts);
         };
     }""", catalog_dict)
-    page.evaluate(CONTENT_JS)
+    page.evaluate(content_js)
 
 
 def measure_first_render(browser, url, runs=12, backend_active=False):
@@ -450,7 +455,7 @@ def main():
 
     with sync_playwright() as p:
         args = ["--no-sandbox"]
-        browser = p.chromium.launch(channel="msedge", headless=False, args=args)
+        browser = p.chromium.launch(channel="msedge", headless=True, args=args)
 
         # 1. Mesure Premier Rendu : Backend Arrêté (Offline nominal)
         # S'assurer que le port 8000 est fermé pour ce test

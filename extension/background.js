@@ -16,41 +16,38 @@
 
 'use strict';
 
-const LOCAL_ENDPOINTS = [
-  'http://127.0.0.1:8000/translate/batch',
-  'http://localhost:8000/translate/batch'
-];
+const LOCAL_API_ENDPOINT = 'http://127.0.0.1:8000/translate/batch';
+const LOCAL_HEALTH_ENDPOINT = 'http://127.0.0.1:8000/health';
+const TIMEOUT_MS = 400; // Délai maximal strict de 400 ms par tentative (un seul essai)
 
 /**
- * Tente d'envoyer le lot de traduction à l'API locale avec timeout strict.
+ * Tente d'envoyer le lot de traduction à l'API locale avec timeout strict de 400 ms.
+ * Un seul essai (aucun essai successif sur un second hôte).
  * @param {Object} payload 
  * @returns {Promise<{success: boolean, data?: Object, error?: string}>}
  */
 async function translateBatchViaLocalApi(payload) {
-  for (const endpoint of LOCAL_ENDPOINTS) {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 1500);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
-    try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        signal: controller.signal
-      });
-      clearTimeout(timeoutId);
+  try {
+    const response = await fetch(LOCAL_API_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
 
-      if (response.ok) {
-        const data = await response.json();
-        return { success: true, data };
-      }
-    } catch (e) {
-      clearTimeout(timeoutId);
-      // Échec de l'endpoint courant, passage au suivant
+    if (response.ok) {
+      const data = await response.json();
+      return { success: true, data };
     }
+  } catch (e) {
+    clearTimeout(timeoutId);
   }
 
-  return { success: false, error: 'Local backend unreachable or timed out' };
+  return { success: false, error: 'Local backend unreachable or timed out (400ms)' };
 }
 
 // Écoute des messages runtime émis par le content script
@@ -63,7 +60,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 
   if (message && message.type === 'SAFINUM_HEALTH_CHECK') {
-    sendResponse({ success: true, status: 'active', timestamp: Date.now() });
-    return false;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
+    fetch(LOCAL_HEALTH_ENDPOINT, { method: 'GET', signal: controller.signal })
+      .then(r => {
+        clearTimeout(timeoutId);
+        sendResponse({ success: r.ok, status: r.status });
+      })
+      .catch(err => {
+        clearTimeout(timeoutId);
+        sendResponse({ success: false, error: err.message });
+      });
+    return true;
   }
 });
+

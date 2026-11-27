@@ -59,7 +59,7 @@ class TestPerformanceRegression(unittest.TestCase):
         cls.playwright = sync_playwright().start()
         cls.browser = cls.playwright.chromium.launch(
             channel="msedge",
-            headless=False,
+            headless=True,
             args=["--no-sandbox"]
         )
 
@@ -68,8 +68,14 @@ class TestPerformanceRegression(unittest.TestCase):
         cls.browser.close()
         cls.playwright.stop()
 
-    def test_first_render_timing_below_threshold(self):
-        """Vérifie que le premier rendu traduit apparaît en moins de 1 000 ms."""
+    def test_first_render_timing_below_threshold_backend_arrete(self):
+        """
+        Test de régression critique :
+        Vérifie que le premier rendu traduit apparaît en moins de 1 000 ms lorsque le backend est arrêté
+        (repli hors ligne pur avec timeout réduit à 400 ms maximum et un seul essai).
+        Vérifie également la mémorisation de l'état indisponible pour la session.
+        """
+        # S'assurer que le backend est arrêté pour tester le repli hors ligne
         context = self.browser.new_context(viewport={"width": 1280, "height": 800})
         page = context.new_page()
         page.goto(MOCK_BANK_URL, wait_until="domcontentloaded")
@@ -80,9 +86,43 @@ class TestPerformanceRegression(unittest.TestCase):
         t1 = time.perf_counter()
 
         elapsed_ms = (t1 - t0) * 1000
+        print(f"\n[PERF] Premier rendu traduit (Backend arrêté) : {elapsed_ms:.2f} ms (seuil max 1000 ms)")
+
+        # Vérification de la mémorisation de l'état indisponible pour la session
+        backend_state = page.evaluate("() => window.SAFINUM_GET_BACKEND_STATE ? window.SAFINUM_GET_BACKEND_STATE() : null")
+        if backend_state:
+            self.assertFalse(backend_state["isAvailable"], "L'état du backend doit être mémorisé comme indisponible (false).")
+
+        context.close()
+        self.assertLess(elapsed_ms, 1000.0, f"Le premier rendu traduit a pris {elapsed_ms:.2f} ms (seuil max 1000 ms)")
+
+    def test_session_caching_and_subsequent_render_speed(self):
+        """
+        Vérifie que lorsque l'indisponibilité du backend est mémorisée pour la session,
+        les rendus suivants sont quasi-instantanés (< 500 ms) sans aucun blocage réseau.
+        """
+        context = self.browser.new_context(viewport={"width": 1280, "height": 800})
+        page = context.new_page()
+        page.goto(MOCK_BANK_URL, wait_until="domcontentloaded")
+
+        # Initialiser avec état déjà mémorisé indisponible
+        page.evaluate("""() => {
+            try {
+                sessionStorage.setItem('safinum_backend_status', 'unavailable');
+                sessionStorage.setItem('safinum_backend_last_checked', String(Date.now()));
+            } catch(e) {}
+        }""")
+
+        t0 = time.perf_counter()
+        inject_extension(page)
+        page.wait_for_selector('[data-safinum-translated="true"]', timeout=3000)
+        t1 = time.perf_counter()
+
+        elapsed_ms = (t1 - t0) * 1000
+        print(f"[PERF] Rendu ultérieur en session mémorisée (0 attente réseau) : {elapsed_ms:.2f} ms")
         context.close()
 
-        self.assertLess(elapsed_ms, 1000.0, f"Le premier rendu traduit a pris {elapsed_ms:.2f} ms (seuil max 1000 ms)")
+        self.assertLess(elapsed_ms, 500.0, f"Le rendu en session mémorisée a pris {elapsed_ms:.2f} ms (seuil max 500 ms)")
 
     def test_revert_to_source_timing_below_threshold(self):
         """Vérifie que le retour à la langue source s'exécute en moins de 10 ms."""

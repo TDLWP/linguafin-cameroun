@@ -51,9 +51,9 @@ PATTERNS = [
     # 0b. Adresses e-mail
     ("EMAIL", re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b", re.IGNORECASE)),
 
-    # 1. Variables de template et faux jetons
+    # 1. Variables de template
     ("TEMPLATE_VAR", re.compile(
-        r"\{\{[a-zA-Z0-9_]+\}\}|\{[a-zA-Z0-9_]+\}|\$\{[a-zA-Z0-9_]+\}|%[sdf]|⟦\d+⟧|\u27e6\d+\u27e7|__SAFE_[A-Za-z0-9_]+__"
+        r"\{\{[a-zA-Z0-9_]+\}\}|\{[a-zA-Z0-9_]+\}|\$\{[a-zA-Z0-9_]+\}|%[sdf]|⟦\d+⟧|\u27e6\d+\u27e7"
     )),
 
     # 2. Références de transaction (ex: SAF-2026-X7Y8Z9, REF-12345, TX-ujineeje)
@@ -99,7 +99,7 @@ PATTERNS = [
 
     # 7. Montants avec devises (placé AVANT TEL pour préserver les montants à 9 chiffres de type 250 000 000 FCFA)
     ("AMOUNT", re.compile(
-        r"(?:[+-−\u2212]\s*)?"
+        r"(?:[-+−\u2212]\s*)?"
         r"(?:"
             r"(?:[$€£]\s*" + AMOUNT_DIGITS + r"+(?:" + AMOUNT_SPACES + AMOUNT_DIGITS + r"{3})*(?:[,\.]" + AMOUNT_DIGITS + r"+)?)"
             r"|"
@@ -126,7 +126,7 @@ PATTERNS = [
 
     # 11. Nombres purs / montants sans devises
     ("NUMBER", re.compile(
-        r"(?<![A-Za-z0-9_])[+-−\u2212]?(?:" + AMOUNT_DIGITS + r"{1,3}(?:" + AMOUNT_SPACES + AMOUNT_DIGITS + r"{3})+|" + AMOUNT_DIGITS + r"{2,})(?:[,\.]" + AMOUNT_DIGITS + r"+)?(?![A-Za-z0-9_])"
+        r"(?<![A-Za-z0-9_])[-+−\u2212]?(?:" + AMOUNT_DIGITS + r"{1,3}(?:" + AMOUNT_SPACES + AMOUNT_DIGITS + r"{3})+|" + AMOUNT_DIGITS + r"{2,})(?:[,\.]" + AMOUNT_DIGITS + r"+)?(?![A-Za-z0-9_])"
     )),
 ]
 
@@ -160,8 +160,8 @@ def mask_sensitive_data(text: str) -> Tuple[str, Dict[str, str], List[str]]:
     cleaned = normalize_input_text(text)
 
     # 2. Protection contre l'injection de faux jetons :
-    # Les faux jetons préexistants de type __SAFE_*__ sont absorbés par le motif TEMPLATE_VAR
-    masked_text = cleaned
+    # Tout __SAFE_ préexistant dans la source utilisateur est neutralisé par préfixe d'échappement
+    masked_text = cleaned.replace(TOKEN_PREFIX, ESCAPED_SAFE_PREFIX)
 
     token_map: Dict[str, str] = {}
     counter = 0

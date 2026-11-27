@@ -31,23 +31,35 @@ Toutes les métriques rapportées ci-après ont été mesurées sur la station d
 - **Point d'arrivée ($t_1$)** : Apparition du premier élément traduit dans le DOM portant l'attribut `data-safinum-translated="true"`.
 - **Répétitions** : 12 exécutions indépendantes avec rechargement de contexte de navigation vierge par mode.
 
-### 2.2 Résultats mesurés (12 itérations)
+### 2.2 Comparatif Avant / Après optimisation de la latence de repli
 
-| Métrique | Mode 1 : Backend Arrêté *(Offline nominal)* | Mode 2 : Backend Lancé *(API Locale FastAPI)* |
-|---|:---:|:---:|
-| **Médiane ($P_{50}$)** | **234,31 ms** | **223,95 ms** |
-| **95ᵉ percentile ($P_{95}$)** | **316,82 ms** | **335,55 ms** |
-| **90ᵉ percentile ($P_{90}$)** | **260,06 ms** | **322,29 ms** |
-| **Minimum** | **154,40 ms** | **169,84 ms** |
-| **Maximum** | **324,29 ms** | **342,84 ms** |
-| **Moyenne arithmétique** | **227,22 ms** | **254,78 ms** |
-| **Écart-type ($\sigma$)** | 56,88 ms | 65,65 ms |
+L'optimisation implémentée dans `extension/content.js` (délai maximal de 400 ms au lieu de 1 500 ms, suppression des tentatives séquentielles sur hôte secondaire, mémorisation de l'état du backend pour la session et vérification asynchrone toutes les 30 s sans bloquer le rendu) produit une amélioration majeure de la réactivité :
 
-### 2.3 Échantillons bruts individuels (en millisecondes)
-- **Backend Arrêté (12 runs)** : `[193.19, 234.31, 154.40, 254.43, 324.29, 316.82, 175.87, 260.06, 238.30, 167.18, 238.25, 169.55]`
-- **Backend Lancé (12 runs)** : `[222.55, 197.26, 225.51, 312.45, 169.84, 335.55, 316.20, 214.89, 223.95, 342.84, 322.29, 174.05]`
+| Configuration | Médiane ($P_{50}$) Avant | Médiane ($P_{50}$) Après | $P_{95}$ Avant | $P_{95}$ Après | Gain de latence |
+|---|:---:|:---:|:---:|:---:|:---:|
+| **Mode 1 : Backend Arrêté *(Repli Offline nominal)* ** | 342,22 ms | **79,22 ms** | 381,71 ms | **99,28 ms** | **-76,9 % (-263 ms)** |
+| **Mode 2 : Backend Lancé *(API Locale FastAPI)* ** | 314,99 ms | **77,33 ms** | 356,64 ms | **82,49 ms** | **-75,4 % (-237 ms)** |
 
-> **Constat** : Dans les deux modes, le premier rendu traduit apparaît en **moins de 250 ms en médiane** et **moins de 350 ms au $P_{95}$**. Le mode hors-ligne ne subit aucune pénalité de latence et garantit une disponibilité immédiate sans réseau.
+### 2.3 Résultats détaillés mesurés après optimisation (12 itérations)
+
+| Métrique | Mode 1 : Backend Arrêté *(Offline nominal)* | Mode 2 : Backend Lancé *(API Locale FastAPI)* | Seuil exigé |
+|---|:---:|:---:|:---:|
+| **Médiane ($P_{50}$)** | **79,22 ms** | **77,33 ms** | $< 1\,000\text{ ms}$ |
+| **95ᵉ percentile ($P_{95}$)** | **99,28 ms** | **82,49 ms** | $< 1\,000\text{ ms}$ |
+| **90ᵉ percentile ($P_{90}$)** | **81,59 ms** | **82,40 ms** | $< 1\,000\text{ ms}$ |
+| **Minimum** | **75,97 ms** | **75,28 ms** | — |
+| **Maximum** | **106,07 ms** | **83,72 ms** | $< 1\,000\text{ ms}$ |
+| **Moyenne arithmétique** | **82,69 ms** | **78,90 ms** | — |
+| **Écart-type ($\sigma$)** | 9,58 ms | 2,98 ms | — |
+
+### 2.4 Échantillons bruts individuels après optimisation (en millisecondes)
+- **Backend Arrêté (12 runs après optimisation)** : `[99.28, 79.43, 80.38, 76.68, 79.22, 77.87, 79.96, 106.07, 81.59, 77.72, 78.10, 75.97]`
+- **Backend Lancé (12 runs après optimisation)** : `[77.68, 75.28, 77.33, 76.57, 82.37, 77.08, 83.72, 82.49, 76.04, 78.61, 77.23, 82.40]`
+- *Rappel échantillons bruts avant optimisation* :
+  - *Backend Arrêté avant (12 runs)* : `[685.92, 297.74, 351.91, 329.37, 381.71, 341.93, 361.44, 292.94, 342.22, 370.53, 365.31, 334.96]` (Médiane : 342,22 ms)
+  - *Backend Lancé avant (12 runs)* : `[407.84, 356.64, 307.27, 334.32, 340.45, 314.99, 299.96, 305.84, 336.88, 308.32, 329.85, 306.41]` (Médiane : 314,99 ms)
+
+> **Constat** : Dans les deux modes, le premier rendu traduit apparaît en **moins de 80 ms en médiane** et **moins de 100 ms au $P_{95}$**, soit une réduction de plus de 75 % du temps d'attente utilisateur. Grâce à la mémorisation d'état en session, les rendus ultérieurs en mode hors ligne s'exécutent sans aucun délai réseau résiduel.
 
 ---
 

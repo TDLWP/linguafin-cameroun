@@ -20,11 +20,39 @@
 
   console.log('[SAFINUM] Démarrage de la couche d\'accessibilité linguistique...');
 
-  // Configuration
-  const API_ENDPOINTS = [
-    'http://localhost:8000/translate/batch',
-    'http://127.0.0.1:8000/translate/batch'
-  ];
+  // Configuration : un seul hôte/point d'accès (pas deux hôtes successifs)
+  const PRIMARY_API_ENDPOINT = (typeof window !== 'undefined' && window.SAFINUM_API_ENDPOINT)
+    ? window.SAFINUM_API_ENDPOINT
+    : 'http://127.0.0.1:8000/translate/batch';
+  const API_TIMEOUT_MS = 400;           // Délai maximal strict de 400 ms par tentative
+  const RETRY_INTERVAL_MS = 30000;      // Nouvelle tentative en arrière-plan toutes les 30 s sans bloquer
+
+  // Gestionnaire d'état du backend local pour la session (disponible / indisponible)
+  const SESSION_BACKEND_KEY = 'safinum_backend_status';
+  const SESSION_BACKEND_TIME_KEY = 'safinum_backend_last_checked';
+
+  function readSessionBackendState() {
+    try {
+      if (typeof sessionStorage !== 'undefined') {
+        const val = sessionStorage.getItem(SESSION_BACKEND_KEY);
+        const lastChecked = parseInt(sessionStorage.getItem(SESSION_BACKEND_TIME_KEY) || '0', 10);
+        if (val === 'available') return { isAvailable: true, lastChecked };
+        if (val === 'unavailable') return { isAvailable: false, lastChecked };
+      }
+    } catch (e) {
+      // sessionStorage non disponible (ex: sandbox ou restriction d'origine)
+    }
+    return { isAvailable: null, lastChecked: 0 };
+  }
+
+  function writeSessionBackendState(isAvailable) {
+    try {
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.setItem(SESSION_BACKEND_KEY, isAvailable ? 'available' : 'unavailable');
+        sessionStorage.setItem(SESSION_BACKEND_TIME_KEY, String(Date.now()));
+      }
+    } catch (e) {}
+  }
 
   // Injection des styles pour la mise en valeur des montants, sécurité et badge de contenu inédit
   function injectDocumentStyles() {
@@ -77,10 +105,73 @@
       machine_suggested: 0,
       fallback_source: 0
     },
+    backendState: {
+      isAvailable: readSessionBackendState().isAvailable, // null (inconnu), true, ou false
+      lastChecked: readSessionBackendState().lastChecked,
+      isChecking: false
+    },
     mutationTimer: null,
     isProcessing: false,
     isMutating: false
   };
+
+  /**
+   * Sonde en arrière-plan la disponibilité du backend sans jamais bloquer le rendu.
+   * Déclenchée périodiquement (toutes les 30 s) lorsque le backend est mémorisé indisponible.
+   */
+  async function probeBackendInBackground() {
+    if (state.backendState.isChecking) return;
+    state.backendState.isChecking = true;
+    try {
+      let isReachable = false;
+      // 1. Tenter via le Service Worker si disponible
+      if (typeof chrome !== 'undefined' && chrome.runtime && typeof chrome.runtime.sendMessage === 'function') {
+        isReachable = await new Promise((resolve) => {
+          const t = setTimeout(() => resolve(false), API_TIMEOUT_MS);
+          try {
+            chrome.runtime.sendMessage({ type: 'SAFINUM_HEALTH_CHECK' }, (res) => {
+              clearTimeout(t);
+              resolve(Boolean(res && res.success));
+            });
+          } catch (e) {
+            clearTimeout(t);
+            resolve(false);
+          }
+        });
+      }
+      // 2. Si non concluant, tester directement l'endpoint avec timeout strict de 400 ms
+      if (!isReachable) {
+        const controller = new AbortController();
+        const t = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+        try {
+          const healthUrl = PRIMARY_API_ENDPOINT.replace(/\/translate\/batch\/?$/, '/health');
+          const resp = await fetch(healthUrl, { method: 'GET', signal: controller.signal });
+          clearTimeout(t);
+          if (resp.ok) isReachable = true;
+        } catch (e) {
+          clearTimeout(t);
+        }
+      }
+
+      state.backendState.isAvailable = isReachable;
+      state.backendState.lastChecked = Date.now();
+      writeSessionBackendState(isReachable);
+      if (isReachable) {
+        console.log('[SAFINUM] Backend local redevenu disponible en arrière-plan.');
+      }
+    } finally {
+      state.backendState.isChecking = false;
+    }
+  }
+
+  // Intervalle d'arrière-plan autonome toutes les 30 s pour retenter si indisponible
+  if (typeof window !== 'undefined') {
+    setInterval(() => {
+      if (state.backendState.isAvailable === false && !state.backendState.isChecking) {
+        probeBackendInBackground();
+      }
+    }, RETRY_INTERVAL_MS);
+  }
 
   // --- Sélecteurs d'exclusion configurables ---
   // Ces sélecteurs désignent les zones que l'extension ne doit JAMAIS toucher.
@@ -405,6 +496,21 @@
       return results;
     }
 
+    // 0. Si le backend est mémorisé comme indisponible pour la session :
+    //    Repli immédiat sur le catalogue hors-ligne sans latence !
+    //    Si l'intervalle de 30 s est écoulé, lancer une vérification en arrière-plan sans bloquer.
+    if (state.backendState.isAvailable === false) {
+      if (Date.now() - state.backendState.lastChecked >= RETRY_INTERVAL_MS && !state.backendState.isChecking) {
+        probeBackendInBackground(); // Sans await : ne bloque JAMAIS le rendu
+      }
+      for (const txt of uncachedTexts) {
+        const fallbackRes = resolveOffline(txt, targetLang);
+        results.set(txt, fallbackRes);
+        state.cache.set(`${txt.trim()}__${targetLang}`, fallbackRes);
+      }
+      return results;
+    }
+
     // Construction du payload conforme à openapi.yaml.
     // Résolution EN→FR : si un texte anglais a un équivalent FR dans l'index, on
     // envoie le texte FR à l'API (qui cherche dans sa mémoire FR). On conserve
@@ -428,16 +534,14 @@
       items: items.map(({ id, text, screen_context }) => ({ id, text, screen_context }))
     };
 
-
-
     let apiSuccess = false;
     let apiData = null;
 
-    // Tentative 1 : Via le Service Worker d'extension (conforme Manifest V3, contourne Private Network Access et Mixed Content)
+    // Tentative 1 : Via le Service Worker d'extension (timeout strict 400 ms)
     if (typeof chrome !== 'undefined' && chrome.runtime && typeof chrome.runtime.sendMessage === 'function') {
       try {
         const swResponse = await new Promise((resolve) => {
-          const timer = setTimeout(() => resolve(null), 1800);
+          const timer = setTimeout(() => resolve(null), API_TIMEOUT_MS);
           try {
             chrome.runtime.sendMessage(
               { type: 'SAFINUM_TRANSLATE_BATCH', payload },
@@ -460,35 +564,37 @@
           apiSuccess = true;
         }
       } catch (swErr) {
-        // Service worker non joignable, tentative directe
+        // Service worker non joignable
       }
     }
 
-    // Tentative 2 : Direct fetch (si Service Worker indisponible ou hors contexte extension)
-    if (!apiSuccess) {
-      for (const endpoint of API_ENDPOINTS) {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1500);
+    // Tentative 2 : Direct fetch si le Service Worker est indisponible (un seul essai, délai maximal 400 ms)
+    if (!apiSuccess && (!chrome || !chrome.runtime || typeof chrome.runtime.sendMessage !== 'function')) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
 
-        try {
-          const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-            signal: controller.signal
-          });
-          clearTimeout(timeoutId);
+      try {
+        const response = await fetch(PRIMARY_API_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
 
-          if (response.ok) {
-            apiData = await response.json();
-            apiSuccess = true;
-            break;
-          }
-        } catch (e) {
-          clearTimeout(timeoutId);
+        if (response.ok) {
+          apiData = await response.json();
+          apiSuccess = true;
         }
+      } catch (e) {
+        clearTimeout(timeoutId);
       }
     }
+
+    // Mémoriser l'état de disponibilité du backend pour la session
+    state.backendState.isAvailable = apiSuccess;
+    state.backendState.lastChecked = Date.now();
+    writeSessionBackendState(apiSuccess);
 
     // Traitement des données renvoyées par l'API
     if (apiSuccess && apiData && Array.isArray(apiData.items)) {
@@ -1345,6 +1451,22 @@
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
+  }
+
+  if (typeof window !== 'undefined') {
+    window.SAFINUM_GET_BACKEND_STATE = () => ({ ...state.backendState });
+    window.SAFINUM_RESET_BACKEND_STATE = () => {
+      state.backendState.isAvailable = null;
+      state.backendState.lastChecked = 0;
+      state.backendState.isChecking = false;
+      try {
+        if (typeof sessionStorage !== 'undefined') {
+          sessionStorage.removeItem(SESSION_BACKEND_KEY);
+          sessionStorage.removeItem(SESSION_BACKEND_TIME_KEY);
+        }
+      } catch (e) {}
+    };
+    window.SAFINUM_PROBE_BACKEND = probeBackendInBackground;
   }
 
 })();
