@@ -6,6 +6,28 @@
 
 ## Decisions
 
+- 2026-11-28 04:45 — Rédaction du guide d'ingénierie face au jury et plan de secours (`docs/questions_jury.md`) :
+  1. Élaboration de 25 questions probables d'évaluation couvrant l'ensemble des piliers critiques :
+     - Intégrité financière & préservation stricte des montants, frais et devises (Q1 à Q4).
+     - Indépendance et non-intrusion absolue sur le site cible `safinum.cm` (Q5 à Q7).
+     - Choix linguistique et protocole de validation humaine (Q8 à Q12).
+     - Sécurité, sanctuarisation des secrets OTP/PIN et zéro collecte de données personnelles (Q13 à Q15).
+     - Résilience réseau, service worker MV3 et mode hors-ligne nominal (Q16 à Q18).
+     - Licences, dépendances et propriété intellectuelle (Q19 à Q21).
+     - Gestion du contenu inédit, limites du prototype et durabilité du projet (Q22 à Q25).
+  2. Réponses transparentes et documentées aux trois questions d'honneur imposées :
+     - *Pourquoi le Fulfulde est-il écarté ?* : Évalué sur 20 libellés réels (`catalogue/evaluation_fulfulde_20.csv`), écarté pour hallucinations sévères (répétitions en boucle, dérives religieuses hors domaine), risque de non-restitution des jetons financiers et variété dialectale non certifiée.
+     - *Pourquoi 0 chaîne validée ?* : Respect absolu de la règle 4 d'`AGENTS.md` interdisant de maquiller une sortie machine en validation humaine ; maintien strict du statut `machine_suggested` pour les 84 chaînes du catalogue tant que les signatures des locuteurs natifs ne sont pas recueillies.
+     - *Que se passe-t-il si le backend est coupé ?* : Bascule instantanée (< 80 ms en médiane) sur le catalogue local embarqué de 122 Ko (`extension/offline_catalog.json`) avec mémorisation d'état sans blocage de l'interface utilisateur.
+  3. Plan de secours opérationnel de démonstration (Scénarios de crise) :
+     - *Scénario 1 (Réseau coupé)* : Fonctionnement 100 % hors-ligne démontré en direct.
+     - *Scénario 2 (Site distant safinum.cm indisponible ou lent)* : Bascule immédiate sur la maquette bancaire locale `tests/mock_bank.html`.
+     - *Scénario 3 (Widget Shadow DOM masqué)* : Déclenchement programmatique en console (`__safinum_test_set_lang`) ou exécution du banc d'essai Playwright (`scripts/repetition_finale.py`).
+  4. Respect des principes de vérité des métriques :
+     - Citations précises des fichiers et chiffres mesurés réels (84 chaînes, 122,10 Ko, 79,22 ms, 0,80 ms, 91 cas, 60 injections).
+     - Déclaration explicite « non mesuré » pour l'autonomie de batterie, le matériel mobile 32 bits et le réseau 2G rural.
+
+
 - 2026-11-28 00:40 — Rédaction de l'état des données linguistiques et justification de l'architecture (`docs/etat_des_donnees.md`) :
   1. Analyse exhaustive du dossier de recherche externe (`DOSSIER_RECHERCHE_DONNEES_SAFINUM`) :
      - Sources primaires analysées : `NOTE_TRANSFERT_CLAUDE_PRINCIPAL.md`, `REGISTRE_LICENCES.csv`, `INVENTAIRE_DATASETS.csv`, `INVENTAIRE_MODELES.csv` et `RAPPORT_RECHERCHE_DONNEES.md`.
