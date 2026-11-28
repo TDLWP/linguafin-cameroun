@@ -11,7 +11,8 @@
 >   - **Alignement de contrat OpenAPI** : Tests automatisés `openapi.yaml` vs API FastAPI (`backend/tests/test_openapi_contract.py`).
 >   - **Kit de validation linguistique natif** : Fiches PDF/CSV prêtes pour la relecture humaine, guide du validateur ([`catalogue/kit_validation/GUIDE_VALIDATEUR.md`](catalogue/kit_validation/GUIDE_VALIDATEUR.md)) et modèles de sollicitation ([`docs/modeles_messages_validateurs.md`](docs/modeles_messages_validateurs.md)).
 >   - **Architecture Service Worker MV3 & Sécurité Réseau Stricte** : Relais réseau isolé via `background.js` avec `host_permissions` ciblées (`127.0.0.1:8000` et `localhost:8000`), respectant les normes W3C Private Network Access et Mixed Content sans aucun affaiblissement de la sécurité du navigateur (zéro option de contournement `--disable-web-security`).
->   - **Automatisation & Packaging v2** : Scripts `lancer_demo.ps1`, `run_all_checks.ps1` (192 tests passants, 0 échec) et `package_release.py` (archives officielles `dist/` certifiées anti-secrets).
+>   - **Automatisation & Packaging v2** : Scripts `lancer_demo.ps1`, `run_all_checks.ps1` (**177 tests locaux passants — 168 backend + 9 racine**, 0 échec local ; 8 tests jury live soumis à disponibilité réseau) et `package_release.py` (archives officielles `dist/` certifiées anti-secrets — `extension_linguafin_v2.zip` **27,8 Ko, 4 fichiers** ; `linguafin_v2_source.zip` **4,99 Mo, 137 fichiers**).
+>   - **Audit hostile v2 (post-soumission)** : 1 constat critique et 3 majeurs corrigés ([`docs/05_audit_final.md`](docs/05_audit_final.md)) — correctifs de détection OTP/PIN étendue, filtrage secrets sur `/feedback`, CSP explicite dans `manifest.json`, exactitude documentaire.
 
 # SAFINUM 2026 — Couche d'Accessibilité Linguistique pour Services Financiers
 
@@ -97,7 +98,7 @@ Pour simplifier l'évaluation, trois scripts prêts à l'emploi sont mis à disp
 | **Tests unitaires & adversariaux** | **83 / 83 tests réussis (0 échec)** | 77 tests backend + 6 tests racine (`unittest discover`) |
 | **Tests d'intégrité jury (`normalizeValue`)** | **8 / 8 vérifications conformes** | `tests/test_jury_integrity.py` |
 | **Temps d'exécution regex (anti-ReDoS)** | **< 0,01 ms** sur chaîne piège | Benchmark `time.time()` |
-| **Empreinte de l'extension client** | **125 034 octets (122,10 Ko)** (zéro dépendance externe) | Somme exacte des 4 fichiers du dossier `extension/` (`background.js`, `content.js`, `manifest.json`, `offline_catalog.json`) |
+| **Empreinte de l'extension client** | **125 238 octets (122,30 Ko)** (zéro dépendance externe) | Somme exacte des 4 fichiers du dossier `extension/` (`background.js` 2 970 o, `content.js` 62 726 o, `manifest.json` 1 238 o, `offline_catalog.json` 58 304 o) |
 | **Temps de bascule hors ligne** | **Instantané** (mémoire cache) | Mesuré via mock bank Playwright |
 | **Premier rendu traduit (offline / online)** | **79 ms** (offline) / **77 ms** (online) | Médiane 12 runs — [`docs/mesures_performance.md`](docs/mesures_performance.md) |
 | **Latence `/translate/batch` (local)** | **16 ms** (médiane), **25 ms** (P95) | 200 appels batch — [`docs/mesures_performance.md`](docs/mesures_performance.md) |

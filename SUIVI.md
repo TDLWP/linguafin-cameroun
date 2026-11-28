@@ -6,6 +6,15 @@
 
 ## Decisions
 
+- 2026-11-28 07:45 — Packaging de release et mise à jour README (P10 — post-audit) :
+  1. `python scripts/package_release.py` : 2 archives générées, 0 secret détecté, décompression de contrôle OK.
+     - `dist/extension_linguafin_v2.zip` : 27,8 Ko, 4 fichiers (`manifest.json` à la racine ✓, 0 `backend/models`, 0 `.env`).
+     - `dist/linguafin_v2_source.zip` : 4,99 Mo, 137 fichiers (exclusions strictes vérifiées ✓).
+  2. Tests relancés depuis le dossier décompressé propre (`%TEMP%\linguafin_unpack_test`) : 177 tests OK (168 backend + 9 racine).
+  3. README.md section Versions mise à jour : 177 tests locaux, chiffres archives réels, audit hostile v2 ajouté.
+  4. README.md tableau métriques mis à jour : empreinte extension 125 238 octets / 122,30 Ko (après correctifs M1+M3).
+  5. Aucun tag créé (réservé à l'utilisateur).
+
 - 2026-11-28 06:20 — Audit final hostile du dépôt (`docs/05_audit_final.md`) :
   1. Exécution de `run_all_checks.ps1` : 197/205 tests locaux OK, 8 tests jury live en échec réseau.
   2. Audit antagoniste sur 6 vecteurs : 1 constat critique, 3 majeurs, 4 mineurs.
