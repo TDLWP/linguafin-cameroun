@@ -594,6 +594,15 @@ def submit_feedback(req: FeedbackRequest):
     # Journalisation strictement anonyme (aucun texte utilisateur n'est loggué)
     logger.info("Feedback received for target_lang=%s, context=%s", req.target_lang, req.screen_context)
 
+    # Garde-fou : rejeter toute soumission contenant un secret (OTP, PIN, mot de passe)
+    for field_value in [req.source_text, req.suggested_translation, req.comment or ""]:
+        if is_secret_text(field_value):
+            raise HTTPException(
+                status_code=422,
+                detail="Le texte soumis contient un secret (OTP, PIN ou mot de passe). "
+                       "Les données sensibles ne doivent jamais être soumises via ce formulaire."
+            )
+
     submission = {
         "id": f"fbk_{int(time.time()*1000)}",
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),

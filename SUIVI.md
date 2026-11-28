@@ -6,6 +6,16 @@
 
 ## Decisions
 
+- 2026-11-28 06:20 — Audit final hostile du dépôt (`docs/05_audit_final.md`) :
+  1. Exécution de `run_all_checks.ps1` : 197/205 tests locaux OK, 8 tests jury live en échec réseau.
+  2. Audit antagoniste sur 6 vecteurs : 1 constat critique, 3 majeurs, 4 mineurs.
+  3. Correctif C1 : nom de fonction `has_confidential_secret()` → `is_secret_text()` dans `docs/questions_jury.md`.
+  4. Correctif M1 : 3 motifs regex ajoutés dans `backend/protect.py` et `extension/content.js` pour combler les faux négatifs de détection de secrets (PIN est, PIN code, Code secret).
+  5. Correctif M2 : filtrage `is_secret_text()` ajouté sur `POST /feedback` dans `backend/api.py` (rejet HTTP 422 si secret détecté).
+  6. Correctif M3 : CSP explicite ajoutée dans `extension/manifest.json`.
+  7. Vérification croisée des 10 affirmations chiffrées documentaires : toutes conformes.
+  8. Tous les tests repassent après correctifs (168 backend + 9 racine = 177 OK).
+
 - 2026-11-28 04:45 — Rédaction du guide d'ingénierie face au jury et plan de secours (`docs/questions_jury.md`) :
   1. Élaboration de 25 questions probables d'évaluation couvrant l'ensemble des piliers critiques :
      - Intégrité financière & préservation stricte des montants, frais et devises (Q1 à Q4).

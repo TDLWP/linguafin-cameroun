@@ -242,7 +242,9 @@
     /\bvotre\s+code\s+pin\s+est\s+\d+/i,
     /\b(?:mot\s+de\s+passe\s+temporaire|temporary\s+password)\b/i,
     /\b(?:mot\s+de\s+passe|password)\s*[:=]\s*\S+/i,
-    /\bcode\s+(?:de\s+)?(?:validation|confirmation|sécurité|securite|vérification|verification|secret)\s*(?:est|:)\s*\d+/i
+    /\bcode\s+(?:de\s+)?(?:validation|confirmation|sécurité|securite|vérification|verification|secret)\s*(?:est|:)?\s*\d{4,8}\b/i,
+    /\bpin\s+(?:code\s*)?(?:est|is|:)\s*\d{4,8}\b/i,
+    /\bvotre\s+pin\s+est\s+\d{4,8}\b/i
   ];
 
   /**

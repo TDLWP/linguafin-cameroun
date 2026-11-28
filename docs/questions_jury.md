@@ -120,7 +120,7 @@ Par une méthodologie en trois piliers supervisés :
 ### Q13. Comment traitez-vous les données sensibles comme les codes OTP ou les codes PIN bancaires ?
 **Réponse** :  
 Par une **sanctuarisation absolue** à la fois côté extension et côté backend :
-- La fonction `isSecretText()` dans [`extension/content.js`](../extension/content.js) et `has_confidential_secret()` dans [`backend/protect.py`](../backend/protect.py) détectent les formats sensibles (mots de passe, codes OTP à 4, 6 ou 8 chiffres, codes de validation).
+- La fonction `isSecretText()` dans [`extension/content.js`](../extension/content.js) et `is_secret_text()` dans [`backend/protect.py`](../backend/protect.py) détectent les formats sensibles (mots de passe, codes OTP à 4, 6 ou 8 chiffres, codes de validation).
 - Tout libellé contenant un code secret est **restitué strictement à l'identique**, n'est **jamais traduit** et n'est **jamais transmis sur le réseau** à l'API.
 - **Résultat vérifié** : Testé sur les cas `T088`, `T089`, `T090` de [`tests_integrite/cases.json`](../tests_integrite/cases.json) dans [`tests/test_integrite_figee.py`](../tests/test_integrite_figee.py).
 

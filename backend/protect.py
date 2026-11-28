@@ -24,7 +24,9 @@ SECRET_PATTERNS = [
     re.compile(r"\bvotre\s+code\s+pin\s+est\s+\d+", re.IGNORECASE),
     re.compile(r"\b(?:mot\s+de\s+passe\s+temporaire|temporary\s+password)\b", re.IGNORECASE),
     re.compile(r"\b(?:mot\s+de\s+passe|password)\s*[:=]\s*\S+", re.IGNORECASE),
-    re.compile(r"\bcode\s+(?:de\s+)?(?:validation|confirmation|sécurité|securite|vérification|verification|secret)\s*(?:est|:)\s*\d+", re.IGNORECASE),
+    re.compile(r"\bcode\s+(?:de\s+)?(?:validation|confirmation|sécurité|securite|vérification|verification|secret)\s*(?:est|:)?\s*\d{4,8}\b", re.IGNORECASE),
+    re.compile(r"\bpin\s+(?:code\s*)?(?:est|is|:)\s*\d{4,8}\b", re.IGNORECASE),
+    re.compile(r"\bvotre\s+pin\s+est\s+\d{4,8}\b", re.IGNORECASE),
 ]
 
 
